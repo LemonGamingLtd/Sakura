@@ -5,7 +5,7 @@ Subject: [PATCH] Reduce deltaMovement Allocations
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index 9d0c8b665bea9da560800b5f7ee1299280201022..a52530dbcd8a3e48a26f13fb246e8183ee560b07 100644
+index 9d0c8b665bea9da560800b5f7ee1299280201022..034a3033547bc80307653e66795784386be9c10f 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
 @@ -1229,7 +1229,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
@@ -67,30 +67,7 @@ index 9d0c8b665bea9da560800b5f7ee1299280201022..a52530dbcd8a3e48a26f13fb246e8183
          this.resetFallDistance();
      }
  
-@@ -4397,16 +4402,19 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
-                     vec3d = vec3d.normalize();
-                 }
- 
--                Vec3 vec3d2 = this.getDeltaMovement();
-+                // Sakura start - reduce movement allocations
-+                // Vec3 vec3d2 = this.getDeltaMovement();
-+                this.syncDeltaMovement();
- 
-                 vec3d = vec3d.scale(speed * 1.0D);
-                 double d3 = 0.003D;
- 
--                if (Math.abs(vec3d2.x) < 0.003D && Math.abs(vec3d2.z) < 0.003D && vec3d.length() < 0.0045000000000000005D) {
-+                if (Math.abs(movementX) < 0.003D && Math.abs(movementZ) < 0.003D && vec3d.length() < 0.0045000000000000005D) {
-                     vec3d = vec3d.normalize().scale(0.0045000000000000005D);
-                 }
- 
--                this.setDeltaMovement(this.getDeltaMovement().add(vec3d));
-+                this.addDeltaMovement(vec3d.x, vec3d.y, vec3d.z);
-+                // Sakura end
-             }
- 
-             this.fluidHeight.put(tag, d1);
-@@ -4477,11 +4485,53 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -4477,11 +4482,53 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
          return this.chunkPosition;
      }
  
@@ -144,7 +121,7 @@ index 9d0c8b665bea9da560800b5f7ee1299280201022..a52530dbcd8a3e48a26f13fb246e8183
          synchronized (this.posLock) { // Paper
          this.deltaMovement = velocity;
          } // Paper
-@@ -4492,7 +4542,11 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -4492,7 +4539,11 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
      }
  
      public void setDeltaMovement(double x, double y, double z) {
