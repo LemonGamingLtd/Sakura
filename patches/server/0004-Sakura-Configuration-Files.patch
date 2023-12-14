@@ -318,10 +318,10 @@ index 0000000000000000000000000000000000000000..0b5f50c7447d1c1732a745bae54c4fcd
 +}
 diff --git a/src/main/java/me/samsuik/sakura/configuration/GlobalConfiguration.java b/src/main/java/me/samsuik/sakura/configuration/GlobalConfiguration.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..911c81920bda503577ed63c9ea4505ccbf70c783
+index 0000000000000000000000000000000000000000..ebdb73fa24fd2600925bf5664ceda202b8da04c0
 --- /dev/null
 +++ b/src/main/java/me/samsuik/sakura/configuration/GlobalConfiguration.java
-@@ -0,0 +1,47 @@
+@@ -0,0 +1,60 @@
 +package me.samsuik.sakura.configuration;
 +
 +import com.mojang.logging.LogUtils;
@@ -366,6 +366,19 @@ index 0000000000000000000000000000000000000000..911c81920bda503577ed63c9ea4505cc
 +    public Players players;
 +    public class Players extends ConfigurationPart {
 +        public String potatoMessage = "<dark_gray>(<light_purple>S</light_purple>) <white>This block has <gray><remaining></gray> of <gray><durability>";
++    }
++
++    public Environment environment;
++    public class Environment extends ConfigurationPart {
++        public MobSpawnerDefaults mobSpawnerDefaults = new MobSpawnerDefaults();
++        public class MobSpawnerDefaults extends ConfigurationPart {
++            public int minSpawnDelay = 200;
++            public int maxSpawnDelay = 800;
++            public int spawnCount = 4;
++            public int maxNearbyEntities = 6;
++            public int requiredPlayerRange = 16;
++            public int spawnRange = 4;
++        }
 +    }
 +
 +}
@@ -608,10 +621,10 @@ index 0000000000000000000000000000000000000000..5fc23a0b579d7cbe03baf5324bef887a
 +}
 diff --git a/src/main/java/me/samsuik/sakura/configuration/WorldConfiguration.java b/src/main/java/me/samsuik/sakura/configuration/WorldConfiguration.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..4e62a5fbd2e1e674abfe4afb763118b7b0127b67
+index 0000000000000000000000000000000000000000..5bee36934f9510abcd365b3856dc5b3e69fdfe27
 --- /dev/null
 +++ b/src/main/java/me/samsuik/sakura/configuration/WorldConfiguration.java
-@@ -0,0 +1,139 @@
+@@ -0,0 +1,162 @@
 +package me.samsuik.sakura.configuration;
 +
 +import com.mojang.logging.LogUtils;
@@ -623,6 +636,7 @@ index 0000000000000000000000000000000000000000..4e62a5fbd2e1e674abfe4afb763118b7
 +import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 +import me.samsuik.sakura.entity.merge.MergeLevel;
 +import me.samsuik.sakura.explosion.durable.DurableMaterial;
++import me.samsuik.sakura.physics.PhysicsVersion;
 +import net.minecraft.Util;
 +import net.minecraft.resources.ResourceLocation;
 +import net.minecraft.world.entity.item.FallingBlockEntity;
@@ -657,6 +671,12 @@ index 0000000000000000000000000000000000000000..4e62a5fbd2e1e674abfe4afb763118b7
 +    public Cannons cannons;
 +    public class Cannons extends ConfigurationPart {
 +        public MergeLevel mergeLevel = MergeLevel.STRICT;
++        public boolean tntAndSandAffectedByBubbleColumns = true;
++
++        @NestedSetting({"treat-collidable-blocks-as-full", "while-moving"})
++        public boolean treatAllBlocksAsFullWhenMoving = false;
++        @NestedSetting({"treat-collidable-blocks-as-full", "moving-faster-than"})
++        public double treatAllBlocksAsFullWhenMovingFasterThan = 64.0;
 +
 +        public Tnt tnt = new Tnt();
 +        public class Tnt extends ConfigurationPart {
@@ -668,6 +688,7 @@ index 0000000000000000000000000000000000000000..4e62a5fbd2e1e674abfe4afb763118b7
 +        public class Sand extends ConfigurationPart {
 +            public boolean loadsChunks;
 +            public boolean despawnInsideMovingPistons = true;
++            public boolean concreteSolidifyInWater = true;
 +
 +            @NestedSetting({"prevent-stacking", "against-border"})
 +            public boolean preventAgainstBorder = false;
@@ -675,7 +696,7 @@ index 0000000000000000000000000000000000000000..4e62a5fbd2e1e674abfe4afb763118b7
 +            public boolean preventAtWorldHeight = false;
 +
 +            public boolean isFallingBlockInBounds(FallingBlockEntity entity) {
-+                return (!preventAgainstBorder || !io.papermc.paper.util.CollisionUtil.isCollidingWithBorderEdge(entity.level().getWorldBorder(), entity.getBoundingBox()))
++                return (!preventAgainstBorder || !io.papermc.paper.util.CollisionUtil.isAlmostCollidingOnBorder(entity.level().getWorldBorder(), entity.getBoundingBox()))
 +                    && (!preventAtWorldHeight || entity.blockPosition().getY() < entity.level().getMaxBuildHeight() - 1);
 +            }
 +        }
@@ -690,7 +711,9 @@ index 0000000000000000000000000000000000000000..4e62a5fbd2e1e674abfe4afb763118b7
 +                map.put(Blocks.CHIPPED_ANVIL, new DurableMaterial(3, Blocks.END_STONE.getExplosionResistance()));
 +                map.put(Blocks.DAMAGED_ANVIL, new DurableMaterial(3, Blocks.END_STONE.getExplosionResistance()));
 +            });
++            public boolean allowNonTntBreakingDurableBlocks = false;
 +            public boolean destroyWaterloggedBlocks = false;
++            public boolean explodeLava = false;
 +            public boolean consistentRadius = false;
 +        }
 +
@@ -699,6 +722,7 @@ index 0000000000000000000000000000000000000000..4e62a5fbd2e1e674abfe4afb763118b7
 +            public TNTSpread tntSpread = TNTSpread.ALL;
 +            public boolean tntFlowsInWater = true;
 +            public boolean fallingBlockParity = false;
++            public PhysicsVersion physicsVersion = PhysicsVersion.LATEST;
 +
 +            public enum TNTSpread {
 +                ALL, Y, NONE;
@@ -743,10 +767,22 @@ index 0000000000000000000000000000000000000000..4e62a5fbd2e1e674abfe4afb763118b7
 +    public class Entity extends ConfigurationPart {
 +        @Comment("Only modify if you know what you're doing")
 +        public boolean disableMobAi = false;
++        public boolean waterSensitivity = true;
 +
 +        public Items items = new Items();
 +        public class Items extends ConfigurationPart {
 +            public List<Item> explosionResistantItems = List.of();
++        }
++    }
++
++    public Environment environment;
++    public class Environment extends ConfigurationPart {
++        public boolean allowWaterInTheNether = false;
++        public boolean disableFastNetherLava = false;
++
++        public BlockGeneration blockGeneration = new BlockGeneration();
++        public class BlockGeneration extends ConfigurationPart {
++            public boolean legacyBlockFormation = false;
 +        }
 +    }
 +

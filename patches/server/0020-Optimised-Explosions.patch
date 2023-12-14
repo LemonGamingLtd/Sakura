@@ -142,17 +142,19 @@ index 0000000000000000000000000000000000000000..3f6f34cc617efaad420485a7f613cfca
 +}
 diff --git a/src/main/java/me/samsuik/sakura/explosion/SakuraExplosion.java b/src/main/java/me/samsuik/sakura/explosion/SakuraExplosion.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..2749e740d043ecaf8cca78c4527a8aab51548611
+index 0000000000000000000000000000000000000000..b87748ae90863abe8f85dcbdc5a202cb3c9e2037
 --- /dev/null
 +++ b/src/main/java/me/samsuik/sakura/explosion/SakuraExplosion.java
-@@ -0,0 +1,383 @@
+@@ -0,0 +1,403 @@
 +package me.samsuik.sakura.explosion;
 +
++import me.samsuik.sakura.entity.EntityState;
 +import net.minecraft.core.BlockPos;
 +import net.minecraft.server.level.ServerLevel;
 +import net.minecraft.util.Mth;
 +import net.minecraft.world.damagesource.DamageSource;
 +import net.minecraft.world.entity.Entity;
++import net.minecraft.world.entity.EntityType;
 +import net.minecraft.world.entity.LivingEntity;
 +import net.minecraft.world.entity.boss.EnderDragonPart;
 +import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
@@ -198,33 +200,40 @@ index 0000000000000000000000000000000000000000..2749e740d043ecaf8cca78c4527a8aab
 +
 +    @Override
 +    public void explode() {
-+        PrimedTnt origin = (PrimedTnt) source;
-+        List<Vec3> positions = new ArrayList<>(origin.getStacked());
-+
-+        // This is a temporary entity that will be used for movement.
-+        PrimedTnt tnt = new PrimedTnt(level, 0, 0, 0, null);
-+        AABB bounds = new AABB(x, y, z, x, y, z);
-+
-+        origin.entityState().apply(tnt);
-+
-+        Vec3 lastMovement = tnt.getDeltaMovement();
-+        ExplosionBlockCache[] blockCache = createBlockCache();
-+        int wrapped = 0;
-+
-+        for (int i = 0; i < origin.getStacked() && !wasCanceled; ++i) {
-+            if (i > 0) {
-+                updatePosition(origin, tnt);
++        if (this.radius < 0.1F) {
++            for (int i = 1; i < source.getStacked(); ++i) {
++                getToBlow().clear();
++                ((ServerLevel) level).notifyPlayersOfExplosion(x, y, z, radius, this);
++                finalizeExplosion(false);
 +            }
 +
-+            // block at explosion position
-+            int blockX = Mth.floor(x);
-+            int blockY = Mth.floor(y);
-+            int blockZ = Mth.floor(z);
++            return;
++        }
++
++        List<Vec3> positions = new ArrayList<>(source.getStacked());
++        ExplosionBlockCache[] blockCache = createBlockCache();
++
++        EntityState entityState = null;
++        AABB bounds = new AABB(x, y, z, x, y, z);
++        Vec3 lastMovement = source.entityState().momentum();
++        int wrapped = 0;
++
++        for (int i = 0; i < source.getStacked() && !wasCanceled; ++i) {
++            if (i > 0) {
++                calculateNextPosition(entityState);
++                getToBlow().clear();
++            }
++
++            // keep track of positions and bounds
 +            Vec3 position = new Vec3(x, y, z);
++            positions.add(position);
++            bounds = bounds.minmax(new AABB(position, position));
 +
 +            // search for blocks if necessary
 +            if (wrapped < 7 + 12) {
-+                getToBlow().clear();
++                int blockX = Mth.floor(x);
++                int blockY = Mth.floor(y);
++                int blockZ = Mth.floor(z);
 +
 +                long key = BlockPos.asLong(blockX, blockY, blockZ);
 +                ExplosionBlockCache center = getOrCacheExplosionBlock(blockX, blockY, blockZ, key, true);
@@ -234,28 +243,30 @@ index 0000000000000000000000000000000000000000..2749e740d043ecaf8cca78c4527a8aab
 +                }
 +            }
 +
-+            // keep track of positions and bounds
-+            positions.add(position);
-+            bounds = bounds.minmax(new AABB(position, position));
-+
-+            Vec3 movement = tnt.getDeltaMovement();
-+
++            // Check if the explosion has wrapped around with swinging on each axis
 +            if (wrapped < 7) {
-+                // Check if the explosion has wrapped around with swinging on each axis
++                Vec3 movement = source.entityState().momentum();
 +                if (movement.x == lastMovement.x || movement.x * lastMovement.x < 0) wrapped |= 1;
 +                if (movement.y == lastMovement.y || movement.y * lastMovement.y < 0) wrapped |= 1 << 1;
 +                if (movement.z == lastMovement.z || movement.z * lastMovement.z < 0) wrapped |= 1 << 2;
-+            } else if (getToBlow().isEmpty() && level.sakuraConfig().cannons.explosion.avoidRedundantBlockSearches) {
-+                wrapped++;
-+            } else {
-+                wrapped = 7;
++                lastMovement = movement;
 +            }
 +
-+            lastMovement = tnt.getDeltaMovement();
++            boolean isFinalExplosion = i + 1 >= source.getStacked();
 +
-+            if (i + 1 < origin.getStacked()) {
++            // Possible optimisation here is making our own finalize explosion for this special case.
++            // If this is after the explosion event we can take better advantage of protection plugins.
++            if (isFinalExplosion || !getToBlow().isEmpty()) {
++                locateAndImpactEntities(positions, bounds, blockCache);
++                bounds = new AABB(position, position);
++                positions.clear();
++            }
++
++            if (!isFinalExplosion) {
 +                BlockPos.MutableBlockPos mbp = new BlockPos.MutableBlockPos();
-+                impactEntityIdle(tnt, new Entity[0], position, 1, radius * 2.0f, mbp, blockCache);
++
++                // Calculate next source velocity
++                entityState = calculateNextVelocity(position, mbp, blockCache);
 +
 +                // The purpose of this is to make sure papers blockCache doesn't become
 +                // outdated by flushing the map and removing stale entries from the recent
@@ -263,41 +274,50 @@ index 0000000000000000000000000000000000000000..2749e740d043ecaf8cca78c4527a8aab
 +                // movement and then start moving without blocks this may break stuff to
 +                // fix it see the note above or add a boolean to mark the cache as dirty
 +                // outside this loop and then invalidate before the final impact entities.
-+                if (!getToBlow().isEmpty() && tnt.getDeltaMovement().lengthSqr() <= 64.0) {
++                if (!getToBlow().isEmpty()) {
 +                    invalidateBlockCache(blockCache);
 +                }
 +
-+                // could it be viable to have a configuration option to only
-+                // call finalize explosion when blocks are found
-+                // may affect plugins that need exact explosion positions
++                // Could be viable in the future to have a configuration option to reduce explosion events
 +                super.finalizeExplosion(false);
 +                ((ServerLevel) level).notifyPlayersOfExplosion(x, y, z, radius, this);
-+            } else {
-+                locateAndImpactEntities(positions, bounds, blockCache);
++
++                // Update wrapped, this is for tracking swinging and if blocks are found
++                if (getToBlow().isEmpty() && level.sakuraConfig().cannons.explosion.avoidRedundantBlockSearches) {
++                    wrapped++;
++                } else {
++                    wrapped = 7;
++                }
 +            }
 +        }
 +
 +        clearBlockCache();
 +    }
 +
-+    private void updatePosition(PrimedTnt origin, PrimedTnt tnt) {
-+        boolean originMoved = !origin.position().equals(tnt.position());
++    private void calculateNextPosition(EntityState entityState) {
++        if (source instanceof PrimedTnt tnt) {
++            tnt.setFuse(100);
++        }
 +
-+        origin.setFuse(100);
-+        tnt.storeEntityState();
-+        tnt.entityState().apply(origin);
++        boolean moved = !source.entityState().position().equals(source.position());
++        entityState.apply(source);
++        source.storeEntityState();
 +
-+        // We have to check delta movement otherwise this optimisation can break reversing tnt.
-+        // If origin was shot upwards to a block then falls in the explosion tick it will swing
-+        // and origin and tnt will be in the same position every other tnt while swinging.
-+        if (!getToBlow().isEmpty() || tnt.getDeltaMovement().lengthSqr() <= 64.0 || originMoved) {
-+            origin.tick();
++        if (!getToBlow().isEmpty() || source.getDeltaMovement().lengthSqr() <= 65.16525625 || moved) {
++            source.tick();
 +        }
 +
 +        // update explosion position
-+        x = origin.getX();
-+        y = origin.getY(0.0625);
-+        z = origin.getZ();
++        x = source.getX();
++        y = source.getY(0.0625D);
++        z = source.getZ();
++    }
++
++    private EntityState calculateNextVelocity(Vec3 position, BlockPos.MutableBlockPos mbp, ExplosionBlockCache[] blockCache) {
++        PrimedTnt tnt = new PrimedTnt(EntityType.TNT, level);
++        source.entityState().apply(tnt);
++        impactEntityIdle(tnt, new Entity[0], position, 1, radius * 2.0f, mbp, blockCache);
++        return EntityState.of(tnt);
 +    }
 +
 +    private void locateAndImpactEntities(List<Vec3> positions, AABB bb, ExplosionBlockCache[] blockCache) {
@@ -600,11 +620,11 @@ index 0000000000000000000000000000000000000000..e0387f16ff49031fdcbc8990613417da
 +
 +}
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index a520e0dbbe2b5baaeba32020d217b5f08870044b..805396ad55b551080e5796cbbc493fe10d2997b6 100644
+index 457ccc9934fc6563a1b260ec9d12f0c875a4bd37..d2b12606c4bd7edec4061f67e79bdedcee147fca 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -1580,6 +1580,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
-             worldserver.explosionDensityCache.clear(); // Paper - Optimize explosions
+@@ -1581,6 +1581,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+             worldserver.localConfig().expire(currentTickLong); // Sakura
              worldserver.minimalTNT.clear(); // Sakura - visibility api
              worldserver.mergeHistory.expire(currentTickLong); // Sakura - merge cannoning entities
 +            worldserver.densityCache.clear(); // Sakura
@@ -612,7 +632,7 @@ index a520e0dbbe2b5baaeba32020d217b5f08870044b..805396ad55b551080e5796cbbc493fe1
          this.isIteratingOverLevels = false; // Paper
  
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index 6beee8db675d737dc492065f0f12b617c5426694..b3183257c3642e481f86cc56caa14bfbf5ca6ed8 100644
+index fd25999781d99526b1bc1677aaa3ff742b216ac5..239a8ec823876c2a53b68068340b79959b478148 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
 @@ -1937,6 +1937,12 @@ public class ServerLevel extends Level implements WorldGenLevel {
@@ -658,7 +678,7 @@ index 02ef6ca32f3de52e921fdcf3f0f572ce7afef318..919680a42a8362859cd87fb3d87e8ee8
  
      @Override
 diff --git a/src/main/java/net/minecraft/world/level/Explosion.java b/src/main/java/net/minecraft/world/level/Explosion.java
-index 1b335111bd9eb90bbda87225b740768705f26193..e5a0ba896ae2c1e21514e1156f9ce0457ea2abb5 100644
+index 1b335111bd9eb90bbda87225b740768705f26193..11ce5591f5f7eb487323e2c828218af2461fca09 100644
 --- a/src/main/java/net/minecraft/world/level/Explosion.java
 +++ b/src/main/java/net/minecraft/world/level/Explosion.java
 @@ -56,12 +56,14 @@ public class Explosion {
@@ -743,7 +763,7 @@ index 1b335111bd9eb90bbda87225b740768705f26193..e5a0ba896ae2c1e21514e1156f9ce045
                          ++missedRays;
                      }
                  }
-@@ -361,6 +374,66 @@ public class Explosion {
+@@ -361,12 +374,72 @@ public class Explosion {
          return (float)missedRays / (float)totalRays;
      }
      // Paper end - optimise collisions
@@ -810,7 +830,27 @@ index 1b335111bd9eb90bbda87225b740768705f26193..e5a0ba896ae2c1e21514e1156f9ce045
  
      private ExplosionDamageCalculator makeDamageCalculator(@Nullable Entity entity) {
          return (ExplosionDamageCalculator) (entity == null ? Explosion.EXPLOSION_DAMAGE_CALCULATOR : new EntityBasedExplosionDamageCalculator(entity));
-@@ -407,7 +480,29 @@ public class Explosion {
+     }
+ 
+-    public static float getSeenPercent(Vec3 source, Entity entity) {
++    protected float getSeenPercent(Vec3 source, Entity entity, me.samsuik.sakura.explosion.DensityCache.Density data) { // Sakura - protected
+         AABB axisalignedbb = entity.getBoundingBox();
+         double d0 = 1.0D / ((axisalignedbb.maxX - axisalignedbb.minX) * 2.0D + 1.0D);
+         double d1 = 1.0D / ((axisalignedbb.maxY - axisalignedbb.minY) * 2.0D + 1.0D);
+@@ -386,7 +459,11 @@ public class Explosion {
+                         double d10 = Mth.lerp(d7, axisalignedbb.minZ, axisalignedbb.maxZ);
+                         Vec3 vec3d1 = new Vec3(d8 + d3, d9, d10 + d4);
+ 
+-                        if (entity.level().clip(new ClipContext(vec3d1, source, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity)).getType() == HitResult.Type.MISS) {
++                        // Sakura start
++                        if (data != null && data.isExpandable() && data.has(vec3d1)) {
++                            i += (int) data.density();
++                        } else if (entity.level().clip(new ClipContext(vec3d1, source, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity)).getType() == HitResult.Type.MISS) {
++                            // Sakura end
+                             ++i;
+                         }
+ 
+@@ -407,7 +484,29 @@ public class Explosion {
              return;
          }
          // CraftBukkit end
@@ -840,7 +880,7 @@ index 1b335111bd9eb90bbda87225b740768705f26193..e5a0ba896ae2c1e21514e1156f9ce045
          Set<BlockPos> set = Sets.newHashSet();
          boolean flag = true;
  
-@@ -415,14 +510,7 @@ public class Explosion {
+@@ -415,14 +514,7 @@ public class Explosion {
          int j;
  
          // Paper start - optimise explosions
@@ -856,7 +896,7 @@ index 1b335111bd9eb90bbda87225b740768705f26193..e5a0ba896ae2c1e21514e1156f9ce045
          // use initial cache value that is most likely to be used: the source position
          final ExplosionBlockCache initialCache;
          {
-@@ -521,10 +609,15 @@ public class Explosion {
+@@ -521,10 +613,15 @@ public class Explosion {
          }
  
          this.toBlow.addAll(set);
@@ -874,7 +914,7 @@ index 1b335111bd9eb90bbda87225b740768705f26193..e5a0ba896ae2c1e21514e1156f9ce045
          int l = Mth.floor(this.y - (double) f2 - 1.0D);
          int i1 = Mth.floor(this.y + (double) f2 + 1.0D);
          int j1 = Mth.floor(this.z - (double) f2 - 1.0D);
-@@ -574,7 +667,7 @@ public class Explosion {
+@@ -574,7 +671,7 @@ public class Explosion {
                                  // Calculate damage separately for each EntityComplexPart
                                  double d7part;
                                  if (list.contains(entityComplexPart) && (d7part = Math.sqrt(entityComplexPart.distanceToSqr(vec3d)) / f2) <= 1.0D) {
@@ -883,7 +923,7 @@ index 1b335111bd9eb90bbda87225b740768705f26193..e5a0ba896ae2c1e21514e1156f9ce045
                                      entityComplexPart.hurt(this.getDamageSource(), (float) ((int) ((d13part * d13part + d13part) / 2.0D * 7.0D * (double) f2 + 1.0D)));
                                  }
                              }
-@@ -617,9 +710,7 @@ public class Explosion {
+@@ -617,9 +714,7 @@ public class Explosion {
              }
          }
  
@@ -894,7 +934,7 @@ index 1b335111bd9eb90bbda87225b740768705f26193..e5a0ba896ae2c1e21514e1156f9ce045
  
      }
  
-@@ -683,6 +774,12 @@ public class Explosion {
+@@ -683,6 +778,12 @@ public class Explosion {
                  this.toBlow.add(coords);
              }
  
@@ -907,7 +947,7 @@ index 1b335111bd9eb90bbda87225b740768705f26193..e5a0ba896ae2c1e21514e1156f9ce045
              if (cancelled) {
                  this.wasCanceled = true;
                  return;
-@@ -850,15 +947,22 @@ public class Explosion {
+@@ -850,15 +951,22 @@ public class Explosion {
          private BlockInteraction() {}
      }
      // Paper start - Optimize explosions
@@ -939,10 +979,10 @@ index 1b335111bd9eb90bbda87225b740768705f26193..e5a0ba896ae2c1e21514e1156f9ce045
  
          return blockDensity;
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index e84b1167c2606bcc1b5ce1e284a6208e3e0b0860..907babe5d01262d0c2d7d1edb7e4882a5503c5f6 100644
+index c7defb4555edd792c83ec001c8dfbf604376b190..3e1271d07883f05fff21d0ec6088fe42a579a706 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
-@@ -228,6 +228,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+@@ -235,6 +235,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
      }
      // Sakura end
      public final me.samsuik.sakura.entity.merge.MergeHistory mergeHistory = new me.samsuik.sakura.entity.merge.MergeHistory(); // Sakura
@@ -950,7 +990,7 @@ index e84b1167c2606bcc1b5ce1e284a6208e3e0b0860..907babe5d01262d0c2d7d1edb7e4882a
  
      protected Level(WritableLevelData worlddatamutable, ResourceKey<Level> resourcekey, RegistryAccess iregistrycustom, Holder<DimensionType> holder, Supplier<ProfilerFiller> supplier, boolean flag, boolean flag1, long i, int j, org.bukkit.generator.ChunkGenerator gen, org.bukkit.generator.BiomeProvider biomeProvider, org.bukkit.World.Environment env, java.util.function.Function<org.spigotmc.SpigotWorldConfig, io.papermc.paper.configuration.WorldConfiguration> paperWorldConfigCreator, Supplier<me.samsuik.sakura.configuration.WorldConfiguration> sakuraWorldConfigCreator, java.util.concurrent.Executor executor) { // Sakura // Paper - Async-Anti-Xray - Pass executor
          this.spigotConfig = new org.spigotmc.SpigotWorldConfig(((net.minecraft.world.level.storage.PrimaryLevelData) worlddatamutable).getLevelName()); // Spigot
-@@ -1406,7 +1407,15 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+@@ -1413,7 +1414,15 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
          }
  
          Explosion.BlockInteraction explosion_effect1 = explosion_effect;

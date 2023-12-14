@@ -1,0 +1,127 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Samsuik <40902469+Samsuik@users.noreply.github.com>
+Date: Tue, 21 Nov 2023 14:53:27 +0000
+Subject: [PATCH] Add physics version API
+
+
+diff --git a/src/main/java/me/samsuik/sakura/local/LocalValueKey.java b/src/main/java/me/samsuik/sakura/local/LocalValueKey.java
+index ee3057c7969956b9c552ac5ceb2f5e38a30e9cdf..f16ea4550f3fb32bcc39d0fe735849264ce02658 100644
+--- a/src/main/java/me/samsuik/sakura/local/LocalValueKey.java
++++ b/src/main/java/me/samsuik/sakura/local/LocalValueKey.java
+@@ -1,5 +1,6 @@
+ package me.samsuik.sakura.local;
+ 
++import me.samsuik.sakura.physics.PhysicsVersion;
+ import org.bukkit.NamespacedKey;
+ 
+ import java.util.Objects;
+@@ -8,6 +9,9 @@ import java.util.function.Supplier;
+ public record LocalValueKey<T>(NamespacedKey key, Supplier<T> defaultSupplier) {
+ 
+     // ...
++    public static final LocalValueKey<PhysicsVersion> PHYSICS_VERSION = new LocalValueKey<>(
++        new NamespacedKey("sakura", "physics-version"), () -> PhysicsVersion.LATEST
++    );
+ 
+     @Override
+     public boolean equals(Object o) {
+diff --git a/src/main/java/me/samsuik/sakura/physics/PhysicsVersion.java b/src/main/java/me/samsuik/sakura/physics/PhysicsVersion.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..b27a757b6d3d43df589947fa65857011da920529
+--- /dev/null
++++ b/src/main/java/me/samsuik/sakura/physics/PhysicsVersion.java
+@@ -0,0 +1,94 @@
++package me.samsuik.sakura.physics;
++
++public enum PhysicsVersion {
++
++    // replicates patched 1.8.8 mechanics
++    LEGACY("legacy", 1_0_0),
++    // vanilla mechanics:
++    v1_8_2("1.8.2", 1_8_2),
++    v1_9("1.9", 1_9_0),
++    v1_10("1.10", 1_10_0),
++    v1_11("1.11", 1_11_0),
++    v1_12("1.12", 1_12_0),
++    v1_13("1.13", 1_13_0),
++    v1_14("1.14", 1_14_0),
++    v1_16("1.16", 1_16_0),
++    v1_17("1.17", 1_17_0),
++    v1_18_2("1.18.2", 1_18_2),
++    v1_19_3("1.19.3", 1_19_3),
++    v1_20("1.20", 1_20_0),
++    // refers to the latest mechanic version
++    LATEST("latest", 9_99_9);
++
++    // utilities:
++    public static PhysicsVersion of(String string) {
++        for (PhysicsVersion ver : values()) {
++            if (ver.getFriendlyName().equalsIgnoreCase(string)) {
++                return ver;
++            }
++        }
++
++        return null;
++    }
++
++    public static PhysicsVersion closest(int formattedVersion) {
++        PhysicsVersion found = null;
++
++        for (PhysicsVersion ver : values()) {
++            if (formattedVersion >= ver.getVersion()) {
++                found = ver;
++            }
++        }
++
++        return found;
++    }
++
++    public static PhysicsVersion closest(String provided) {
++        // check for "legacy" or "latest"
++        PhysicsVersion physicsVersion = of(provided);
++
++        if (physicsVersion != null) {
++            return physicsVersion;
++        }
++
++        String versionString = provided.replace(".", "");
++        return closest(Integer.parseInt(versionString));
++    }
++
++    private final String friendlyName;
++    private final int version;
++
++    PhysicsVersion(String friendlyName, int version) {
++        this.friendlyName = friendlyName;
++        this.version = version;
++    }
++
++    public boolean isLegacy() {
++        return this == LEGACY;
++    }
++
++    public boolean afterOrEqual(int max) {
++        return this.version >= max;
++    }
++
++    public boolean before(int max) {
++        return this.version < max;
++    }
++
++    public boolean is(int max) {
++        return this.version == max;
++    }
++
++    public boolean isWithin(int min, int max) {
++        return this.version >= min && this.version <= max;
++    }
++
++    public int getVersion() {
++        return this.version;
++    }
++
++    public String getFriendlyName() {
++        return this.friendlyName;
++    }
++
++}

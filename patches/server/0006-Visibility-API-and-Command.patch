@@ -31,14 +31,14 @@ index c2651cac1dcf85fb67fe981b97efee4e56431de2..d7d0c49cc5d576c594dee16ddba037cd
      public static void registerCommands(final MinecraftServer server) {
 diff --git a/src/main/java/me/samsuik/sakura/command/subcommands/FPSCommand.java b/src/main/java/me/samsuik/sakura/command/subcommands/FPSCommand.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..23a12e9a8697a39951f9e8d841a119c14e06e02e
+index 0000000000000000000000000000000000000000..1dc2a98123d671c945e85b97a898f56e527a81f5
 --- /dev/null
 +++ b/src/main/java/me/samsuik/sakura/command/subcommands/FPSCommand.java
 @@ -0,0 +1,26 @@
 +package me.samsuik.sakura.command.subcommands;
 +
 +import me.samsuik.sakura.command.BaseSubCommand;
-+import me.samsuik.sakura.player.visibility.ui.VisibilityGUI;
++import me.samsuik.sakura.player.visibility.VisibilityGUI;
 +import org.bukkit.command.CommandSender;
 +import org.bukkit.entity.Player;
 +import org.checkerframework.checker.nullness.qual.NonNull;
@@ -112,48 +112,47 @@ index 0000000000000000000000000000000000000000..6027e4741e2de7c6d3bd7b094c196a21
 +    }
 +
 +}
-diff --git a/src/main/java/me/samsuik/sakura/player/visibility/ui/VisibilityGUI.java b/src/main/java/me/samsuik/sakura/player/visibility/ui/VisibilityGUI.java
+diff --git a/src/main/java/me/samsuik/sakura/player/visibility/VisibilityGUI.java b/src/main/java/me/samsuik/sakura/player/visibility/VisibilityGUI.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..725dd617641f7344d18d100dfa487430080e1d93
+index 0000000000000000000000000000000000000000..d5bd47426a219a3825deaa0b62386c88d17b4aac
 --- /dev/null
-+++ b/src/main/java/me/samsuik/sakura/player/visibility/ui/VisibilityGUI.java
-@@ -0,0 +1,108 @@
-+package me.samsuik.sakura.player.visibility.ui;
++++ b/src/main/java/me/samsuik/sakura/player/visibility/VisibilityGUI.java
+@@ -0,0 +1,119 @@
++package me.samsuik.sakura.player.visibility;
 +
 +import me.samsuik.sakura.configuration.GlobalConfiguration;
 +import me.samsuik.sakura.player.gui.ItemIcon;
 +import me.samsuik.sakura.player.gui.PlayerGUI;
-+import me.samsuik.sakura.player.visibility.Visibility;
 +import net.kyori.adventure.text.Component;
 +import net.kyori.adventure.text.format.NamedTextColor;
 +import net.kyori.adventure.text.format.TextColor;
 +import net.kyori.adventure.text.format.TextDecoration;
-+import net.kyori.adventure.text.minimessage.MiniMessage;
 +import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 +import org.bukkit.Bukkit;
 +import org.bukkit.Material;
 +import org.bukkit.entity.Player;
 +import org.bukkit.inventory.Inventory;
 +import org.bukkit.inventory.ItemStack;
++import org.bukkit.inventory.meta.ItemMeta;
 +
 +import java.util.function.BiFunction;
 +
 +public class VisibilityGUI extends PlayerGUI {
 +
 +    private static final BiFunction<Player, Holder, Inventory> CREATE_INVENTORY = (player, holder) -> {
-+        var inventory = Bukkit.createInventory(holder, 45, Component.text("FPS GUI"));
++        Inventory inventory = Bukkit.createInventory(holder, 45, Component.text("FPS GUI"));
 +
-+        for (var i = 0; i < inventory.getSize(); ++i) {
-+            var column = i % 9;
-+            var row    = (i + 1) / 9;
++        for (int i = 0; i < inventory.getSize(); ++i) {
++            int column = i % 9;
++            int row    = (i + 1) / 9;
 +
-+            var background = column > 0 && column < 8 ? (row > 0 && row < 4 || column > 1 && column < 7)
++            Material background = column > 0 && column < 8 ? (row > 0 && row < 4 || column > 1 && column < 7)
 +                ? Material.matchMaterial(GlobalConfiguration.get().fps.material)
 +                : Material.WHITE_STAINED_GLASS_PANE
 +                : Material.BLACK_STAINED_GLASS_PANE;
 +
-+            var itemstack = new ItemStack(background);
-+            var meta = itemstack.getItemMeta();
++            ItemStack itemstack = new ItemStack(background);
++            ItemMeta meta = itemstack.getItemMeta();
 +            meta.displayName(Component.space());
 +            itemstack.setItemMeta(meta);
 +
@@ -180,45 +179,57 @@ index 0000000000000000000000000000000000000000..725dd617641f7344d18d100dfa487430
 +        registerFPSIcon(Visibility.Setting.ENCHANTMENT_GLINT, Material.ENCHANTED_BOOK, NamedTextColor.DARK_PURPLE, 32);
 +
 +        registerIcon(new ItemIcon(
-+            (player) -> new ItemStack(Material.EMERALD_BLOCK),
-+            (player) -> player.getVisibility().toggleAll(),
++            (player) -> {
++                ItemStack itemstack = new ItemStack(Material.GREEN_STAINED_GLASS_PANE);
++                Component title = Component.text("Toggle all", NamedTextColor.GREEN);
++                
++                itemstack.editMeta(meta -> meta.displayName(title.decoration(TextDecoration.ITALIC, false)));
++                return itemstack;
++            },
++            (player) -> {
++                player.getVisibility().toggleAll();
++
++                // refresh icons after toggling
++                this.refresh(player);
++            },
 +            26
 +        ));
 +    }
 +
 +    private void registerFPSIcon(Visibility.Setting setting, Material material, TextColor colour, int slot) {
 +        registerIcon(new ItemIcon((player) -> {
-+            var visibility = player.getVisibility();
++            Visibility visibility = player.getVisibility();
++            ItemStack itemstack = new ItemStack(material);
 +
-+            // Get the current state as a string
-+            var state = visibility.isEnabled(setting)
-+                ? "Enabled" : "Disabled";
++            itemstack.editMeta(meta -> {
++                // Get the current state as a string
++                String state = visibility.isEnabled(setting) ? "Enabled" : "Disabled";
 +
-+            // Friendly name as a component
-+            var title = Component.text(setting.friendlyName()).color(colour);
-+            var itemstack = new ItemStack(material);
-+            var meta = itemstack.getItemMeta();
++                // Friendly name as a component
++                Component title = Component.text(setting.friendlyName(), colour);
 +
-+            // Display names are italic by default
-+            title = title.decoration(TextDecoration.ITALIC, false);
++                // Display names are italic by default
++                title = title.decoration(TextDecoration.ITALIC, false);
 +
-+            // Set the display name
-+            meta.displayName(title.append(Component.space())
-+                .append(Component.text(state).color(NamedTextColor.GRAY)));
++                // Set the display name
++                meta.displayName(title.append(Component.space())
++                    .append(Component.text(state, NamedTextColor.GRAY)));
++            });
 +
-+            itemstack.setItemMeta(meta);
 +            return itemstack;
 +        }, (player) -> {
-+            var visibility = player.getVisibility();
++            Visibility visibility = player.getVisibility();
 +
 +            // Toggle clicked setting visibility
 +            visibility.toggle(setting);
 +
++            // Get the current state as a string
++            String state = visibility.isEnabled(setting) ? "Enabled" : "Disabled";
++
 +            // Send message to player
-+            var state = visibility.isEnabled(setting) ? "Enabled" : "Disabled";
-+            player.sendMessage(MiniMessage.miniMessage().deserialize(GlobalConfiguration.get().fps.message,
++            player.sendRichMessage(GlobalConfiguration.get().fps.message,
 +                Placeholder.unparsed("name", setting.friendlyName()),
-+                Placeholder.unparsed("state", state))
++                Placeholder.unparsed("state", state)
 +            );
 +        },
 +            slot
@@ -240,13 +251,13 @@ index e3f355c85eb7cc8c1683e3009502c10a5ed32daa..349e56d5caad3fc38e83eac6ffff83e2
      public ClientboundSectionBlocksUpdatePacket(SectionPos sectionPos, ShortSet positions, LevelChunkSection section) {
          this.sectionPos = sectionPos;
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 9c5c633587d6781a72d9eb258ba5a4a35e954144..ed5c391750f2f895be40713eb2e8bfed7cb9448b 100644
+index 63d11c4db7152a7bb5aaf5fc625d8f8e585cafa0..681091462217b1c4176f8892563a681a3c8a9c06 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -1575,6 +1575,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
-             this.profiler.pop();
+@@ -1576,6 +1576,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              this.profiler.pop();
              worldserver.explosionDensityCache.clear(); // Paper - Optimize explosions
+             worldserver.localConfig().expire(currentTickLong); // Sakura
 +            worldserver.minimalTNT.clear(); // Sakura - visibility api
          }
          this.isIteratingOverLevels = false; // Paper
@@ -380,7 +391,7 @@ index 35674f92a67f93382103c2766df4b678ba5c862f..83c4639c2bdca4dc4281d9f5eca104af
  
          if (this.entity instanceof LivingEntity) {
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index c661de08862b4619f7d75606cac9a913fe154386..93cca48032e5d95d9d07eae3393a2babdf9a3aa5 100644
+index 9d860f15b13a3daa2f3b44c96f9b18e33828dd15..b48186e142c803d1371cf441542119962862ed07 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
 @@ -1932,7 +1932,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
@@ -587,10 +598,10 @@ index 4ce3e69970dd9eb251d0538a2d233ca30e9e5e47..d14a8e2cf748cb3784253d99d1bf3c8f
  
      public PrimedTnt(Level world, double x, double y, double z, @Nullable LivingEntity igniter) {
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index 11ab3a3b8624c36dfde3d42091af67c51340e8f2..23945f078070c94785ea00320113c0849a79981f 100644
+index cd2d2db3b3024ed40aaeb478d6e52e9c7c168107..b5b19105f33b27a6ade70e914a2e19c024325b86 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
-@@ -216,6 +216,8 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+@@ -223,6 +223,8 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
  
      public abstract ResourceKey<LevelStem> getTypeKey();
  
