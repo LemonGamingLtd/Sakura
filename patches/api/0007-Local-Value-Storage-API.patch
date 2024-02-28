@@ -153,10 +153,10 @@ index 0000000000000000000000000000000000000000..0f7da96d434cd699470e050898712898
 +
 +}
 diff --git a/src/main/java/org/bukkit/World.java b/src/main/java/org/bukkit/World.java
-index 5eb3521f5f91b0684b4beebf4f7ba2c795b41c42..5f0cb37bd3384922c4ae2a238d5549db48f16c16 100644
+index c5fe36050eeaff80cfb989fe2f38370215af6fe5..c91d6af3cc13a1b290e2b362a3017f6536046831 100644
 --- a/src/main/java/org/bukkit/World.java
 +++ b/src/main/java/org/bukkit/World.java
-@@ -131,6 +131,10 @@ public interface World extends RegionAccessor, WorldInfo, PluginMessageRecipient
+@@ -157,6 +157,10 @@ public interface World extends RegionAccessor, WorldInfo, PluginMessageRecipient
          return new Location(this, x, y, z);
      }
      // Paper end

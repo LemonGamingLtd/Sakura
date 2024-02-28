@@ -5,15 +5,15 @@ Subject: [PATCH] Option to configure entity water sensitivity
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-index 12f8e63e9abc37e24f83662b39265befc8942683..53f84d80e8436837c5fd0bc79e559caf9154e6ed 100644
+index 4a85c137dee528b56c2b9353bfbad86005ff709f..decb925446701a38455d7f33a676e73858946e67 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-@@ -3492,7 +3492,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
+@@ -3525,7 +3525,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
              }
          }
-         // Paper end
+         // Paper end - Add EntityMoveEvent
 -        if (!this.level().isClientSide && this.isSensitiveToWater() && this.isInWaterRainOrBubble()) {
-+        if (!this.level().isClientSide && this.level().sakuraConfig().entity.waterSensitivity && this.isSensitiveToWater() && this.isInWaterRainOrBubble()) { // Sakura
++        if (!this.level().isClientSide && this.level().sakuraConfig().entity.waterSensitivity && this.isSensitiveToWater() && this.isInWaterRainOrBubble()) { // Sakura - configure entity water sensitivity
              this.hurt(this.damageSources().drown(), 1.0F);
          }
  

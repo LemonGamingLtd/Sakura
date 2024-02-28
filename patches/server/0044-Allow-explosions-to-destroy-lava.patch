@@ -5,10 +5,10 @@ Subject: [PATCH] Allow explosions to destroy lava
 
 
 diff --git a/src/main/java/net/minecraft/world/level/Explosion.java b/src/main/java/net/minecraft/world/level/Explosion.java
-index c94e2bf305437b88f82dbb8ab105cfbf5dec01f8..f1b260cc62e6c955ad2fa72c779afc3d84b92e6b 100644
+index e10a78213da1514f54e0659960f7633843adc8af..9c35e3cd73eb324c36d383c9410f1c3a4e23d978 100644
 --- a/src/main/java/net/minecraft/world/level/Explosion.java
 +++ b/src/main/java/net/minecraft/world/level/Explosion.java
-@@ -214,6 +214,10 @@ public class Explosion {
+@@ -228,6 +228,10 @@ public class Explosion {
                  if (material != null && material.resistance() >= 0.0f && (this.level.sakuraConfig().cannons.explosion.allowNonTntBreakingDurableBlocks || this.source instanceof net.minecraft.world.entity.item.PrimedTnt)) {
                      resistance = Optional.of(material.resistance());
                  }
@@ -17,9 +17,9 @@ index c94e2bf305437b88f82dbb8ab105cfbf5dec01f8..f1b260cc62e6c955ad2fa72c779afc3d
 +                    resistance = Optional.of(0.0f); // 1.0 might be better here, 0.0 seems too much.
 +                }
              }
-             // Sakura end
+             // Sakura end - explosion durable blocks
  
-@@ -429,6 +433,12 @@ public class Explosion {
+@@ -449,6 +453,12 @@ public class Explosion {
              return false;
          }
  

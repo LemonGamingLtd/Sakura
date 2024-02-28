@@ -5,7 +5,7 @@ Subject: [PATCH] Despawn falling blocks inside moving pistons
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java b/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
-index 69f5f03a8e43f1e7370981009fe2376294b7253a..78fe35df4ef92f56d5ea2e80131fb7f4e71c9bea 100644
+index 9c41177ed25a93f7aff8795fc56a0a478903630e..5ff54673066dd26b4eed5c5f86cfd1c0f4190bf3 100644
 --- a/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
 @@ -242,7 +242,7 @@ public class FallingBlockEntity extends Entity {
@@ -13,7 +13,7 @@ index 69f5f03a8e43f1e7370981009fe2376294b7253a..78fe35df4ef92f56d5ea2e80131fb7f4
                  }
  
 -                if (!this.onGround() && !flag1) {
-+                if (!this.onGround() && !flag1 || level().sakuraConfig().cannons.sand.despawnInsideMovingPistons && autoExpire && this.time > 600) { // Sakura
-                     if (!this.level().isClientSide && ((this.time > 100 && autoExpire) && (blockposition.getY() <= this.level().getMinBuildHeight() || blockposition.getY() > this.level().getMaxBuildHeight()) || (this.time > 600 && autoExpire))) { // Paper - Auto expire setting
++                if (!this.onGround() && !flag1 || level().sakuraConfig().cannons.sand.despawnInsideMovingPistons && autoExpire && this.time > 600) { // Sakura - allow falling blocks to despawn inside moving pistons
+                     if (!this.level().isClientSide && ((this.time > 100 && autoExpire) && (blockposition.getY() <= this.level().getMinBuildHeight() || blockposition.getY() > this.level().getMaxBuildHeight()) || (this.time > 600 && autoExpire))) { // Paper - Expand FallingBlock API
                          if (this.dropItem && this.level().getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
                              this.spawnAtLocation((ItemLike) block);

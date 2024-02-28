@@ -5,10 +5,10 @@ Subject: [PATCH] Remove spigot max tnt per tick
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/item/PrimedTnt.java b/src/main/java/net/minecraft/world/entity/item/PrimedTnt.java
-index 923dd09399cd85cdb31e129a03affb9403feb181..f25b15949f100b01e44a23832bc900d84f6cf1f1 100644
+index 3ebc6fabbd9e5f9e71a97fe6153f24116c66f828..19397e2556a3cdc7180a5f8889aefb5ef23715b7 100644
 --- a/src/main/java/net/minecraft/world/entity/item/PrimedTnt.java
 +++ b/src/main/java/net/minecraft/world/entity/item/PrimedTnt.java
-@@ -140,7 +140,7 @@ public class PrimedTnt extends Entity implements TraceableEntity {
+@@ -133,7 +133,7 @@ public class PrimedTnt extends Entity implements TraceableEntity {
  
      @Override
      public void tick() {

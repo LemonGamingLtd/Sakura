@@ -6,7 +6,7 @@ Subject: [PATCH] Explosion Durable Blocks
 
 diff --git a/src/main/java/me/samsuik/sakura/explosion/durable/DurableBlockManager.java b/src/main/java/me/samsuik/sakura/explosion/durable/DurableBlockManager.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..2e11ba36e9e820f17839d696e5d7d876e7437fbf
+index 0000000000000000000000000000000000000000..c58e52f7cc012babf4235e405e5fb5015c6e95d9
 --- /dev/null
 +++ b/src/main/java/me/samsuik/sakura/explosion/durable/DurableBlockManager.java
 @@ -0,0 +1,63 @@
@@ -17,7 +17,7 @@ index 0000000000000000000000000000000000000000..2e11ba36e9e820f17839d696e5d7d876
 +import net.minecraft.core.BlockPos;
 +import net.minecraft.server.MinecraftServer;
 +
-+public class DurableBlockManager {
++public final class DurableBlockManager {
 +
 +    private final Long2ObjectOpenHashMap<DurableBlock> blocks = new Long2ObjectOpenHashMap<>();
 +
@@ -74,26 +74,26 @@ index 0000000000000000000000000000000000000000..2e11ba36e9e820f17839d696e5d7d876
 +
 +}
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index d2b12606c4bd7edec4061f67e79bdedcee147fca..4c2dc25419662c491097a53f2a730b805269da05 100644
+index 771a23258d55cff17502acbe2341ed397f54a122..a3aa2c38169de2636f2e2a1c352e618959c4ac7a 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -1582,6 +1582,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1740,6 +1740,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              worldserver.minimalTNT.clear(); // Sakura - visibility api
              worldserver.mergeHistory.expire(currentTickLong); // Sakura - merge cannoning entities
              worldserver.densityCache.clear(); // Sakura
 +            worldserver.durabilityManager.expire(currentTickLong); // Sakura
          }
-         this.isIteratingOverLevels = false; // Paper
+         this.isIteratingOverLevels = false; // Paper - Throw exception on world create while being ticked
  
 diff --git a/src/main/java/net/minecraft/world/item/ItemNameBlockItem.java b/src/main/java/net/minecraft/world/item/ItemNameBlockItem.java
-index a8008c7550488be34b51f4280f5569170b1ebd1d..b10cfec6da6dfab89e585c5d4d39ae04f7d2e43d 100644
+index a8008c7550488be34b51f4280f5569170b1ebd1d..2e5a46b9d27b930870c68dbde93d8731fd364219 100644
 --- a/src/main/java/net/minecraft/world/item/ItemNameBlockItem.java
 +++ b/src/main/java/net/minecraft/world/item/ItemNameBlockItem.java
 @@ -7,6 +7,33 @@ public class ItemNameBlockItem extends BlockItem {
          super(block, settings);
      }
  
-+    // Sakura start
++    // Sakura start - explosion durable blocks
 +    @Override
 +    public net.minecraft.world.InteractionResult useOn(net.minecraft.world.item.context.UseOnContext context) {
 +        Block itemBlock = this.getBlock();
@@ -118,20 +118,20 @@ index a8008c7550488be34b51f4280f5569170b1ebd1d..b10cfec6da6dfab89e585c5d4d39ae04
 +            net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed("durability", String.valueOf(durability))
 +        );
 +    }
-+    // Sakura end
++    // Sakura end - explosion durable blocks
 +
      @Override
      public String getDescriptionId() {
          return this.getOrCreateDescriptionId();
 diff --git a/src/main/java/net/minecraft/world/level/Explosion.java b/src/main/java/net/minecraft/world/level/Explosion.java
-index 11ce5591f5f7eb487323e2c828218af2461fca09..810bbc05dcfaf0e55804ebb86e89f628ad02e478 100644
+index f7b2ebc636b8f01654ac917e2b9c4aa590454a8c..08c7109b0bb613388b5a98a5d312b4ba32770fbf 100644
 --- a/src/main/java/net/minecraft/world/level/Explosion.java
 +++ b/src/main/java/net/minecraft/world/level/Explosion.java
-@@ -198,6 +198,17 @@ public class Explosion {
+@@ -212,6 +212,17 @@ public class Explosion {
  
              Optional<Float> resistance = !calculateResistance ? Optional.empty() : this.damageCalculator.getBlockExplosionResistance((Explosion)(Object)this, this.level, pos, blockState, fluidState);
  
-+            // Sakura start - durable materials
++            // Sakura start - explosion durable blocks
 +            if (calculateResistance) {
 +                Block block = blockState.getBlock();
 +                me.samsuik.sakura.explosion.durable.DurableMaterial material = this.level.localConfig().config(pos).durableMaterials.get(block);
@@ -140,37 +140,37 @@ index 11ce5591f5f7eb487323e2c828218af2461fca09..810bbc05dcfaf0e55804ebb86e89f628
 +                    resistance = Optional.of(material.resistance());
 +                }
 +            }
-+            // Sakura end
++            // Sakura end - explosion durable blocks
 +
              ret = new ExplosionBlockCache(
-                     key, pos, blockState, fluidState,
-                     (resistance.orElse(ZERO_RESISTANCE).floatValue() + 0.3f) * 0.3f,
-@@ -795,6 +806,16 @@ public class Explosion {
-                 BlockPos blockposition = (BlockPos) objectlistiterator.next();
+                 key, pos, blockState, fluidState,
+                 (resistance.orElse(ZERO_RESISTANCE).floatValue() + 0.3f) * 0.3f,
+@@ -838,6 +849,16 @@ public class Explosion {
+                 // CraftBukkit start - TNTPrimeEvent
                  BlockState iblockdata = this.level.getBlockState(blockposition);
                  Block block = iblockdata.getBlock();
-+                // Sakura start - durable materials
-+                if (level.sakuraConfig().cannons.explosion.allowNonTntBreakingDurableBlocks || source instanceof net.minecraft.world.entity.item.PrimedTnt) {
-+                    me.samsuik.sakura.explosion.durable.DurableMaterial material = level.localConfig().config(blockposition).durableMaterials.get(block);
++                // Sakura start - explosion durable blocks
++                if (this.level.sakuraConfig().cannons.explosion.allowNonTntBreakingDurableBlocks || this.source instanceof net.minecraft.world.entity.item.PrimedTnt) {
++                    me.samsuik.sakura.explosion.durable.DurableMaterial material = this.level.localConfig().config(blockposition).durableMaterials.get(block);
 +
-+                    if (material != null && material.durability() >= 0 && !level.durabilityManager.damage(blockposition, material)) {
++                    if (material != null && material.durability() >= 0 && !this.level.durabilityManager.damage(blockposition, material)) {
 +                        objectlistiterator.remove();
 +                        continue;
 +                    }
 +                }
-+                // Sakura end
-                 // CraftBukkit start - TNTPrimeEvent
++                // Sakura end - explosion durable blocks
                  if (block instanceof net.minecraft.world.level.block.TntBlock) {
                      Entity sourceEntity = this.source == null ? null : this.source;
+                     BlockPos sourceBlock = sourceEntity == null ? BlockPos.containing(this.x, this.y, this.z) : null;
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index 6fca6c3d8200251e24f3df886f17f35179b1f760..3d133380c70c6ef471dd42280bbd269ef72d2e6d 100644
+index 5316c8802111ea969334a075e542437eabe89f04..403d12ecd56d7ed56b19bbdafcbcf33c06c13679 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
-@@ -236,6 +236,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
-     // Sakura end
-     public final me.samsuik.sakura.entity.merge.MergeHistory mergeHistory = new me.samsuik.sakura.entity.merge.MergeHistory(); // Sakura
-     public final me.samsuik.sakura.explosion.DensityCache densityCache = new me.samsuik.sakura.explosion.DensityCache();
-+    public final me.samsuik.sakura.explosion.durable.DurableBlockManager durabilityManager = new me.samsuik.sakura.explosion.durable.DurableBlockManager();
+@@ -222,6 +222,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+     public final it.unimi.dsi.fastutil.longs.Long2IntMap minimalTNT = new it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap(); // Sakura - visibility api
+     public final me.samsuik.sakura.entity.merge.MergeHistory mergeHistory = new me.samsuik.sakura.entity.merge.MergeHistory(); // Sakura - cannon entity merging
+     public final me.samsuik.sakura.explosion.DensityCache densityCache = new me.samsuik.sakura.explosion.DensityCache(); // Sakura - specialised density cache for swinging explosions
++    public final me.samsuik.sakura.explosion.durable.DurableBlockManager durabilityManager = new me.samsuik.sakura.explosion.durable.DurableBlockManager(); // Sakura - explosion durable blocks
  
-     // Sakura start - limited get entities
+     // Sakura start - add entity retrival methods with search limits
      public void getLimitedEntities(Entity except, AABB box, Predicate<? super Entity> predicate, List<Entity> into, int limit, int search) {

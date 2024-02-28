@@ -5,7 +5,7 @@ Subject: [PATCH] Visibility API and Command
 
 
 diff --git a/src/main/java/me/samsuik/sakura/command/SakuraCommands.java b/src/main/java/me/samsuik/sakura/command/SakuraCommands.java
-index c2651cac1dcf85fb67fe981b97efee4e56431de2..d7d0c49cc5d576c594dee16ddba037cd147e11fa 100644
+index 3b08454cf7411d12bb33225df59800bd73312123..22676ec7a7ae9494b198e5e65e6be6d32e0feb85 100644
 --- a/src/main/java/me/samsuik/sakura/command/SakuraCommands.java
 +++ b/src/main/java/me/samsuik/sakura/command/SakuraCommands.java
 @@ -2,6 +2,9 @@ package me.samsuik.sakura.command;
@@ -18,7 +18,7 @@ index c2651cac1dcf85fb67fe981b97efee4e56431de2..d7d0c49cc5d576c594dee16ddba037cd
  import net.minecraft.server.MinecraftServer;
  import org.bukkit.command.Command;
  
-@@ -14,6 +17,10 @@ public class SakuraCommands {
+@@ -14,6 +17,10 @@ public final class SakuraCommands {
      static {
          COMMANDS.put("sakura", new SakuraCommand("sakura"));
          COMMANDS.put("config", new ConfigCommand("config"));
@@ -31,7 +31,7 @@ index c2651cac1dcf85fb67fe981b97efee4e56431de2..d7d0c49cc5d576c594dee16ddba037cd
      public static void registerCommands(final MinecraftServer server) {
 diff --git a/src/main/java/me/samsuik/sakura/command/subcommands/FPSCommand.java b/src/main/java/me/samsuik/sakura/command/subcommands/FPSCommand.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..1dc2a98123d671c945e85b97a898f56e527a81f5
+index 0000000000000000000000000000000000000000..aa5ddf696b09226a0bd3d967d2ac2b11fc2deb32
 --- /dev/null
 +++ b/src/main/java/me/samsuik/sakura/command/subcommands/FPSCommand.java
 @@ -0,0 +1,26 @@
@@ -45,7 +45,7 @@ index 0000000000000000000000000000000000000000..1dc2a98123d671c945e85b97a898f56e
 +import org.checkerframework.framework.qual.DefaultQualifier;
 +
 +@DefaultQualifier(NonNull.class)
-+public class FPSCommand extends BaseSubCommand {
++public final class FPSCommand extends BaseSubCommand {
 +
 +    private final VisibilityGUI VISIBILITY_GUI = new VisibilityGUI();
 +
@@ -63,7 +63,7 @@ index 0000000000000000000000000000000000000000..1dc2a98123d671c945e85b97a898f56e
 +}
 diff --git a/src/main/java/me/samsuik/sakura/command/subcommands/VisualCommand.java b/src/main/java/me/samsuik/sakura/command/subcommands/VisualCommand.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..6027e4741e2de7c6d3bd7b094c196a212e34e2f5
+index 0000000000000000000000000000000000000000..148a583279333eeb3e5db16652623082cd5e0e60
 --- /dev/null
 +++ b/src/main/java/me/samsuik/sakura/command/subcommands/VisualCommand.java
 @@ -0,0 +1,45 @@
@@ -82,7 +82,7 @@ index 0000000000000000000000000000000000000000..6027e4741e2de7c6d3bd7b094c196a21
 +import java.util.Arrays;
 +
 +@DefaultQualifier(NonNull.class)
-+public class VisualCommand extends BaseSubCommand {
++public final class VisualCommand extends BaseSubCommand {
 +
 +    private final Visibility.Setting type;
 +
@@ -114,7 +114,7 @@ index 0000000000000000000000000000000000000000..6027e4741e2de7c6d3bd7b094c196a21
 +}
 diff --git a/src/main/java/me/samsuik/sakura/player/visibility/VisibilityGUI.java b/src/main/java/me/samsuik/sakura/player/visibility/VisibilityGUI.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..d5bd47426a219a3825deaa0b62386c88d17b4aac
+index 0000000000000000000000000000000000000000..115addbbed36b9c10c123450a0f6400c2b8cf97d
 --- /dev/null
 +++ b/src/main/java/me/samsuik/sakura/player/visibility/VisibilityGUI.java
 @@ -0,0 +1,119 @@
@@ -137,7 +137,7 @@ index 0000000000000000000000000000000000000000..d5bd47426a219a3825deaa0b62386c88
 +
 +import java.util.function.BiFunction;
 +
-+public class VisibilityGUI extends PlayerGUI {
++public final class VisibilityGUI extends PlayerGUI {
 +
 +    private static final BiFunction<Player, Holder, Inventory> CREATE_INVENTORY = (player, holder) -> {
 +        Inventory inventory = Bukkit.createInventory(holder, 45, Component.text("FPS GUI"));
@@ -238,7 +238,7 @@ index 0000000000000000000000000000000000000000..d5bd47426a219a3825deaa0b62386c88
 +
 +}
 diff --git a/src/main/java/net/minecraft/network/protocol/game/ClientboundSectionBlocksUpdatePacket.java b/src/main/java/net/minecraft/network/protocol/game/ClientboundSectionBlocksUpdatePacket.java
-index e3f355c85eb7cc8c1683e3009502c10a5ed32daa..349e56d5caad3fc38e83eac6ffff83e2fb30eaa7 100644
+index ccdc2345465313991f065e1176b58fb7d5e8722f..ab8bb26bceb2ec6f541aab348d420b9390c8c47a 100644
 --- a/src/main/java/net/minecraft/network/protocol/game/ClientboundSectionBlocksUpdatePacket.java
 +++ b/src/main/java/net/minecraft/network/protocol/game/ClientboundSectionBlocksUpdatePacket.java
 @@ -16,7 +16,7 @@ public class ClientboundSectionBlocksUpdatePacket implements Packet<ClientGamePa
@@ -251,24 +251,24 @@ index e3f355c85eb7cc8c1683e3009502c10a5ed32daa..349e56d5caad3fc38e83eac6ffff83e2
      public ClientboundSectionBlocksUpdatePacket(SectionPos sectionPos, ShortSet positions, LevelChunkSection section) {
          this.sectionPos = sectionPos;
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 63d11c4db7152a7bb5aaf5fc625d8f8e585cafa0..681091462217b1c4176f8892563a681a3c8a9c06 100644
+index 23e5fcffe6e1b1a12af5c7399dd8b2f6e0d2f5ff..f6a43cbd45834141e539f87f5bd7240ec3879955 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -1576,6 +1576,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1734,6 +1734,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              this.profiler.pop();
              worldserver.explosionDensityCache.clear(); // Paper - Optimize explosions
              worldserver.localConfig().expire(currentTickLong); // Sakura
 +            worldserver.minimalTNT.clear(); // Sakura - visibility api
          }
-         this.isIteratingOverLevels = false; // Paper
+         this.isIteratingOverLevels = false; // Paper - Throw exception on world create while being ticked
  
 diff --git a/src/main/java/net/minecraft/server/level/ChunkMap.java b/src/main/java/net/minecraft/server/level/ChunkMap.java
-index caa73632aee15583c6b6ed12a668c8f49b794708..7e205ccdc7c6691581eb7423d01a383b87f0d2af 100644
+index 12109446fc76a39faee6cda042ca48b3fd3809f4..bb6a2be67394b9a6904d759b7564008dd1c282b3 100644
 --- a/src/main/java/net/minecraft/server/level/ChunkMap.java
 +++ b/src/main/java/net/minecraft/server/level/ChunkMap.java
-@@ -1435,6 +1435,22 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+@@ -1424,6 +1424,22 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
                  }
-                 // Paper end - check Y
+                 // Paper end - Configurable entity tracking range by Y
  
 +                // Sakura start - visibility api
 +                if (this.entity.isPrimedTNT && player.visibility.isToggled(me.samsuik.sakura.player.visibility.Visibility.Setting.TNT_VISIBILITY)
@@ -290,7 +290,7 @@ index caa73632aee15583c6b6ed12a668c8f49b794708..7e205ccdc7c6691581eb7423d01a383b
                  if (flag && !player.getBukkitEntity().canSee(this.entity.getBukkitEntity())) { // Paper - only consider hits
                      flag = false;
 diff --git a/src/main/java/net/minecraft/server/level/ServerEntity.java b/src/main/java/net/minecraft/server/level/ServerEntity.java
-index 35674f92a67f93382103c2766df4b678ba5c862f..83c4639c2bdca4dc4281d9f5eca104af3063bfa5 100644
+index 529ab44baaf573b97cf7e89560c548642733188f..cce8f45c15b9a9acfbf9b769f7670cfd0969d62f 100644
 --- a/src/main/java/net/minecraft/server/level/ServerEntity.java
 +++ b/src/main/java/net/minecraft/server/level/ServerEntity.java
 @@ -47,6 +47,13 @@ import net.minecraft.util.Mth;
@@ -307,7 +307,7 @@ index 35674f92a67f93382103c2766df4b678ba5c862f..83c4639c2bdca4dc4281d9f5eca104af
  
  public class ServerEntity {
  
-@@ -284,6 +291,18 @@ public class ServerEntity {
+@@ -290,6 +297,18 @@ public class ServerEntity {
          this.entity.startSeenByPlayer(player);
      }
  
@@ -326,7 +326,7 @@ index 35674f92a67f93382103c2766df4b678ba5c862f..83c4639c2bdca4dc4281d9f5eca104af
      public void sendPairingData(ServerPlayer player, Consumer<Packet<ClientGamePacketListener>> sender) {
          if (this.entity.isRemoved()) {
              // CraftBukkit start - Remove useless error spam, just return
-@@ -292,12 +311,19 @@ public class ServerEntity {
+@@ -298,12 +317,19 @@ public class ServerEntity {
              // CraftBukkit end
          }
  
@@ -348,7 +348,7 @@ index 35674f92a67f93382103c2766df4b678ba5c862f..83c4639c2bdca4dc4281d9f5eca104af
          }
  
          boolean flag = this.trackDelta;
-@@ -367,6 +393,32 @@ public class ServerEntity {
+@@ -373,6 +399,32 @@ public class ServerEntity {
          }
  
      }
@@ -381,7 +381,7 @@ index 35674f92a67f93382103c2766df4b678ba5c862f..83c4639c2bdca4dc4281d9f5eca104af
  
      private void sendDirtyEntityData() {
          SynchedEntityData datawatcher = this.entity.getEntityData();
-@@ -374,7 +426,7 @@ public class ServerEntity {
+@@ -380,7 +432,7 @@ public class ServerEntity {
  
          if (list != null) {
              this.trackedDataValues = datawatcher.getNonDefaultValues();
@@ -391,31 +391,31 @@ index 35674f92a67f93382103c2766df4b678ba5c862f..83c4639c2bdca4dc4281d9f5eca104af
  
          if (this.entity instanceof LivingEntity) {
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index 9d860f15b13a3daa2f3b44c96f9b18e33828dd15..b48186e142c803d1371cf441542119962862ed07 100644
+index 46e060bab0a9adb05a9dadff7e0cee9277db9511..f217fed953fbb1838a6692ab36018869951ed4e0 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
-@@ -1932,7 +1932,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
+@@ -1941,7 +1941,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
          while (iterator.hasNext()) {
              ServerPlayer entityplayer = (ServerPlayer) iterator.next();
  
 -            if (entityplayer.distanceToSqr(x, y, z) < 4096.0D) {
 +            if (entityplayer.distanceToSqr(x, y, z) < 4096.0D && !entityplayer.visibility.isToggled(me.samsuik.sakura.player.visibility.Visibility.Setting.EXPLOSIONS)) { // Sakura - visibility api
-                 entityplayer.connection.send(new ClientboundExplodePacket(x, y, z, power, explosion.getToBlow(), (Vec3) explosion.getHitPlayers().get(entityplayer)));
+                 entityplayer.connection.send(new ClientboundExplodePacket(x, y, z, power, explosion.getToBlow(), (Vec3) explosion.getHitPlayers().get(entityplayer), explosion.getBlockInteraction(), explosion.getSmallExplosionParticles(), explosion.getLargeExplosionParticles(), explosion.getExplosionSound()));
              }
          }
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index f71a4a8307fb092d33545e12d253e0b80c884168..fa2ff114c8c8b344b98b639bbbfb94c39c1e996e 100644
+index 58591bf2f63b9c5e97d9ce4188dff3366968a178..164a5566005078ca1ba4f4b9deb9e149916704c2 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-@@ -254,6 +254,7 @@ public class ServerPlayer extends Player {
+@@ -261,6 +261,7 @@ public class ServerPlayer extends Player {
      public final int[] mobCounts = new int[MOBCATEGORY_TOTAL_ENUMS]; // Paper
-     // Paper end - mob spawning rework
+     // Paper end - Optional per player mob spawns
      public final int[] mobBackoffCounts = new int[MOBCATEGORY_TOTAL_ENUMS]; // Paper - per player mob count backoff
 +    public final me.samsuik.sakura.player.visibility.Visibility visibility = new me.samsuik.sakura.player.visibility.Visibility(); // Sakura - visiblity api
  
      // CraftBukkit start
      public String displayName;
-@@ -560,6 +561,15 @@ public class ServerPlayer extends Player {
+@@ -567,6 +568,15 @@ public class ServerPlayer extends Player {
                  this.respawnDimension = (ResourceKey) dataresult1.resultOrPartial(logger1::error).orElse(Level.OVERWORLD);
              }
          }
@@ -431,7 +431,7 @@ index f71a4a8307fb092d33545e12d253e0b80c884168..fa2ff114c8c8b344b98b639bbbfb94c3
  
      }
  
-@@ -626,6 +636,13 @@ public class ServerPlayer extends Player {
+@@ -633,6 +643,13 @@ public class ServerPlayer extends Player {
              });
          }
          this.getBukkitEntity().setExtraData(nbt); // CraftBukkit
@@ -446,7 +446,7 @@ index f71a4a8307fb092d33545e12d253e0b80c884168..fa2ff114c8c8b344b98b639bbbfb94c3
      }
  
 diff --git a/src/main/java/net/minecraft/server/network/ServerCommonPacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-index 598f807f0d0caac98b81e0e2991f1bd497c4534e..a3fb63aac5603e32e822aae14fb02a5df5dd660c 100644
+index 0306771b8f90dcdd77f151c19c6c2d75c41f8feb..7451f65cef49248793815965bda4bcbe257b722e 100644
 --- a/src/main/java/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 @@ -40,6 +40,23 @@ import org.bukkit.craftbukkit.util.Waitable;
@@ -473,7 +473,7 @@ index 598f807f0d0caac98b81e0e2991f1bd497c4534e..a3fb63aac5603e32e822aae14fb02a5d
  
  public abstract class ServerCommonPacketListenerImpl implements ServerCommonPacketListener {
  
-@@ -234,6 +251,61 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
+@@ -247,6 +264,61 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
          } else if (packet instanceof ClientboundSetDefaultSpawnPositionPacket) {
              ClientboundSetDefaultSpawnPositionPacket packet6 = (ClientboundSetDefaultSpawnPositionPacket) packet;
              this.player.compassTarget = CraftLocation.toBukkit(packet6.pos, this.getCraftPlayer().getWorld());
@@ -535,7 +535,7 @@ index 598f807f0d0caac98b81e0e2991f1bd497c4534e..a3fb63aac5603e32e822aae14fb02a5d
          }
          // CraftBukkit end
          boolean flag = !this.suspendFlushingOnServerThread || !this.server.isSameThread();
-@@ -244,8 +316,11 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
+@@ -257,8 +329,11 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
              CrashReport crashreport = CrashReport.forThrowable(throwable, "Sending packet");
              CrashReportCategory crashreportsystemdetails = crashreport.addCategory("Packet being sent");
  
@@ -549,10 +549,10 @@ index 598f807f0d0caac98b81e0e2991f1bd497c4534e..a3fb63aac5603e32e822aae14fb02a5d
              throw new ReportedException(crashreport);
          }
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 65bb221993147a558995b36fb835f7b82e0eb4bd..5435de311366cb2d7ca9dc298529e5b0ae3e9a5d 100644
+index 87e5ee042ab2c052d25ab4c2521a68cf2e2d67b6..c47c6347fe666cdd83d71c177e57c7fe19ebdc4f 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -3105,6 +3105,7 @@ public class ServerGamePacketListenerImpl extends ServerCommonPacketListenerImpl
+@@ -3103,6 +3103,7 @@ public class ServerGamePacketListenerImpl extends ServerCommonPacketListenerImpl
  
                          event.setCancelled(cancelled);
                          AbstractContainerMenu oldContainer = this.player.containerMenu; // SPIGOT-1224
@@ -561,23 +561,25 @@ index 65bb221993147a558995b36fb835f7b82e0eb4bd..5435de311366cb2d7ca9dc298529e5b0
                          if (this.player.containerMenu != oldContainer) {
                              return;
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index c655c6fee393c62ba79301f76baa72f9b1154a9a..9d0c8b665bea9da560800b5f7ee1299280201022 100644
+index 45439b0cc4ea69e409fd41d4684403c0e0feab12..006cd1fdd4c0f76043609a4b684f7818e21106ac 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
-@@ -531,6 +531,8 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
-         this.teleportTo(worldserver, null);
-     }
-     // Paper end - make end portalling safe
-+    public boolean isPrimedTNT; // Sakura
-+    public boolean isFallingBlock; // Sakura
+@@ -567,6 +567,10 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource, S
  
-     public boolean isLegacyTrackingEntity = false;
+     public boolean updatingSectionStatus = false;
+     // Paper end
++    // Sakura start - visibility api and command
++    public boolean isPrimedTNT;
++    public boolean isFallingBlock;
++    // Sakura end - visibility api and command
  
+     public Entity(EntityType<?> type, Level world) {
+         this.id = Entity.ENTITY_COUNTER.incrementAndGet();
 diff --git a/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java b/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
-index e6f75a9cac46c8e3ddba664a9d5b27b665a94cb4..c85d2e98311406ead180ace803aabc17cd05066a 100644
+index 0aef6a8d51cb1351daaea16022f5cbb27ceaff0d..788915f5e5cf54ee53222ded9939139ea982d306 100644
 --- a/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
-@@ -73,6 +73,7 @@ public class FallingBlockEntity extends Entity {
+@@ -74,6 +74,7 @@ public class FallingBlockEntity extends Entity {
          this.blockState = Blocks.SAND.defaultBlockState();
          this.dropItem = true;
          this.fallDamageMax = 40;
@@ -586,10 +588,10 @@ index e6f75a9cac46c8e3ddba664a9d5b27b665a94cb4..c85d2e98311406ead180ace803aabc17
  
      public FallingBlockEntity(Level world, double x, double y, double z, BlockState block) {
 diff --git a/src/main/java/net/minecraft/world/entity/item/PrimedTnt.java b/src/main/java/net/minecraft/world/entity/item/PrimedTnt.java
-index 4ce3e69970dd9eb251d0538a2d233ca30e9e5e47..d14a8e2cf748cb3784253d99d1bf3c8f9eb2089c 100644
+index e712bd07ea2946167782473a536e0c72fab4bccd..2e6691b86e161616bb2dcf5ce0391ad57a3ef422 100644
 --- a/src/main/java/net/minecraft/world/entity/item/PrimedTnt.java
 +++ b/src/main/java/net/minecraft/world/entity/item/PrimedTnt.java
-@@ -31,6 +31,7 @@ public class PrimedTnt extends Entity implements TraceableEntity {
+@@ -39,6 +39,7 @@ public class PrimedTnt extends Entity implements TraceableEntity {
      public PrimedTnt(EntityType<? extends PrimedTnt> type, Level world) {
          super(type, world);
          this.blocksBuilding = true;
@@ -598,23 +600,23 @@ index 4ce3e69970dd9eb251d0538a2d233ca30e9e5e47..d14a8e2cf748cb3784253d99d1bf3c8f
  
      public PrimedTnt(Level world, double x, double y, double z, @Nullable LivingEntity igniter) {
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index cd2d2db3b3024ed40aaeb478d6e52e9c7c168107..b5b19105f33b27a6ade70e914a2e19c024325b86 100644
+index 28ddb9e74bc131b043f91107483b92531f5fd252..7b800ebae9787979613be845440a7dfa549c98ee 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
-@@ -223,6 +223,8 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+@@ -219,6 +219,8 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
  
      public abstract ResourceKey<LevelStem> getTypeKey();
  
 +    public final it.unimi.dsi.fastutil.longs.Long2IntMap minimalTNT = new it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap(); // Sakura - visibility api
 +
-     protected Level(WritableLevelData worlddatamutable, ResourceKey<Level> resourcekey, RegistryAccess iregistrycustom, Holder<DimensionType> holder, Supplier<ProfilerFiller> supplier, boolean flag, boolean flag1, long i, int j, org.bukkit.generator.ChunkGenerator gen, org.bukkit.generator.BiomeProvider biomeProvider, org.bukkit.World.Environment env, java.util.function.Function<org.spigotmc.SpigotWorldConfig, io.papermc.paper.configuration.WorldConfiguration> paperWorldConfigCreator, Supplier<me.samsuik.sakura.configuration.WorldConfiguration> sakuraWorldConfigCreator, java.util.concurrent.Executor executor) { // Sakura // Paper - Async-Anti-Xray - Pass executor
+     protected Level(WritableLevelData worlddatamutable, ResourceKey<Level> resourcekey, RegistryAccess iregistrycustom, Holder<DimensionType> holder, Supplier<ProfilerFiller> supplier, boolean flag, boolean flag1, long i, int j, org.bukkit.generator.ChunkGenerator gen, org.bukkit.generator.BiomeProvider biomeProvider, org.bukkit.World.Environment env, java.util.function.Function<org.spigotmc.SpigotWorldConfig, io.papermc.paper.configuration.WorldConfiguration> paperWorldConfigCreator, Supplier<me.samsuik.sakura.configuration.WorldConfiguration> sakuraWorldConfigCreator, java.util.concurrent.Executor executor) { // Sakura // Paper - create paper world config; Async-Anti-Xray: Pass executor
          this.spigotConfig = new org.spigotmc.SpigotWorldConfig(((net.minecraft.world.level.storage.PrimaryLevelData) worlddatamutable).getLevelName()); // Spigot
-         this.paperConfig = paperWorldConfigCreator.apply(this.spigotConfig); // Paper
+         this.paperConfig = paperWorldConfigCreator.apply(this.spigotConfig); // Paper - create paper world config
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 83aaf3e6e377d731ce02f779f80b7bf5db46f89f..50d2a2b658fd9ddfcc4b25fa2196493d4dbd8664 100644
+index 616d2e479d91673695ade0db151a0099b568904f..ffbc3e08861be286964e01891e76adb0f9eb66d9 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -489,6 +489,13 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -458,6 +458,13 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          this.getHandle().displayName = name == null ? this.getName() : name;
      }
  

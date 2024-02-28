@@ -5,20 +5,20 @@ Subject: [PATCH] Added list of ItemEntity's that ignore explosions
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/item/ItemEntity.java b/src/main/java/net/minecraft/world/entity/item/ItemEntity.java
-index eb0351aa12eebcefab1d1d14641fc3c60cbbcab8..92c8cae1709052ec09715b6f27e6b0199762a00e 100644
+index c7f06c3cfb737bd17a706798bf9cf0e1af5f0cc0..e5e4e9f67390b407abc1bd01242cddbe118b3e45 100644
 --- a/src/main/java/net/minecraft/world/entity/item/ItemEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/item/ItemEntity.java
-@@ -559,6 +559,17 @@ public class ItemEntity extends Entity implements TraceableEntity {
+@@ -579,6 +579,17 @@ public class ItemEntity extends Entity implements TraceableEntity {
  
      }
  
 +    // Sakura start
 +    @Override
-+    public boolean ignoreExplosion() {
++    public boolean ignoreExplosion(net.minecraft.world.level.Explosion explosion) {
 +        if (this.level().sakuraConfig().entity.items.explosionResistantItems.contains(this.getItem().getItem())) {
 +            return true;
 +        } else {
-+            return super.ignoreExplosion();
++            return super.ignoreExplosion(explosion);
 +        }
 +    }
 +    // Sakura end

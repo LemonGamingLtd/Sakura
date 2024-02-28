@@ -52,33 +52,33 @@ index 0000000000000000000000000000000000000000..c9f2c5ae57878283e8c8bc3847fe63b9
 +
 +}
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index f00a5a68e12f1881857eed7ffaf22a656a9ef2af..cbb2853f56c3339826fcaaff20ba93f62e56a761 100644
+index 72b1fba4430cb2063b5305ee28758dffed272b8a..552780f56247c0f064c704679e4c2d81e652291b 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
-@@ -546,6 +546,34 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -584,6 +584,34 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource, S
          return flags;
      }
-     // Sakura end
-+    // Sakura start - entity state (from start of tick)
+     // Sakura end - load chunks on cannon entity movement
++    // Sakura start - store entity data/state
 +    private @Nullable me.samsuik.sakura.entity.EntityState entityState = null;
 +
-+    public Vec3 stuckSpeedMultiplier() {
++    public final Vec3 stuckSpeedMultiplier() {
 +        return stuckSpeedMultiplier;
 +    }
 +
-+    public void storeEntityState() {
++    public final void storeEntityState() {
 +        entityState = me.samsuik.sakura.entity.EntityState.of(this);
 +    }
 +
-+    public @Nullable me.samsuik.sakura.entity.EntityState entityState() {
++    public final @Nullable me.samsuik.sakura.entity.EntityState entityState() {
 +        return entityState;
 +    }
 +
-+    public boolean compareState(Entity to) {
++    public final boolean compareState(Entity to) {
 +        return to.entityState() != null && to.entityState().isCurrentState(this);
 +    }
 +
-+    public long getPackedOrigin() {
++    public final long getPackedOrigin() {
 +        var v = getOriginVector();
 +        if (v == null) return Long.MIN_VALUE;
 +        // Note: vector#getBlockN may not be 100% exact
@@ -86,15 +86,15 @@ index f00a5a68e12f1881857eed7ffaf22a656a9ef2af..cbb2853f56c3339826fcaaff20ba93f6
 +        // giving an incorrect position change it to Mth instead.
 +        return BlockPos.asLong(v.getBlockX(), v.getBlockY(), v.getBlockZ());
 +    }
-+    // Sakura end
++    // Sakura end - store entity data/state
  
-     public boolean isLegacyTrackingEntity = false;
- 
+     public Entity(EntityType<?> type, Level world) {
+         this.id = Entity.ENTITY_COUNTER.incrementAndGet();
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index 7354a93826cbb977829fae1b2d91de24fcd867c1..12c6705d652cf873134aca556e205aa5ec0248fb 100644
+index 7b800ebae9787979613be845440a7dfa549c98ee..a57ae743a7be1835799d286c8c9d3ea82ed3da3e 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
-@@ -1332,6 +1332,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+@@ -1321,6 +1321,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
  
      public <T extends Entity> void guardEntityTick(Consumer<T> tickConsumer, T entity) {
          try {

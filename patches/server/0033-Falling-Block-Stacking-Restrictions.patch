@@ -5,7 +5,7 @@ Subject: [PATCH] Falling Block Stacking Restrictions
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java b/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
-index 78fe35df4ef92f56d5ea2e80131fb7f4e71c9bea..bf52aafe542ca735181e461d1f9cbc39b8d88220 100644
+index 7cce7ef607358f0e4ee154c2684dc4ad065d9512..90e33d8217aa8f570d9b68c638f3e71adc2018d6 100644
 --- a/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
 @@ -260,7 +260,7 @@ public class FallingBlockEntity extends Entity {

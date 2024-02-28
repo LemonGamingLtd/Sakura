@@ -5,12 +5,12 @@ Subject: [PATCH] Configure concrete solidifying in water
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java b/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
-index 87ef8f4953c7d9fddfc9ddbdb027e76145b645c8..7f01adefebb98edaa035711bcb18b695d167fe97 100644
+index 222fb210f97e9bc06cfd9431d297dcdb10fc6e1e..14914d0e96f6640e8dd52dd40b98d30b68a1034f 100644
 --- a/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
-@@ -293,7 +293,7 @@ public class FallingBlockEntity extends Entity {
-                 }
-                 // Sakura end
+@@ -287,7 +287,7 @@ public class FallingBlockEntity extends Entity {
+                 BlockPos blockposition = this.physics.before(1_17_0) ? this.patchedBlockPosition() : this.blockPosition();
+                 // Sakura end - physics version api
  
 -                boolean flag = this.blockState.getBlock() instanceof ConcretePowderBlock;
 +                boolean flag = this.level().sakuraConfig().cannons.sand.concreteSolidifyInWater && this.blockState.getBlock() instanceof ConcretePowderBlock; // Sakura

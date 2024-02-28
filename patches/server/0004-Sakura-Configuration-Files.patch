@@ -136,7 +136,7 @@ index 0000000000000000000000000000000000000000..9b5af05f7a4593eb44f36fff90d94e98
 +}
 diff --git a/src/main/java/me/samsuik/sakura/command/SakuraCommand.java b/src/main/java/me/samsuik/sakura/command/SakuraCommand.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..f4e75ba8f2c53a82cb40868f0e1ab77ffcc19e3e
+index 0000000000000000000000000000000000000000..2b145614bf189ae56622016436bfefd63f5271eb
 --- /dev/null
 +++ b/src/main/java/me/samsuik/sakura/command/SakuraCommand.java
 @@ -0,0 +1,93 @@
@@ -161,7 +161,7 @@ index 0000000000000000000000000000000000000000..f4e75ba8f2c53a82cb40868f0e1ab77f
 +import java.util.List;
 +
 +@DefaultQualifier(NonNull.class)
-+public class SakuraCommand extends Command {
++public final class SakuraCommand extends Command {
 +
 +    private static final Component INFORMATION_MESSAGE = MiniMessage.miniMessage().deserialize("""
 +        <dark_purple>.</dark_purple>
@@ -235,7 +235,7 @@ index 0000000000000000000000000000000000000000..f4e75ba8f2c53a82cb40868f0e1ab77f
 +}
 diff --git a/src/main/java/me/samsuik/sakura/command/SakuraCommands.java b/src/main/java/me/samsuik/sakura/command/SakuraCommands.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..c2651cac1dcf85fb67fe981b97efee4e56431de2
+index 0000000000000000000000000000000000000000..3b08454cf7411d12bb33225df59800bd73312123
 --- /dev/null
 +++ b/src/main/java/me/samsuik/sakura/command/SakuraCommands.java
 @@ -0,0 +1,26 @@
@@ -249,7 +249,7 @@ index 0000000000000000000000000000000000000000..c2651cac1dcf85fb67fe981b97efee4e
 +import java.util.HashMap;
 +import java.util.Map;
 +
-+public class SakuraCommands {
++public final class SakuraCommands {
 +
 +    static final Map<String, Command> COMMANDS = new HashMap<>();
 +    static {
@@ -267,7 +267,7 @@ index 0000000000000000000000000000000000000000..c2651cac1dcf85fb67fe981b97efee4e
 +}
 diff --git a/src/main/java/me/samsuik/sakura/command/subcommands/ConfigCommand.java b/src/main/java/me/samsuik/sakura/command/subcommands/ConfigCommand.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..0b5f50c7447d1c1732a745bae54c4fcd4f45da46
+index 0000000000000000000000000000000000000000..75febc3f40910a27a9fc651dac9697da48338cc1
 --- /dev/null
 +++ b/src/main/java/me/samsuik/sakura/command/subcommands/ConfigCommand.java
 @@ -0,0 +1,45 @@
@@ -290,7 +290,7 @@ index 0000000000000000000000000000000000000000..0b5f50c7447d1c1732a745bae54c4fcd
 +import static net.kyori.adventure.text.format.NamedTextColor.RED;
 +
 +@DefaultQualifier(NonNull.class)
-+public class ConfigCommand extends BaseSubCommand {
++public final class ConfigCommand extends BaseSubCommand {
 +
 +    public ConfigCommand(String name) {
 +        super(name);
@@ -318,16 +318,17 @@ index 0000000000000000000000000000000000000000..0b5f50c7447d1c1732a745bae54c4fcd
 +}
 diff --git a/src/main/java/me/samsuik/sakura/configuration/GlobalConfiguration.java b/src/main/java/me/samsuik/sakura/configuration/GlobalConfiguration.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..ebdb73fa24fd2600925bf5664ceda202b8da04c0
+index 0000000000000000000000000000000000000000..5296d4e0a1041932e36562f42fbf3e1dcfea33fe
 --- /dev/null
 +++ b/src/main/java/me/samsuik/sakura/configuration/GlobalConfiguration.java
-@@ -0,0 +1,60 @@
+@@ -0,0 +1,64 @@
 +package me.samsuik.sakura.configuration;
 +
 +import com.mojang.logging.LogUtils;
 +import io.papermc.paper.configuration.Configuration;
 +import io.papermc.paper.configuration.ConfigurationPart;
 +import org.slf4j.Logger;
++import org.spongepowered.configurate.objectmapping.meta.Comment;
 +import org.spongepowered.configurate.objectmapping.meta.Setting;
 +
 +@SuppressWarnings({"CanBeFinal", "FieldCanBeLocal", "FieldMayBeFinal", "NotNullFieldNotInitialized", "InnerClassMayBeStatic", "RedundantSuppression"})
@@ -370,6 +371,9 @@ index 0000000000000000000000000000000000000000..ebdb73fa24fd2600925bf5664ceda202
 +
 +    public Environment environment;
 +    public class Environment extends ConfigurationPart {
++        @Comment("This is only intended for plot worlds. Will affect chunk generation on servers.")
++        public boolean calculateBiomeNoiseOncePerChunkSection = false;
++
 +        public MobSpawnerDefaults mobSpawnerDefaults = new MobSpawnerDefaults();
 +        public class MobSpawnerDefaults extends ConfigurationPart {
 +            public int minSpawnDelay = 200;
@@ -384,10 +388,10 @@ index 0000000000000000000000000000000000000000..ebdb73fa24fd2600925bf5664ceda202
 +}
 diff --git a/src/main/java/me/samsuik/sakura/configuration/SakuraConfigurations.java b/src/main/java/me/samsuik/sakura/configuration/SakuraConfigurations.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..5fc23a0b579d7cbe03baf5324bef887ad3dcaa25
+index 0000000000000000000000000000000000000000..74d4e257440842d40bfd72ff0741f1d7e04d493e
 --- /dev/null
 +++ b/src/main/java/me/samsuik/sakura/configuration/SakuraConfigurations.java
-@@ -0,0 +1,231 @@
+@@ -0,0 +1,240 @@
 +package me.samsuik.sakura.configuration;
 +
 +import com.google.common.collect.Table;
@@ -397,6 +401,7 @@ index 0000000000000000000000000000000000000000..5fc23a0b579d7cbe03baf5324bef887a
 +import io.papermc.paper.configuration.Configurations;
 +import io.papermc.paper.configuration.NestedSetting;
 +import io.papermc.paper.configuration.PaperConfigurations;
++import io.papermc.paper.configuration.mapping.InnerClassFieldDiscoverer;
 +import io.papermc.paper.configuration.serializer.*;
 +import io.papermc.paper.configuration.serializer.collections.FastutilMapSerializer;
 +import io.papermc.paper.configuration.serializer.collections.MapSerializer;
@@ -412,7 +417,6 @@ index 0000000000000000000000000000000000000000..5fc23a0b579d7cbe03baf5324bef887a
 +import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 +import it.unimi.dsi.fastutil.objects.Reference2LongMap;
 +import it.unimi.dsi.fastutil.objects.Reference2LongOpenHashMap;
-+import me.samsuik.sakura.configuration.mapping.InnerClassFieldDiscoverer;
 +import net.minecraft.core.RegistryAccess;
 +import net.minecraft.core.registries.Registries;
 +import net.minecraft.resources.ResourceLocation;
@@ -425,12 +429,14 @@ index 0000000000000000000000000000000000000000..5fc23a0b579d7cbe03baf5324bef887a
 +import org.slf4j.Logger;
 +import org.spongepowered.configurate.ConfigurateException;
 +import org.spongepowered.configurate.ConfigurationOptions;
++import org.spongepowered.configurate.objectmapping.FieldDiscoverer;
 +import org.spongepowered.configurate.objectmapping.ObjectMapper;
 +import org.spongepowered.configurate.yaml.YamlConfigurationLoader;
 +
 +import java.io.IOException;
 +import java.lang.reflect.Type;
 +import java.nio.file.Path;
++import java.util.Map;
 +import java.util.function.Function;
 +
 +import static io.leangen.geantyref.GenericTypeReflector.erase;
@@ -524,7 +530,14 @@ index 0000000000000000000000000000000000000000..5fc23a0b579d7cbe03baf5324bef887a
 +    protected ObjectMapper.Factory.Builder createWorldObjectMapperFactoryBuilder(final ContextMap contextMap) {
 +        return super.createWorldObjectMapperFactoryBuilder(contextMap)
 +            .addNodeResolver(new NestedSetting.Factory())
-+            .addDiscoverer(InnerClassFieldDiscoverer.worldConfig(createWorldConfigInstance(contextMap)));
++            .addDiscoverer(createWorldConfigFieldDiscoverer(contextMap));
++    }
++
++    private static FieldDiscoverer<?> createWorldConfigFieldDiscoverer(final ContextMap contextMap) {
++        final Map<Class<?>, Object> overrides = Map.of(
++            WorldConfiguration.class, createWorldConfigInstance(contextMap)
++        );
++        return new InnerClassFieldDiscoverer(overrides);
 +    }
 +
 +    private static WorldConfiguration createWorldConfigInstance(ContextMap contextMap) {
@@ -621,10 +634,10 @@ index 0000000000000000000000000000000000000000..5fc23a0b579d7cbe03baf5324bef887a
 +}
 diff --git a/src/main/java/me/samsuik/sakura/configuration/WorldConfiguration.java b/src/main/java/me/samsuik/sakura/configuration/WorldConfiguration.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..5bee36934f9510abcd365b3856dc5b3e69fdfe27
+index 0000000000000000000000000000000000000000..671fa0b3076276741ede09d5ae1f915e525ecf9f
 --- /dev/null
 +++ b/src/main/java/me/samsuik/sakura/configuration/WorldConfiguration.java
-@@ -0,0 +1,162 @@
+@@ -0,0 +1,184 @@
 +package me.samsuik.sakura.configuration;
 +
 +import com.mojang.logging.LogUtils;
@@ -639,6 +652,7 @@ index 0000000000000000000000000000000000000000..5bee36934f9510abcd365b3856dc5b3e
 +import me.samsuik.sakura.physics.PhysicsVersion;
 +import net.minecraft.Util;
 +import net.minecraft.resources.ResourceLocation;
++import net.minecraft.world.entity.EntityType;
 +import net.minecraft.world.entity.item.FallingBlockEntity;
 +import net.minecraft.world.item.Item;
 +import net.minecraft.world.level.block.Block;
@@ -696,7 +710,7 @@ index 0000000000000000000000000000000000000000..5bee36934f9510abcd365b3856dc5b3e
 +            public boolean preventAtWorldHeight = false;
 +
 +            public boolean isFallingBlockInBounds(FallingBlockEntity entity) {
-+                return (!preventAgainstBorder || !io.papermc.paper.util.CollisionUtil.isAlmostCollidingOnBorder(entity.level().getWorldBorder(), entity.getBoundingBox()))
++                return (!preventAgainstBorder || !io.papermc.paper.util.CollisionUtil.isCollidingWithBorder(entity.level().getWorldBorder(), entity.getBoundingBox().inflate(0.01)))
 +                    && (!preventAtWorldHeight || entity.blockPosition().getY() < entity.level().getMaxBuildHeight() - 1);
 +            }
 +        }
@@ -715,6 +729,8 @@ index 0000000000000000000000000000000000000000..5bee36934f9510abcd365b3856dc5b3e
 +            public boolean destroyWaterloggedBlocks = false;
 +            public boolean explodeLava = false;
 +            public boolean consistentRadius = false;
++            public boolean explosionsHurtPlayers = true;
++            public boolean explosionsDropItems = true;
 +        }
 +
 +        public Mechanics mechanics = new Mechanics();
@@ -732,8 +748,13 @@ index 0000000000000000000000000000000000000000..5bee36934f9510abcd365b3856dc5b3e
 +
 +    public Technical technical;
 +    public class Technical extends ConfigurationPart {
-+        @NestedSetting({"redstone", "redstone-cache"})
-+        public boolean redstoneCache = false;
++        public boolean dispenserRandomItemSelection = true;
++
++        public Redstone redstone = new Redstone();
++        public class Redstone extends ConfigurationPart {
++            public boolean redstoneCache = false;
++            public boolean fluidsBreakRedstone = true;
++        }
 +    }
 +
 +    public Players players;
@@ -768,10 +789,24 @@ index 0000000000000000000000000000000000000000..5bee36934f9510abcd365b3856dc5b3e
 +        @Comment("Only modify if you know what you're doing")
 +        public boolean disableMobAi = false;
 +        public boolean waterSensitivity = true;
++        public boolean instantDeathAnimation = false;
++        public boolean ironGolemsTakeFalldamage = false;
 +
 +        public Items items = new Items();
 +        public class Items extends ConfigurationPart {
 +            public List<Item> explosionResistantItems = List.of();
++        }
++
++        @Comment("Entity travel distance limits")
++        public Map<EntityType<?>, Integer> chunkTravelLimit = Util.make(new Reference2ObjectOpenHashMap<>(), map -> {
++            map.put(EntityType.ENDER_PEARL, 8);
++        });
++
++        public ThrownPotion thrownPotion = new ThrownPotion();
++        public class ThrownPotion extends ConfigurationPart {
++            public double horizontalSpeed = 1.0;
++            public double verticalSpeed = 1.0;
++            public boolean allowBreakingInsideEntities = false;
 +        }
 +    }
 +
@@ -787,67 +822,6 @@ index 0000000000000000000000000000000000000000..5bee36934f9510abcd365b3856dc5b3e
 +    }
 +
 +}
-diff --git a/src/main/java/me/samsuik/sakura/configuration/mapping/InnerClassFieldDiscoverer.java b/src/main/java/me/samsuik/sakura/configuration/mapping/InnerClassFieldDiscoverer.java
-new file mode 100644
-index 0000000000000000000000000000000000000000..96080117b5ac9dea6b9eeb7489dc0c87d2c5f8a1
---- /dev/null
-+++ b/src/main/java/me/samsuik/sakura/configuration/mapping/InnerClassFieldDiscoverer.java
-@@ -0,0 +1,55 @@
-+package me.samsuik.sakura.configuration.mapping;
-+
-+import io.papermc.paper.configuration.ConfigurationPart;
-+import io.papermc.paper.configuration.mapping.InnerClassInstanceFactory;
-+import io.papermc.paper.configuration.mapping.InnerClassInstanceSupplier;
-+import me.samsuik.sakura.configuration.WorldConfiguration;
-+import org.checkerframework.checker.nullness.qual.Nullable;
-+import org.spongepowered.configurate.objectmapping.FieldDiscoverer;
-+import org.spongepowered.configurate.serialize.SerializationException;
-+
-+import java.lang.reflect.AnnotatedType;
-+import java.lang.reflect.Field;
-+import java.util.Collections;
-+import java.util.Map;
-+
-+import static io.leangen.geantyref.GenericTypeReflector.erase;
-+
-+public final class InnerClassFieldDiscoverer implements FieldDiscoverer<Map<Field, Object>> {
-+
-+    private final InnerClassInstanceSupplier instanceSupplier;
-+    private final FieldDiscoverer<Map<Field, Object>> delegate;
-+
-+    @SuppressWarnings("unchecked")
-+    public InnerClassFieldDiscoverer(final Map<Class<?>, Object> initialOverrides) {
-+        this.instanceSupplier = new InnerClassInstanceSupplier(initialOverrides);
-+        this.delegate = (FieldDiscoverer<Map<Field, Object>>) FieldDiscoverer.object(this.instanceSupplier);
-+    }
-+
-+    @Override
-+    public @Nullable <V> InstanceFactory<Map<Field, Object>> discover(final AnnotatedType target, final FieldCollector<Map<Field, Object>, V> collector) throws SerializationException {
-+        final Class<?> clazz = erase(target.getType());
-+        if (ConfigurationPart.class.isAssignableFrom(clazz)) {
-+            final @Nullable InstanceFactory<Map<Field, Object>> instanceFactoryDelegate = this.delegate.<V>discover(target, (name, type, annotations, deserializer, serializer) -> {
-+                if (!erase(type.getType()).equals(clazz.getEnclosingClass())) { // don't collect synth fields for inner classes
-+                    collector.accept(name, type, annotations, deserializer, serializer);
-+                }
-+            });
-+            if (instanceFactoryDelegate instanceof MutableInstanceFactory<Map<Field, Object>> mutableInstanceFactoryDelegate) {
-+                return new InnerClassInstanceFactory(this.instanceSupplier, mutableInstanceFactoryDelegate, target);
-+            }
-+        }
-+        return null;
-+    }
-+
-+    public static FieldDiscoverer<?> worldConfig(WorldConfiguration worldConfiguration) {
-+        final Map<Class<?>, Object> overrides = Map.of(
-+            WorldConfiguration.class, worldConfiguration
-+        );
-+        return new InnerClassFieldDiscoverer(overrides);
-+    }
-+
-+    public static FieldDiscoverer<?> globalConfig() {
-+        return new InnerClassFieldDiscoverer(Collections.emptyMap());
-+    }
-+}
 diff --git a/src/main/java/me/samsuik/sakura/explosion/durable/DurableMaterial.java b/src/main/java/me/samsuik/sakura/explosion/durable/DurableMaterial.java
 new file mode 100644
 index 0000000000000000000000000000000000000000..4024f9738e039ffffd560a07a2210f758879d3c0
@@ -861,89 +835,22 @@ index 0000000000000000000000000000000000000000..4024f9738e039ffffd560a07a2210f75
 +@ConfigSerializable
 +public record DurableMaterial(int durability, float resistance) {
 +}
-diff --git a/src/main/java/me/samsuik/sakura/utils/VariousHelpers.java b/src/main/java/me/samsuik/sakura/utils/VariousHelpers.java
-new file mode 100644
-index 0000000000000000000000000000000000000000..141b15887ca075fef5d36ff15125b3e071049917
---- /dev/null
-+++ b/src/main/java/me/samsuik/sakura/utils/VariousHelpers.java
-@@ -0,0 +1,61 @@
-+package me.samsuik.sakura.utils;
-+
-+import net.minecraft.core.Registry;
-+import net.minecraft.core.registries.BuiltInRegistries;
-+import net.minecraft.world.entity.EntityType;
-+
-+import java.util.List;
-+import java.util.regex.Pattern;
-+import org.apache.commons.lang.StringUtils;
-+
-+public class VariousHelpers {
-+
-+    public static List<EntityType<?>> getEntityTypes(String from) {
-+        Pattern pattern = VariousHelpers.wildcardPattern(from);
-+
-+        return BuiltInRegistries.ENTITY_TYPE.stream()
-+            .filter((type) -> pattern.matcher(type.getDescriptionId()).find()
-+                || pattern.matcher(type.getCategory().getName()).find())
-+            .toList();
-+    }
-+
-+    public static Pattern wildcardPattern(String string) {
-+        String included = string.replaceAll("\\*{2}", ".*?");
-+        return Pattern.compile("^(%s)$".formatted(included));
-+    }
-+    
-+    public static String capitalise(String string) {
-+        StringBuilder builder = new StringBuilder(string.length());
-+        boolean capitalise = true;
-+
-+        for (char character : string.toCharArray()) {
-+            if (!Character.isAlphabetic(character)) {
-+                capitalise = true;
-+            } else if (capitalise) {
-+                character = Character.toUpperCase(character);
-+                capitalise = false;
-+            }
-+
-+            builder.append(character);
-+        }
-+
-+        return builder.toString();
-+    }
-+
-+    public static int sequential(String of, String provided) {
-+        for (int i = 0; i < of.length() && i < provided.length(); ++i) {
-+            if (provided.charAt(i) != of.charAt(i)) {
-+                return i;
-+            }
-+        }
-+
-+        return Math.min(of.length(), provided.length());
-+    }
-+
-+    public static double similarity(String a, String b) {
-+        double distance = StringUtils.getLevenshteinDistance(a, b);
-+        int highest = Math.max(a.length(), b.length());
-+        return 1 - (distance / highest);
-+    }
-+
-+}
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index a9494fe4ef242eeee02eca2c1d69e46539dfe719..9c5c633587d6781a72d9eb258ba5a4a35e954144 100644
+index 27134af410284f734abe29d834906f7e51cf05ea..eb04fab84e266b11ef4e531cb7ea8504a1e46aac 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -300,6 +300,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -306,6 +306,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
      public final double[] recentTps = new double[ 3 ];
      // Spigot end
-     public final io.papermc.paper.configuration.PaperConfigurations paperConfigurations;
-+    public final me.samsuik.sakura.configuration.SakuraConfigurations sakuraConfigurations; // Sakura - missing paper comment above D:
-     public static long currentTickLong = 0L; // Paper
+     public final io.papermc.paper.configuration.PaperConfigurations paperConfigurations; // Paper - add paper configuration files
++    public final me.samsuik.sakura.configuration.SakuraConfigurations sakuraConfigurations; // Sakura
+     public static long currentTickLong = 0L; // Paper - track current tick as a long
+     public boolean isIteratingOverLevels = false; // Paper - Throw exception on world create while being ticked
  
-     public volatile Thread shutdownThread; // Paper
-@@ -405,6 +406,10 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -412,6 +413,10 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          Runtime.getRuntime().addShutdownHook(new org.bukkit.craftbukkit.util.ServerShutdownThread(this));
          // CraftBukkit end
-         this.paperConfigurations = services.paperConfigurations(); // Paper
+         this.paperConfigurations = services.paperConfigurations(); // Paper - add paper configuration files
 +        // Sakura start
 +        final var sakuraConfigDirPath = ((File) options.valueOf("sakura-settings-directory")).toPath();
 +        this.sakuraConfigurations = me.samsuik.sakura.configuration.SakuraConfigurations.setup(sakuraConfigDirPath);
@@ -952,13 +859,13 @@ index a9494fe4ef242eeee02eca2c1d69e46539dfe719..9c5c633587d6781a72d9eb258ba5a4a3
  
      private void readScoreboard(DimensionDataStorage persistentStateManager) {
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index 1c9742ad81f04052d2c3bc18c7636f45b2fc5160..35810dd15db02d8bfed181370fed8f7f2f82e157 100644
+index 68d268b6fff126e8645b6deec3fb549ea2286b77..66eb8a462b472003333bb0af897e7650f5b63aa4 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 @@ -221,6 +221,11 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
-         com.destroystokyo.paper.VersionHistoryManager.INSTANCE.getClass(); // load version history now
-         io.papermc.paper.brigadier.PaperBrigadierProviderImpl.INSTANCE.getClass(); // init PaperBrigadierProvider
-         // Paper end
+         com.destroystokyo.paper.Metrics.PaperMetrics.startMetrics(); // Paper - start metrics
+         com.destroystokyo.paper.VersionHistoryManager.INSTANCE.getClass(); // Paper - load version history now
+         io.papermc.paper.brigadier.PaperBrigadierProviderImpl.INSTANCE.getClass(); // Paper - init PaperBrigadierProvider
 +        // Sakura start
 +        sakuraConfigurations.initializeGlobalConfiguration(this.registryAccess());
 +        sakuraConfigurations.initializeWorldDefaultsConfiguration(this.registryAccess());
@@ -968,52 +875,52 @@ index 1c9742ad81f04052d2c3bc18c7636f45b2fc5160..35810dd15db02d8bfed181370fed8f7f
          this.setPvpAllowed(dedicatedserverproperties.pvp);
          this.setFlightAllowed(dedicatedserverproperties.allowFlight);
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index c88d5b9125f6ee43bf2be60fd1745d836f271b78..9d860f15b13a3daa2f3b44c96f9b18e33828dd15 100644
+index 6907d1be36fbdf0856c0e11983218d2fd1f9cb46..46e060bab0a9adb05a9dadff7e0cee9277db9511 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
-@@ -691,7 +691,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
+@@ -692,7 +692,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
          // Holder holder = worlddimension.type(); // CraftBukkit - decompile error
  
          // Objects.requireNonNull(minecraftserver); // CraftBukkit - decompile error
--        super(iworlddataserver, resourcekey, minecraftserver.registryAccess(), worlddimension.type(), minecraftserver::getProfiler, false, flag, i, minecraftserver.getMaxChainedNeighborUpdates(), gen, biomeProvider, env, spigotConfig -> minecraftserver.paperConfigurations.createWorldConfig(io.papermc.paper.configuration.PaperConfigurations.createWorldContextMap(convertable_conversionsession.levelDirectory.path(), iworlddataserver.getLevelName(), resourcekey.location(), spigotConfig, minecraftserver.registryAccess())), executor); // Paper - Async-Anti-Xray - Pass executor
-+        super(iworlddataserver, resourcekey, minecraftserver.registryAccess(), worlddimension.type(), minecraftserver::getProfiler, false, flag, i, minecraftserver.getMaxChainedNeighborUpdates(), gen, biomeProvider, env, spigotConfig -> minecraftserver.paperConfigurations.createWorldConfig(io.papermc.paper.configuration.PaperConfigurations.createWorldContextMap(convertable_conversionsession.levelDirectory.path(), iworlddataserver.getLevelName(), resourcekey.location(), spigotConfig, minecraftserver.registryAccess())), () -> minecraftserver.sakuraConfigurations.createWorldConfig(me.samsuik.sakura.configuration.SakuraConfigurations.createWorldContextMap(convertable_conversionsession.levelDirectory.path(), iworlddataserver.getLevelName(), resourcekey.location(), minecraftserver.registryAccess())), executor); // Paper - Async-Anti-Xray - Pass executor
+-        super(iworlddataserver, resourcekey, minecraftserver.registryAccess(), worlddimension.type(), minecraftserver::getProfiler, false, flag, i, minecraftserver.getMaxChainedNeighborUpdates(), gen, biomeProvider, env, spigotConfig -> minecraftserver.paperConfigurations.createWorldConfig(io.papermc.paper.configuration.PaperConfigurations.createWorldContextMap(convertable_conversionsession.levelDirectory.path(), iworlddataserver.getLevelName(), resourcekey.location(), spigotConfig, minecraftserver.registryAccess())), executor); // Paper - create paper world configs; Async-Anti-Xray: Pass executor
++        super(iworlddataserver, resourcekey, minecraftserver.registryAccess(), worlddimension.type(), minecraftserver::getProfiler, false, flag, i, minecraftserver.getMaxChainedNeighborUpdates(), gen, biomeProvider, env, spigotConfig -> minecraftserver.paperConfigurations.createWorldConfig(io.papermc.paper.configuration.PaperConfigurations.createWorldContextMap(convertable_conversionsession.levelDirectory.path(), iworlddataserver.getLevelName(), resourcekey.location(), spigotConfig, minecraftserver.registryAccess())), () -> minecraftserver.sakuraConfigurations.createWorldConfig(me.samsuik.sakura.configuration.SakuraConfigurations.createWorldContextMap(convertable_conversionsession.levelDirectory.path(), iworlddataserver.getLevelName(), resourcekey.location(), minecraftserver.registryAccess())), executor); // Sakura // Paper - create paper world configs; Async-Anti-Xray: Pass executor
          this.pvpMode = minecraftserver.isPvpAllowed();
          this.convertable = convertable_conversionsession;
          this.uuid = WorldUUID.getUUID(convertable_conversionsession.levelDirectory.path().toFile());
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index 2354a0e5d15e9be633d9fe3a1a9feefe7b9b7782..11ab3a3b8624c36dfde3d42091af67c51340e8f2 100644
+index f476ba6c97944bdffae5aacae2e285d17541f46e..7ea0aee066529720311c0089fc0b5d3bfde901d0 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
-@@ -174,6 +174,12 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+@@ -171,6 +171,12 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
          return this.paperConfig;
      }
-     // Paper end
+     // Paper end - add paper world config
 +    // Sakura start
 +    private final me.samsuik.sakura.configuration.WorldConfiguration sakuraConfig;
-+    public me.samsuik.sakura.configuration.WorldConfiguration sakuraConfig() {
++    public final me.samsuik.sakura.configuration.WorldConfiguration sakuraConfig() {
 +        return this.sakuraConfig;
 +    }
 +    // Sakura end
  
      public final com.destroystokyo.paper.antixray.ChunkPacketBlockController chunkPacketBlockController; // Paper - Anti-Xray
      public final co.aikar.timings.WorldTimingsHandler timings; // Paper
-@@ -210,9 +216,10 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+@@ -207,9 +213,10 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
  
      public abstract ResourceKey<LevelStem> getTypeKey();
  
--    protected Level(WritableLevelData worlddatamutable, ResourceKey<Level> resourcekey, RegistryAccess iregistrycustom, Holder<DimensionType> holder, Supplier<ProfilerFiller> supplier, boolean flag, boolean flag1, long i, int j, org.bukkit.generator.ChunkGenerator gen, org.bukkit.generator.BiomeProvider biomeProvider, org.bukkit.World.Environment env, java.util.function.Function<org.spigotmc.SpigotWorldConfig, io.papermc.paper.configuration.WorldConfiguration> paperWorldConfigCreator, java.util.concurrent.Executor executor) { // Paper - Async-Anti-Xray - Pass executor
-+    protected Level(WritableLevelData worlddatamutable, ResourceKey<Level> resourcekey, RegistryAccess iregistrycustom, Holder<DimensionType> holder, Supplier<ProfilerFiller> supplier, boolean flag, boolean flag1, long i, int j, org.bukkit.generator.ChunkGenerator gen, org.bukkit.generator.BiomeProvider biomeProvider, org.bukkit.World.Environment env, java.util.function.Function<org.spigotmc.SpigotWorldConfig, io.papermc.paper.configuration.WorldConfiguration> paperWorldConfigCreator, Supplier<me.samsuik.sakura.configuration.WorldConfiguration> sakuraWorldConfigCreator, java.util.concurrent.Executor executor) { // Sakura // Paper - Async-Anti-Xray - Pass executor
+-    protected Level(WritableLevelData worlddatamutable, ResourceKey<Level> resourcekey, RegistryAccess iregistrycustom, Holder<DimensionType> holder, Supplier<ProfilerFiller> supplier, boolean flag, boolean flag1, long i, int j, org.bukkit.generator.ChunkGenerator gen, org.bukkit.generator.BiomeProvider biomeProvider, org.bukkit.World.Environment env, java.util.function.Function<org.spigotmc.SpigotWorldConfig, io.papermc.paper.configuration.WorldConfiguration> paperWorldConfigCreator, java.util.concurrent.Executor executor) { // Paper - create paper world config; Async-Anti-Xray: Pass executor
++    protected Level(WritableLevelData worlddatamutable, ResourceKey<Level> resourcekey, RegistryAccess iregistrycustom, Holder<DimensionType> holder, Supplier<ProfilerFiller> supplier, boolean flag, boolean flag1, long i, int j, org.bukkit.generator.ChunkGenerator gen, org.bukkit.generator.BiomeProvider biomeProvider, org.bukkit.World.Environment env, java.util.function.Function<org.spigotmc.SpigotWorldConfig, io.papermc.paper.configuration.WorldConfiguration> paperWorldConfigCreator, Supplier<me.samsuik.sakura.configuration.WorldConfiguration> sakuraWorldConfigCreator, java.util.concurrent.Executor executor) { // Sakura // Paper - create paper world config; Async-Anti-Xray: Pass executor
          this.spigotConfig = new org.spigotmc.SpigotWorldConfig(((net.minecraft.world.level.storage.PrimaryLevelData) worlddatamutable).getLevelName()); // Spigot
-         this.paperConfig = paperWorldConfigCreator.apply(this.spigotConfig); // Paper
+         this.paperConfig = paperWorldConfigCreator.apply(this.spigotConfig); // Paper - create paper world config
 +        this.sakuraConfig = sakuraWorldConfigCreator.get(); // Sakura
          this.generator = gen;
          this.world = new CraftWorld((ServerLevel) this, gen, biomeProvider, env);
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 1d98df3b60721568f69adc4ff10cc23d5d26504e..9b0e7524f2f223fb0927332879f5602f66696705 100644
+index b77b2e5a0e90017828b3a7814ca1bff99f763415..6ae1be6e4a52f36eb1d6793f0e4db50455d99e85 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -1041,6 +1041,7 @@ public final class CraftServer implements Server {
+@@ -1054,6 +1054,7 @@ public final class CraftServer implements Server {
  
          org.spigotmc.SpigotConfig.init((File) this.console.options.valueOf("spigot-settings")); // Spigot
          this.console.paperConfigurations.reloadConfigs(this.console);
@@ -1021,7 +928,7 @@ index 1d98df3b60721568f69adc4ff10cc23d5d26504e..9b0e7524f2f223fb0927332879f5602f
          for (ServerLevel world : this.console.getAllLevels()) {
              // world.serverLevelData.setDifficulty(config.difficulty); // Paper - per level difficulty
              world.setSpawnSettings(world.serverLevelData.getDifficulty() != Difficulty.PEACEFUL && config.spawnMonsters, config.spawnAnimals); // Paper - per level difficulty (from MinecraftServer#setDifficulty(ServerLevel, Difficulty, boolean))
-@@ -1071,6 +1072,7 @@ public final class CraftServer implements Server {
+@@ -1084,6 +1085,7 @@ public final class CraftServer implements Server {
          this.reloadData();
          org.spigotmc.SpigotConfig.registerCommands(); // Spigot
          io.papermc.paper.command.PaperCommands.registerCommands(this.console); // Paper
@@ -1030,10 +937,10 @@ index 1d98df3b60721568f69adc4ff10cc23d5d26504e..9b0e7524f2f223fb0927332879f5602f
          this.ignoreVanillaPermissions = this.commandsConfiguration.getBoolean("ignore-vanilla-permissions");
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/Main.java b/src/main/java/org/bukkit/craftbukkit/Main.java
-index 2af0068ef338634d1f44532af5db66c2d0b3dd10..65cadd91f2a0932f01bb30b036e249c37d69feec 100644
+index ce341f42b3a5e17fb6d1f7de8057e73137ae2a6e..703a485a2483305e34ecdf6cc259dd2ca2914749 100644
 --- a/src/main/java/org/bukkit/craftbukkit/Main.java
 +++ b/src/main/java/org/bukkit/craftbukkit/Main.java
-@@ -173,6 +173,14 @@ public class Main {
+@@ -174,6 +174,14 @@ public class Main {
                          .describedAs("Jar file");
                  // Paper end
  
