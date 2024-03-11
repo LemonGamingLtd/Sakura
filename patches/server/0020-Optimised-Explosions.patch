@@ -142,7 +142,7 @@ index 0000000000000000000000000000000000000000..5c6d4124189d98421e2d6f351840c5d6
 +}
 diff --git a/src/main/java/me/samsuik/sakura/explosion/SakuraExplosion.java b/src/main/java/me/samsuik/sakura/explosion/SakuraExplosion.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..fbdd4c4ec21cff4c9651402a9e94dd99996723e1
+index 0000000000000000000000000000000000000000..1819b24c90b4e58487cacce5eb0b3ee21c5a8f83
 --- /dev/null
 +++ b/src/main/java/me/samsuik/sakura/explosion/SakuraExplosion.java
 @@ -0,0 +1,405 @@
@@ -291,7 +291,7 @@ index 0000000000000000000000000000000000000000..fbdd4c4ec21cff4c9651402a9e94dd99
 +                    if (getToBlow().isEmpty()) {
 +                        cleanBlockCache(foundBlocks);
 +                    } else {
-+                        invalidateBlockCache(blockCache);
++                        invalidateBlockCache(blockCache, foundBlocks);
 +                    }
 +                }
 +            }
@@ -634,7 +634,7 @@ index f68da3e0168c9462aa05cce11e523b9cefefd7e7..771a23258d55cff17502acbe2341ed39
          this.isIteratingOverLevels = false; // Paper - Throw exception on world create while being ticked
  
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index fe8a1ffe9a8030955d41b9324a59eb30db678e27..942000dd75d1467ed59063173423bb737021be89 100644
+index 4b524e5b62f3d83c2f1ad750ff4237f5484da586..0b919f90b649b7e72244f65c5088219fa176fd83 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
 @@ -1946,6 +1946,12 @@ public class ServerLevel extends Level implements WorldGenLevel {
@@ -680,7 +680,7 @@ index ed0234d6a2718d35af635c4b74243bb2afd40769..2800af98260ebdab107466c596d2ec8c
  
      @Override
 diff --git a/src/main/java/net/minecraft/world/level/Explosion.java b/src/main/java/net/minecraft/world/level/Explosion.java
-index 39c30a295df9dfbc3c861f1678a958ef2ed2ba93..f7b2ebc636b8f01654ac917e2b9c4aa590454a8c 100644
+index 39c30a295df9dfbc3c861f1678a958ef2ed2ba93..e9d6c126b236cb0e29765e7febb52ba14f3b8c61 100644
 --- a/src/main/java/net/minecraft/world/level/Explosion.java
 +++ b/src/main/java/net/minecraft/world/level/Explosion.java
 @@ -55,14 +55,16 @@ public class Explosion {
@@ -769,7 +769,7 @@ index 39c30a295df9dfbc3c861f1678a958ef2ed2ba93..f7b2ebc636b8f01654ac917e2b9c4aa5
                          ++missedRays;
                      }
                  }
-@@ -375,12 +388,76 @@ public class Explosion {
+@@ -375,12 +388,80 @@ public class Explosion {
          return (float)missedRays / (float)totalRays;
      }
      // Paper end - optimise collisions
@@ -793,12 +793,16 @@ index 39c30a295df9dfbc3c861f1678a958ef2ed2ba93..f7b2ebc636b8f01654ac917e2b9c4aa5
 +
 +    protected void cleanBlockCache(List<BlockPos> blocks) {
 +        for (BlockPos blow : blocks) {
-+            blockCache.get(blow.asLong()).shouldExplode = null;
++            ExplosionBlockCache cache = blockCache.get(blow.asLong());
++            // May be null if the cache is invalidated then retrieved from the ExplosionBlockCache[]
++            if (cache != null) {
++                cache.shouldExplode = null;
++            }
 +        }
 +    }
 +
-+    protected void invalidateBlockCache(ExplosionBlockCache[] blockCaches) {
-+        for (BlockPos blow : getToBlow()) {
++    protected void invalidateBlockCache(ExplosionBlockCache[] blockCaches, List<BlockPos> blocks) {
++        for (BlockPos blow : blocks) {
 +            final int cacheKey =
 +                (blow.getX() & BLOCK_EXPLOSION_CACHE_MASK) |
 +                (blow.getY() & BLOCK_EXPLOSION_CACHE_MASK) << (BLOCK_EXPLOSION_CACHE_SHIFT) |
@@ -847,7 +851,7 @@ index 39c30a295df9dfbc3c861f1678a958ef2ed2ba93..f7b2ebc636b8f01654ac917e2b9c4aa5
          AABB axisalignedbb = entity.getBoundingBox();
          double d0 = 1.0D / ((axisalignedbb.maxX - axisalignedbb.minX) * 2.0D + 1.0D);
          double d1 = 1.0D / ((axisalignedbb.maxY - axisalignedbb.minY) * 2.0D + 1.0D);
-@@ -400,7 +477,11 @@ public class Explosion {
+@@ -400,7 +481,11 @@ public class Explosion {
                          double d10 = Mth.lerp(d7, axisalignedbb.minZ, axisalignedbb.maxZ);
                          Vec3 vec3d1 = new Vec3(d8 + d3, d9, d10 + d4);
  
@@ -860,7 +864,7 @@ index 39c30a295df9dfbc3c861f1678a958ef2ed2ba93..f7b2ebc636b8f01654ac917e2b9c4aa5
                              ++i;
                          }
  
-@@ -429,7 +510,29 @@ public class Explosion {
+@@ -429,7 +514,29 @@ public class Explosion {
              return;
          }
          // CraftBukkit end
@@ -890,7 +894,7 @@ index 39c30a295df9dfbc3c861f1678a958ef2ed2ba93..f7b2ebc636b8f01654ac917e2b9c4aa5
          Set<BlockPos> set = Sets.newHashSet();
          boolean flag = true;
  
-@@ -437,14 +540,7 @@ public class Explosion {
+@@ -437,14 +544,7 @@ public class Explosion {
          int j;
  
          // Paper start - optimise explosions
@@ -906,7 +910,7 @@ index 39c30a295df9dfbc3c861f1678a958ef2ed2ba93..f7b2ebc636b8f01654ac917e2b9c4aa5
          // use initial cache value that is most likely to be used: the source position
          final ExplosionBlockCache initialCache;
          {
-@@ -541,10 +637,15 @@ public class Explosion {
+@@ -541,10 +641,15 @@ public class Explosion {
          }
  
          this.toBlow.addAll(set);
@@ -924,7 +928,7 @@ index 39c30a295df9dfbc3c861f1678a958ef2ed2ba93..f7b2ebc636b8f01654ac917e2b9c4aa5
          int l = Mth.floor(this.y - (double) f2 - 1.0D);
          int i1 = Mth.floor(this.y + (double) f2 + 1.0D);
          int j1 = Mth.floor(this.z - (double) f2 - 1.0D);
-@@ -590,11 +691,11 @@ public class Explosion {
+@@ -590,11 +695,11 @@ public class Explosion {
                                  for (EnderDragonPart entityComplexPart : ((EnderDragon) entity).subEntities) {
                                      // Calculate damage separately for each EntityComplexPart
                                      if (list.contains(entityComplexPart)) {
@@ -938,7 +942,7 @@ index 39c30a295df9dfbc3c861f1678a958ef2ed2ba93..f7b2ebc636b8f01654ac917e2b9c4aa5
                              }
  
                              if (entity.lastDamageCancelled) { // SPIGOT-5339, SPIGOT-6252, SPIGOT-6777: Skip entity if damage event was cancelled
-@@ -655,9 +756,7 @@ public class Explosion {
+@@ -655,9 +760,7 @@ public class Explosion {
              }
          }
  
@@ -949,7 +953,7 @@ index 39c30a295df9dfbc3c861f1678a958ef2ed2ba93..f7b2ebc636b8f01654ac917e2b9c4aa5
      }
  
      public void finalizeExplosion(boolean particles) {
-@@ -725,6 +824,12 @@ public class Explosion {
+@@ -725,6 +828,12 @@ public class Explosion {
              if (this.wasCanceled) {
                  return;
              }
@@ -962,7 +966,7 @@ index 39c30a295df9dfbc3c861f1678a958ef2ed2ba93..f7b2ebc636b8f01654ac917e2b9c4aa5
              // CraftBukkit end
              objectlistiterator = this.toBlow.iterator();
  
-@@ -871,15 +976,22 @@ public class Explosion {
+@@ -871,15 +980,22 @@ public class Explosion {
          private BlockInteraction() {}
      }
      // Paper start - Optimize explosions
@@ -1007,10 +1011,10 @@ index f529f5d0f28533ec89f3ee712e59745991d068ee..d0ff7710577c1cfedae494796e6db420
      public float getEntityDamageAmount(Explosion explosion, Entity entity, double seenPercent) {
          // Paper end - actually optimise explosions
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index 0ccfae5343c88481d3f8ed5ec9839a5b7fa7f25c..67ea475db771d09232777b08278c3ba881bec905 100644
+index c23ae4d49c59cdd49495f6e8ffb7c7d21b016b42..46271bda79558ee965b3d2bd893a68feee8e898c 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
-@@ -221,6 +221,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+@@ -230,6 +230,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
  
      public final it.unimi.dsi.fastutil.longs.Long2IntMap minimalTNT = new it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap(); // Sakura - visibility api
      public final me.samsuik.sakura.entity.merge.MergeHistory mergeHistory = new me.samsuik.sakura.entity.merge.MergeHistory(); // Sakura - cannon entity merging
@@ -1018,7 +1022,7 @@ index 0ccfae5343c88481d3f8ed5ec9839a5b7fa7f25c..67ea475db771d09232777b08278c3ba8
  
      protected Level(WritableLevelData worlddatamutable, ResourceKey<Level> resourcekey, RegistryAccess iregistrycustom, Holder<DimensionType> holder, Supplier<ProfilerFiller> supplier, boolean flag, boolean flag1, long i, int j, org.bukkit.generator.ChunkGenerator gen, org.bukkit.generator.BiomeProvider biomeProvider, org.bukkit.World.Environment env, java.util.function.Function<org.spigotmc.SpigotWorldConfig, io.papermc.paper.configuration.WorldConfiguration> paperWorldConfigCreator, Supplier<me.samsuik.sakura.configuration.WorldConfiguration> sakuraWorldConfigCreator, java.util.concurrent.Executor executor) { // Sakura // Paper - create paper world config; Async-Anti-Xray: Pass executor
          this.spigotConfig = new org.spigotmc.SpigotWorldConfig(((net.minecraft.world.level.storage.PrimaryLevelData) worlddatamutable).getLevelName()); // Spigot
-@@ -1409,7 +1410,15 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+@@ -1418,7 +1419,15 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
          }
  
          Explosion.BlockInteraction explosion_effect1 = explosion_effect;
@@ -1026,7 +1030,7 @@ index 0ccfae5343c88481d3f8ed5ec9839a5b7fa7f25c..67ea475db771d09232777b08278c3ba8
 +        // Sakura start
 +        Explosion explosion;
 +
-+        if (explosionSourceType == ExplosionInteraction.TNT) {
++        if (entity instanceof net.minecraft.world.entity.item.PrimedTnt) {
 +            explosion = new me.samsuik.sakura.explosion.SakuraExplosion(this, entity, damageSource, behavior, x, y, z, power, createFire, explosion_effect1, particle, emitterParticle, soundEvent);
 +        } else {
 +            explosion = new Explosion(this, entity, damageSource, behavior, x, y, z, power, createFire, explosion_effect1, particle, emitterParticle, soundEvent);
