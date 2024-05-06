@@ -1,30 +1,30 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Nahuel Dolores <contact@nahu.me>
-Date: Thu, 21 Mar 2024 14:24:37 -0300
+Date: Mon, 6 May 2024 13:24:15 -0300
 Subject: [PATCH] Add option to allow unsigned chat messages
 
 
 diff --git a/src/main/java/io/papermc/paper/configuration/GlobalConfiguration.java b/src/main/java/io/papermc/paper/configuration/GlobalConfiguration.java
-index b53b6cc4463675096b061b3b65f14a4695c742e2..a0a81aff4a63792b54a66882fabb77ca9ceff7e0 100644
+index 30fe1c0645a07d663b08c0f988a1ab3a750bf7c4..2e27816f435356339601bb662e16d25bfd24548f 100644
 --- a/src/main/java/io/papermc/paper/configuration/GlobalConfiguration.java
 +++ b/src/main/java/io/papermc/paper/configuration/GlobalConfiguration.java
-@@ -171,6 +171,9 @@ public class GlobalConfiguration extends ConfigurationPart {
+@@ -172,6 +172,9 @@ public class GlobalConfiguration extends ConfigurationPart {
      public UnsupportedSettings unsupportedSettings;
  
      public class UnsupportedSettings extends ConfigurationPart {
 +        // Citrus start - Add option to allow unsigned chat messages
 +        public boolean allowUnsignedChatDecoding = true;
 +        // Citrus end - Add option to allow unsigned chat messages
+         @Comment("This setting controls if the broken behavior of disarmed tripwires not breaking should be allowed. This also allows for dupes")
+         public boolean allowTripwireDisarmingExploits = false;
          @Comment("This setting allows for exploits related to end portals, for example sand duping")
-         public boolean allowUnsafeEndPortalTeleportation = false;
-         @Comment("This setting controls if players should be able to break bedrock, end portals and other intended to be permanent blocks.")
 diff --git a/src/main/java/net/minecraft/network/chat/SignedMessageChain.java b/src/main/java/net/minecraft/network/chat/SignedMessageChain.java
-index ba12919c3f9aec34a9e64993b143ae92be5eb172..9990966897c31ad2f0c6f02b604a6851672dfbd7 100644
+index 0af9ed92824ccf30814eceb6a2c2e5c12661c991..ed2bfaed9072fb3c4efcc6a6cdbb24f762d8df17 100644
 --- a/src/main/java/net/minecraft/network/chat/SignedMessageChain.java
 +++ b/src/main/java/net/minecraft/network/chat/SignedMessageChain.java
-@@ -44,7 +44,13 @@ public class SignedMessageChain {
+@@ -43,7 +43,13 @@ public class SignedMessageChain {
                  this.lastTimeStamp = body.timeStamp();
-                 PlayerChatMessage playerChatMessage = new PlayerChatMessage(signedMessageLink, signature, body, (Component)null, FilterMask.PASS_THROUGH);
+                 PlayerChatMessage playerChatMessage = new PlayerChatMessage(signedMessageLink, signature, body, null, FilterMask.PASS_THROUGH);
                  if (!playerChatMessage.verify(signatureValidator)) {
 -                    throw new SignedMessageChain.DecodeException(Component.translatable("multiplayer.disconnect.unsigned_chat"), true, org.bukkit.event.player.PlayerKickEvent.Cause.UNSIGNED_CHAT); // Paper - kick event causes
 +                    // Citrus start - Add option to allow unsigned chat messages
@@ -36,7 +36,7 @@ index ba12919c3f9aec34a9e64993b143ae92be5eb172..9990966897c31ad2f0c6f02b604a6851
 +                    // Citrus end - Add option to allow unsigned chat messages
                  } else {
                      if (playerChatMessage.hasExpiredServer(Instant.now())) {
-                         LOGGER.warn("Received expired chat: '{}'. Is the client/server system time unsynchronized?", (Object)body.content());
+                         LOGGER.warn("Received expired chat: '{}'. Is the client/server system time unsynchronized?", body.content());
 diff --git a/src/main/java/net/minecraft/server/network/ServerCommonPacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 index 7451f65cef49248793815965bda4bcbe257b722e..5eddaf8a683eca9c6baa0c34d370a62114d46ccc 100644
 --- a/src/main/java/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
@@ -64,26 +64,27 @@ index 7451f65cef49248793815965bda4bcbe257b722e..5eddaf8a683eca9c6baa0c34d370a621
          if (packet == null || this.processedDisconnect) { // Spigot
              return;
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index eac0f802c202b544747d4c1f33212fada3997b8c..e97243069b96f7680d406d9197445d8a21587389 100644
+index 0018ca9d0d495232777a6167fa173b69a19727a9..286de5499adaec86badaa03cfd3c96a2bcc0dac9 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -2631,9 +2631,11 @@ public class ServerGamePacketListenerImpl extends ServerCommonPacketListenerImpl
+@@ -2631,10 +2631,11 @@ public class ServerGamePacketListenerImpl extends ServerCommonPacketListenerImpl
                  i = this.lastSeenMessages.trackedMessagesCount();
              }
  
 -            if (i > 4096) {
 -                this.disconnect(Component.translatable("multiplayer.disconnect.too_many_pending_chats"), org.bukkit.event.player.PlayerKickEvent.Cause.TOO_MANY_PENDING_CHATS); // Paper - kick event cause
 -            }
+-
 +            // Citrus start - disable chat signing
 +            //if (i > 4096) {
 +            //    this.disconnect(Component.translatable("multiplayer.disconnect.too_many_pending_chats"), org.bukkit.event.player.PlayerKickEvent.Cause.TOO_MANY_PENDING_CHATS); // Paper - kick event cause
 +            //}
 +            // Citrus end - disable chat signing
- 
          }
      }
+ 
 diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
-index 1e5f709115007ff19901c0a6c3cf884d9e4d3a6c..f739324d695bfc281fdc1e14743110cfef3543c8 100644
+index 1e5f709115007ff19901c0a6c3cf884d9e4d3a6c..d7eceee79f716dff4735b8e3c08a34da27e89034 100644
 --- a/src/main/java/net/minecraft/server/players/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/players/PlayerList.java
 @@ -1460,7 +1460,8 @@ public abstract class PlayerList {
@@ -91,7 +92,7 @@ index 1e5f709115007ff19901c0a6c3cf884d9e4d3a6c..f739324d695bfc281fdc1e14743110cf
  
      public boolean verifyChatTrusted(PlayerChatMessage message) { // Paper - private -> public
 -        return message.hasSignature() && !message.hasExpiredServer(Instant.now());
-+        //return message.hasSignature() && !message.hasExpiredServer(Instant.now());
++        // return message.hasSignature() && !message.hasExpiredServer(Instant.now()); // Citrus - disable chat signing
 +        return true; // Citrus - disable chat signing
      }
  
