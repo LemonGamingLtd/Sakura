@@ -1,0 +1,22 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Samsuik <kfian294ma4@gmail.com>
+Date: Sun, 24 Dec 2023 11:20:10 +0000
+Subject: [PATCH] Add explosions dropping items config
+
+
+diff --git a/src/main/java/net/minecraft/world/level/Explosion.java b/src/main/java/net/minecraft/world/level/Explosion.java
+index 0631bf063fed8462ebe014e733e8103bc7968ac9..035b5ea9570668fa8aaafd7b757458343fd26456 100644
+--- a/src/main/java/net/minecraft/world/level/Explosion.java
++++ b/src/main/java/net/minecraft/world/level/Explosion.java
+@@ -949,6 +949,11 @@ public class Explosion {
+                 this.level.densityCache.clear(-1);
+             }
+             // Sakura end - explosion density cache
++            // Sakura start - config for explosions dropping items
++            if (!level.sakuraConfig().cannons.explosion.explosionsDropItems) {
++                list.clear();
++            }
++            // Sakura end - config for explosions dropping items
+             Iterator iterator = list.iterator();
+ 
+             while (iterator.hasNext()) {

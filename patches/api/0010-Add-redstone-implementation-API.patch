@@ -5,7 +5,7 @@ Subject: [PATCH] Add redstone implementation API
 
 
 diff --git a/src/main/java/me/samsuik/sakura/local/LocalValueKey.java b/src/main/java/me/samsuik/sakura/local/LocalValueKey.java
-index 3beb5830d623e72a3f4dec63aedc8b69a6396bf0..1a725c1f349b9b8f86c118e579004d7974f016fd 100644
+index 4735e5d8dcea4835061b5cada9d601794efdf390..098ce4d0356fb1dddbd4e34c02f77848da1fb546 100644
 --- a/src/main/java/me/samsuik/sakura/local/LocalValueKey.java
 +++ b/src/main/java/me/samsuik/sakura/local/LocalValueKey.java
 @@ -1,6 +1,7 @@

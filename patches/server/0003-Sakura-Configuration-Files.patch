@@ -388,10 +388,10 @@ index 0000000000000000000000000000000000000000..5296d4e0a1041932e36562f42fbf3e1d
 +}
 diff --git a/src/main/java/me/samsuik/sakura/configuration/SakuraConfigurations.java b/src/main/java/me/samsuik/sakura/configuration/SakuraConfigurations.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..04dc81634277d05894076a2cafde60ca35e1886e
+index 0000000000000000000000000000000000000000..dd5a70f70c2e7bdc30b8f5655b0b7a082c1b472b
 --- /dev/null
 +++ b/src/main/java/me/samsuik/sakura/configuration/SakuraConfigurations.java
-@@ -0,0 +1,251 @@
+@@ -0,0 +1,253 @@
 +package me.samsuik.sakura.configuration;
 +
 +import com.google.common.collect.Table;
@@ -415,8 +415,7 @@ index 0000000000000000000000000000000000000000..04dc81634277d05894076a2cafde60ca
 +import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 +import it.unimi.dsi.fastutil.objects.Reference2LongMap;
 +import it.unimi.dsi.fastutil.objects.Reference2LongOpenHashMap;
-+import me.samsuik.sakura.configuration.transformation.world.V3_RenameKnockback;
-+import me.samsuik.sakura.configuration.transformation.world.V2_VerticalKnockbackUseDefault;
++import me.samsuik.sakura.configuration.transformation.world.*;
 +import net.minecraft.core.RegistryAccess;
 +import net.minecraft.core.registries.Registries;
 +import net.minecraft.resources.ResourceLocation;
@@ -579,6 +578,9 @@ index 0000000000000000000000000000000000000000..04dc81634277d05894076a2cafde60ca
 +        final ConfigurationTransformation.VersionedBuilder versionedBuilder = Transformations.versionedBuilder();
 +        V2_VerticalKnockbackUseDefault.apply(versionedBuilder);
 +        V3_RenameKnockback.apply(versionedBuilder);
++        V4_RenameNonStrictMergeLevel.apply(versionedBuilder);
++        V5_CombineLoadChunksOptions.apply(versionedBuilder);
++        V6_FixIncorrectExtraKnockback.apply(versionedBuilder);
 +        // ADD FUTURE VERSIONED TRANSFORMS TO versionedBuilder HERE
 +        versionedBuilder.build().apply(node);
 +    }
@@ -645,10 +647,10 @@ index 0000000000000000000000000000000000000000..04dc81634277d05894076a2cafde60ca
 +}
 diff --git a/src/main/java/me/samsuik/sakura/configuration/WorldConfiguration.java b/src/main/java/me/samsuik/sakura/configuration/WorldConfiguration.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..a019905f4fb7ec8743136ca406584dbcc73801f5
+index 0000000000000000000000000000000000000000..2ed95ba385e3937fde99d4ee3e7845e77591aa89
 --- /dev/null
 +++ b/src/main/java/me/samsuik/sakura/configuration/WorldConfiguration.java
-@@ -0,0 +1,199 @@
+@@ -0,0 +1,219 @@
 +package me.samsuik.sakura.configuration;
 +
 +import com.mojang.logging.LogUtils;
@@ -680,7 +682,7 @@ index 0000000000000000000000000000000000000000..a019905f4fb7ec8743136ca406584dbc
 +public class WorldConfiguration extends ConfigurationPart {
 +
 +    private static final Logger LOGGER = LogUtils.getClassLogger();
-+    static final int CURRENT_VERSION = 3; // (when you change the version, change the comment, so it conflicts on rebases): rename filter bad nbt from spawn eggs
++    static final int CURRENT_VERSION = 6; // (when you change the version, change the comment, so it conflicts on rebases): rename filter bad nbt from spawn eggs
 +
 +    private transient final ResourceLocation worldKey;
 +    WorldConfiguration(ResourceLocation worldKey) {
@@ -703,16 +705,15 @@ index 0000000000000000000000000000000000000000..a019905f4fb7ec8743136ca406584dbc
 +        public boolean treatAllBlocksAsFullWhenMoving = false;
 +        @NestedSetting({"treat-collidable-blocks-as-full", "moving-faster-than"})
 +        public double treatAllBlocksAsFullWhenMovingFasterThan = 64.0;
++        public boolean loadChunks = false;
 +
 +        public Tnt tnt = new Tnt();
 +        public class Tnt extends ConfigurationPart {
-+            public boolean loadsChunks;
 +            public boolean forcePositionUpdates;
 +        }
 +
 +        public Sand sand = new Sand();
 +        public class Sand extends ConfigurationPart {
-+            public boolean loadsChunks;
 +            public boolean despawnInsideMovingPistons = true;
 +            public boolean concreteSolidifyInWater = true;
 +
@@ -730,19 +731,21 @@ index 0000000000000000000000000000000000000000..a019905f4fb7ec8743136ca406584dbc
 +        public Explosion explosion = new Explosion();
 +        public class Explosion extends ConfigurationPart {
 +            public boolean optimiseProtectedRegions = true;
-+            public boolean avoidRedundantBlockSearches = true;
++            public boolean avoidRedundantBlockSearches = false;
 +            public Map<Block, DurableMaterial> durableMaterials = Util.make(new Reference2ObjectOpenHashMap<>(), map -> {
 +                map.put(Blocks.OBSIDIAN, new DurableMaterial(4, Blocks.COBBLESTONE.getExplosionResistance()));
 +                map.put(Blocks.ANVIL, new DurableMaterial(3, Blocks.END_STONE.getExplosionResistance()));
 +                map.put(Blocks.CHIPPED_ANVIL, new DurableMaterial(3, Blocks.END_STONE.getExplosionResistance()));
 +                map.put(Blocks.DAMAGED_ANVIL, new DurableMaterial(3, Blocks.END_STONE.getExplosionResistance()));
 +            });
++            public boolean protectScaffoldingFromCreepers = false;
 +            public boolean allowNonTntBreakingDurableBlocks = false;
 +            public boolean destroyWaterloggedBlocks = false;
 +            public boolean explodeLava = false;
 +            public boolean consistentRadius = false;
 +            public boolean explosionsHurtPlayers = true;
 +            public boolean explosionsDropItems = true;
++            public boolean useBlockCacheAcrossExplosions = false;
 +        }
 +
 +        public Mechanics mechanics = new Mechanics();
@@ -771,6 +774,16 @@ index 0000000000000000000000000000000000000000..a019905f4fb7ec8743136ca406584dbc
 +
 +    public Players players;
 +    public class Players extends ConfigurationPart {
++        public Combat combat = new Combat();
++        public class Combat extends ConfigurationPart {
++            public boolean legacyCombatMechanics = false;
++            public boolean allowSweepAttacks = true;
++            public boolean shieldDamageReduction = false;
++            public boolean oldEnchantedGoldenApple = false;
++            public boolean oldSoundsAndParticleEffects = false;
++            public boolean fastHealthRegen = true;
++        }
++
 +        public Knockback knockback = new Knockback();
 +        public class Knockback extends ConfigurationPart {
 +            public DoubleOr.Default knockbackVertical = DoubleOr.Default.USE_DEFAULT;
@@ -783,10 +796,13 @@ index 0000000000000000000000000000000000000000..a019905f4fb7ec8743136ca406584dbc
 +            public Sprinting sprinting = new Sprinting();
 +            public class Sprinting extends ConfigurationPart {
 +                public boolean requireFullAttack = true;
-+                public double extraKnockback = 1.0;
++                public double extraKnockback = 0.5;
 +                @Comment("Delay between extra knockback hits in milliseconds")
 +                public IntOr.Default knockbackDelay = IntOr.Default.USE_DEFAULT;
 +            }
++
++            @NestedSetting({"projectiles", "fishing-hooks-apply-knockback"})
++            public boolean fishingHooksApplyKnockback;
 +
 +            @Comment("Knockback resistance attribute modifier")
 +            public double knockbackResistanceModifier = 1.0;
@@ -796,6 +812,7 @@ index 0000000000000000000000000000000000000000..a019905f4fb7ec8743136ca406584dbc
 +
 +        @Comment("Prevents players swimming using elytra or riptide to enter holes")
 +        public boolean posesShrinkCollisionBox = true;
++        public boolean fishingHooksPullEntities = true;
 +    }
 +
 +    public Entity entity;
@@ -837,6 +854,11 @@ index 0000000000000000000000000000000000000000..a019905f4fb7ec8743136ca406584dbc
 +        public BlockGeneration blockGeneration = new BlockGeneration();
 +        public class BlockGeneration extends ConfigurationPart {
 +            public boolean legacyBlockFormation = false;
++        }
++
++        public Crops crops = new Crops();
++        public class Crops extends ConfigurationPart {
++            public boolean useRandomChanceToGrow = false;
 +        }
 +
 +        public MobSpawner mobSpawner = new MobSpawner();
@@ -916,6 +938,133 @@ index 0000000000000000000000000000000000000000..efba1f83cb079d0e75904adc439b715d
 +            transformationBuilder.addAction(entry.getKey(), rename(entry.getValue()));
 +        }
 +        builder.addVersion(VERSION, transformationBuilder.build());
++    }
++}
+diff --git a/src/main/java/me/samsuik/sakura/configuration/transformation/world/V4_RenameNonStrictMergeLevel.java b/src/main/java/me/samsuik/sakura/configuration/transformation/world/V4_RenameNonStrictMergeLevel.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..198eb5f030ec5def4d93dec51dde352261654bb5
+--- /dev/null
++++ b/src/main/java/me/samsuik/sakura/configuration/transformation/world/V4_RenameNonStrictMergeLevel.java
+@@ -0,0 +1,35 @@
++package me.samsuik.sakura.configuration.transformation.world;
++
++import org.checkerframework.checker.nullness.qual.Nullable;
++import org.spongepowered.configurate.ConfigurateException;
++import org.spongepowered.configurate.ConfigurationNode;
++import org.spongepowered.configurate.NodePath;
++import org.spongepowered.configurate.transformation.ConfigurationTransformation;
++import org.spongepowered.configurate.transformation.TransformAction;
++
++import java.util.Locale;
++
++import static org.spongepowered.configurate.NodePath.path;
++
++public final class V4_RenameNonStrictMergeLevel implements TransformAction {
++    private static final int VERSION = 4;
++    private static final String OLD_LEVEL_NAME = "NON_STRICT";
++    private static final String NEW_LEVEL_NAME = "LENIENT";
++    private static final NodePath PATH = path("cannons", "merge-level");
++    private static final V4_RenameNonStrictMergeLevel INSTANCE = new V4_RenameNonStrictMergeLevel();
++
++    private V4_RenameNonStrictMergeLevel() {}
++
++    public static void apply(ConfigurationTransformation.VersionedBuilder builder) {
++        builder.addVersion(VERSION, ConfigurationTransformation.builder().addAction(PATH, INSTANCE).build());
++    }
++
++    @Override
++    public Object @Nullable [] visitPath(NodePath path, ConfigurationNode value) throws ConfigurateException {
++        String level = value.getString();
++        if (level != null && OLD_LEVEL_NAME.equals(level.toUpperCase(Locale.ENGLISH))) {
++            value.set(NEW_LEVEL_NAME);
++        }
++        return null;
++    }
++}
+diff --git a/src/main/java/me/samsuik/sakura/configuration/transformation/world/V5_CombineLoadChunksOptions.java b/src/main/java/me/samsuik/sakura/configuration/transformation/world/V5_CombineLoadChunksOptions.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..3d647a3db0862232f158d823da9a797d4e0d5608
+--- /dev/null
++++ b/src/main/java/me/samsuik/sakura/configuration/transformation/world/V5_CombineLoadChunksOptions.java
+@@ -0,0 +1,44 @@
++package me.samsuik.sakura.configuration.transformation.world;
++
++import org.checkerframework.checker.nullness.qual.Nullable;
++import org.spongepowered.configurate.ConfigurateException;
++import org.spongepowered.configurate.ConfigurationNode;
++import org.spongepowered.configurate.NodePath;
++import org.spongepowered.configurate.transformation.ConfigurationTransformation;
++import org.spongepowered.configurate.transformation.TransformAction;
++
++import java.util.List;
++
++import static org.spongepowered.configurate.NodePath.path;
++
++public final class V5_CombineLoadChunksOptions implements TransformAction {
++    private static final int VERSION = 5;
++    private static final List<String> ENTITY_PATHS = List.of("tnt", "sand");
++    private static final String OLD_NAME = "loads-chunks";
++    private static final String NAME = "load-chunks";
++    private static final NodePath PATH = path("cannons");
++    private static final V5_CombineLoadChunksOptions INSTANCE = new V5_CombineLoadChunksOptions();
++
++    private V5_CombineLoadChunksOptions() {}
++
++    public static void apply(ConfigurationTransformation.VersionedBuilder builder) {
++        builder.addVersion(VERSION, ConfigurationTransformation.builder().addAction(PATH, INSTANCE).build());
++    }
++
++    @Override
++    public Object @Nullable [] visitPath(NodePath path, ConfigurationNode value) throws ConfigurateException {
++        boolean shouldLoadChunks = false;
++
++        for (String entity : ENTITY_PATHS) {
++            NodePath entityPath = NodePath.path(entity, OLD_NAME);
++            if (value.hasChild(entityPath)) {
++                ConfigurationNode node = value.node(entityPath);
++                shouldLoadChunks |= node.getBoolean();
++                node.raw(null);
++            }
++        }
++
++        value.node(NAME).set(shouldLoadChunks);
++        return null;
++    }
++}
+diff --git a/src/main/java/me/samsuik/sakura/configuration/transformation/world/V6_FixIncorrectExtraKnockback.java b/src/main/java/me/samsuik/sakura/configuration/transformation/world/V6_FixIncorrectExtraKnockback.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..f9fdf1a87420c78136deccf8822f5cf177b41aed
+--- /dev/null
++++ b/src/main/java/me/samsuik/sakura/configuration/transformation/world/V6_FixIncorrectExtraKnockback.java
+@@ -0,0 +1,30 @@
++package me.samsuik.sakura.configuration.transformation.world;
++
++import org.checkerframework.checker.nullness.qual.Nullable;
++import org.spongepowered.configurate.ConfigurateException;
++import org.spongepowered.configurate.ConfigurationNode;
++import org.spongepowered.configurate.NodePath;
++import org.spongepowered.configurate.transformation.ConfigurationTransformation;
++import org.spongepowered.configurate.transformation.TransformAction;
++
++import static org.spongepowered.configurate.NodePath.path;
++
++public final class V6_FixIncorrectExtraKnockback implements TransformAction {
++    private static final int VERSION = 6;
++    private static final NodePath PATH = path("players", "knockback", "sprinting", "extra-knockback");
++    private static final V6_FixIncorrectExtraKnockback INSTANCE = new V6_FixIncorrectExtraKnockback();
++
++    private V6_FixIncorrectExtraKnockback() {}
++
++    public static void apply(ConfigurationTransformation.VersionedBuilder builder) {
++        builder.addVersion(VERSION, ConfigurationTransformation.builder().addAction(PATH, INSTANCE).build());
++    }
++
++    @Override
++    public Object @Nullable [] visitPath(NodePath path, ConfigurationNode value) throws ConfigurateException {
++        if (value.getDouble() == 1.0) {
++            value.set(0.5);
++        }
++        return null;
 +    }
 +}
 diff --git a/src/main/java/me/samsuik/sakura/explosion/durable/DurableMaterial.java b/src/main/java/me/samsuik/sakura/explosion/durable/DurableMaterial.java
