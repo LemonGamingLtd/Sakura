@@ -38,7 +38,7 @@ index 0572cf39080e549354b5adf437afc7dc3e8e824c..c2c0d80adb6fa8cb74fa5fe3ce5bc7ac
      public boolean captureBlockStates = false;
      public boolean captureTreeGeneration = false;
 diff --git a/src/main/java/net/minecraft/world/level/block/RedStoneWireBlock.java b/src/main/java/net/minecraft/world/level/block/RedStoneWireBlock.java
-index 9d8c0d2b5a1d5a23966b49f8fefbb3d379a07364..034f9788550802b4f1e85892a5055ee72a60454e 100644
+index 640c4d46a915f5efe1febd9236512133fe104caa..e8fdbcf0dc234e91f762d136777352bdccc3d394 100644
 --- a/src/main/java/net/minecraft/world/level/block/RedStoneWireBlock.java
 +++ b/src/main/java/net/minecraft/world/level/block/RedStoneWireBlock.java
 @@ -499,7 +499,7 @@ public class RedStoneWireBlock extends Block {

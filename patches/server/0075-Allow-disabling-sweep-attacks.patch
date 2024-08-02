@@ -5,7 +5,7 @@ Subject: [PATCH] Allow disabling sweep attacks
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/player/Player.java b/src/main/java/net/minecraft/world/entity/player/Player.java
-index cef878d0876cf5eef8ce4bf220b50d21f64ad597..b613a0843a6a71ad80bdedb407d0402ec788a6f3 100644
+index 7f2b778706bdc1d24b97c53ac9278439a4a03d36..7453ba523f1e0fac5192e6afe737f89bf6eab4f0 100644
 --- a/src/main/java/net/minecraft/world/entity/player/Player.java
 +++ b/src/main/java/net/minecraft/world/entity/player/Player.java
 @@ -1361,7 +1361,7 @@ public abstract class Player extends LivingEntity {
