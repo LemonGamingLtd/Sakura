@@ -1,0 +1,124 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Nahuel Dolores <contact@nahu.me>
+Date: Wed, 18 Sep 2024 10:54:50 +0200
+Subject: [PATCH] Add support for stackable buckets
+
+
+diff --git a/src/main/java/me/samsuik/sakura/configuration/GlobalConfiguration.java b/src/main/java/me/samsuik/sakura/configuration/GlobalConfiguration.java
+index 5296d4e0a1041932e36562f42fbf3e1dcfea33fe..60dd6180cf669d6f8f6f8b7cfb587d7dc917af32 100644
+--- a/src/main/java/me/samsuik/sakura/configuration/GlobalConfiguration.java
++++ b/src/main/java/me/samsuik/sakura/configuration/GlobalConfiguration.java
+@@ -3,8 +3,14 @@ package me.samsuik.sakura.configuration;
+ import com.mojang.logging.LogUtils;
+ import io.papermc.paper.configuration.Configuration;
+ import io.papermc.paper.configuration.ConfigurationPart;
++import net.minecraft.world.item.BucketItem;
++import net.minecraft.world.item.Item;
++import net.minecraft.world.item.Items;
++import net.minecraft.world.item.MilkBucketItem;
++import net.minecraft.world.level.material.Fluids;
+ import org.slf4j.Logger;
+ import org.spongepowered.configurate.objectmapping.meta.Comment;
++import org.spongepowered.configurate.objectmapping.meta.PostProcess;
+ import org.spongepowered.configurate.objectmapping.meta.Setting;
+ 
+ @SuppressWarnings({"CanBeFinal", "FieldCanBeLocal", "FieldMayBeFinal", "NotNullFieldNotInitialized", "InnerClassMayBeStatic", "RedundantSuppression"})
+@@ -25,6 +31,23 @@ public class GlobalConfiguration extends ConfigurationPart {
+     @Setting(Configuration.VERSION_FIELD)
+     public int version = CURRENT_VERSION;
+ 
++    public StackableBuckets stackableBuckets;
++    public class StackableBuckets extends ConfigurationPart {
++        public boolean enabled = true;
++        public int maxBucketStackSize = 16;
++
++        @PostProcess
++        public void postProcess() {
++            if (!enabled) {
++                return;
++            }
++            Items.BUCKET = Items.registerItem("bucket", new BucketItem(Fluids.EMPTY, new Item.Properties().stacksTo(maxBucketStackSize)));
++            Items.WATER_BUCKET = Items.registerItem("water_bucket", new BucketItem(Fluids.WATER, new Item.Properties().craftRemainder(Items.BUCKET).stacksTo(maxBucketStackSize)));
++            Items.LAVA_BUCKET = Items.registerItem("lava_bucket", new BucketItem(Fluids.LAVA, new Item.Properties().craftRemainder(Items.BUCKET).stacksTo(maxBucketStackSize)));
++            Items.MILK_BUCKET = Items.registerItem("milk_bucket", new MilkBucketItem(new Item.Properties().craftRemainder(Items.BUCKET).stacksTo(maxBucketStackSize)));
++        }
++    }
++
+     public Fps fps;
+     public class Fps extends ConfigurationPart {
+         public String message = "<dark_gray>(<light_purple>S</light_purple>) <gray><state> <yellow><name>";
+diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
+index 5f066ffa28b6eb6560c4645ce52f7cbc36c7d3f5..556aa40d867406476c242d0f416664fcdd0d7b19 100644
+--- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
++++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
+@@ -3222,6 +3222,18 @@ public class ServerGamePacketListenerImpl extends ServerCommonPacketListenerImpl
+                         switch (event.getResult()) {
+                             case ALLOW:
+                             case DEFAULT:
++                                // Sakura start - Add support for stackable spawners
++                                if (me.samsuik.sakura.configuration.GlobalConfiguration.get().stackableBuckets.enabled) {
++                                    if (itemstack.getItem() == Items.LAVA_BUCKET || itemstack.getItem() == Items.WATER_BUCKET || itemstack.getItem() == Items.MILK_BUCKET) {
++                                        if (action == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
++                                            this.player.containerMenu.sendAllDataToRemote();
++                                        } else {
++                                            this.player.connection.send(new ClientboundContainerSetSlotPacket(-1, -1, this.player.inventoryMenu.incrementStateId(), this.player.containerMenu.getCarried()));
++                                            this.player.connection.send(new ClientboundContainerSetSlotPacket(this.player.containerMenu.containerId, this.player.inventoryMenu.incrementStateId(), packet.getSlotNum(), this.player.containerMenu.getSlot(packet.getSlotNum()).getItem()));
++                                        }
++                                    }
++                                }
++                                // Sakura end
+                                 this.player.containerMenu.clicked(i, packet.getButtonNum(), packet.getClickType(), this.player);
+                                 break;
+                             case DENY:
+diff --git a/src/main/java/net/minecraft/world/item/BucketItem.java b/src/main/java/net/minecraft/world/item/BucketItem.java
+index 229d71f093f672f323cc2feadf2cd174a62805f8..17103ee1ea329b61112814122d704138edce6ff5 100644
+--- a/src/main/java/net/minecraft/world/item/BucketItem.java
++++ b/src/main/java/net/minecraft/world/item/BucketItem.java
+@@ -191,7 +191,22 @@ public class BucketItem extends Item implements DispensibleContainerItem {
+                     ((ServerPlayer) entityhuman).getBukkitEntity().updateInventory(); // SPIGOT-4541
+                     return false;
+                 }
+-                itemLeftInHandAfterPlayerBucketEmptyEvent = event.getItemStack() != null ? event.getItemStack().equals(CraftItemStack.asNewCraftStack(net.minecraft.world.item.Items.BUCKET)) ? null : CraftItemStack.asNMSCopy(event.getItemStack()) : ItemStack.EMPTY; // Paper - Fix PlayerBucketEmptyEvent result itemstack
++                // Sakura start - Add support for stackable buckets
++                if (me.samsuik.sakura.configuration.GlobalConfiguration.get().stackableBuckets.enabled) {
++                    ItemStack handledItemstack = event.getItemStack() != null ? event.getItemStack().equals(CraftItemStack.asNewCraftStack(Items.BUCKET)) ? null : CraftItemStack.asNMSCopy(event.getItemStack()) : ItemStack.EMPTY; // Paper - fix empty event result itemstack
++                    int count = itemstack.getCount() - 1;
++                    if (count > 0) {
++                        ItemStack eventItemstack = CraftItemStack.asNMSCopy(event.getItemStack());
++                        if (!entityhuman.addItem(eventItemstack)) {
++                            entityhuman.drop(eventItemstack, false);
++                        }
++                        handledItemstack = itemstack.copyWithCount(count);
++                    }
++                    itemLeftInHandAfterPlayerBucketEmptyEvent = handledItemstack;
++                } else {
++                    itemLeftInHandAfterPlayerBucketEmptyEvent = event.getItemStack() != null ? event.getItemStack().equals(CraftItemStack.asNewCraftStack(Items.BUCKET)) ? null : CraftItemStack.asNMSCopy(event.getItemStack()) : ItemStack.EMPTY; // Paper - Fix PlayerBucketEmptyEvent result itemstack
++                }
++                // Sakura end
+             }
+             // CraftBukkit end
+             if (!flag2) {
+diff --git a/src/main/java/net/minecraft/world/item/Items.java b/src/main/java/net/minecraft/world/item/Items.java
+index 07315232192f6e09910a028c4643d7f0544c62e3..9391bc7ad0ba3bb4e966eb4abc9790be88bacc08 100644
+--- a/src/main/java/net/minecraft/world/item/Items.java
++++ b/src/main/java/net/minecraft/world/item/Items.java
+@@ -1209,15 +1209,15 @@ public class Items {
+     public static final Item WARPED_HANGING_SIGN = registerItem(
+         "warped_hanging_sign", new HangingSignItem(Blocks.WARPED_HANGING_SIGN, Blocks.WARPED_WALL_HANGING_SIGN, new Item.Properties().stacksTo(16))
+     );
+-    public static final Item BUCKET = registerItem("bucket", new BucketItem(Fluids.EMPTY, new Item.Properties().stacksTo(16)));
+-    public static final Item WATER_BUCKET = registerItem("water_bucket", new BucketItem(Fluids.WATER, new Item.Properties().craftRemainder(BUCKET).stacksTo(1)));
+-    public static final Item LAVA_BUCKET = registerItem("lava_bucket", new BucketItem(Fluids.LAVA, new Item.Properties().craftRemainder(BUCKET).stacksTo(1)));
++    public static Item BUCKET = registerItem("bucket", new BucketItem(Fluids.EMPTY, new Item.Properties().stacksTo(16)));
++    public static Item WATER_BUCKET = registerItem("water_bucket", new BucketItem(Fluids.WATER, new Item.Properties().craftRemainder(BUCKET).stacksTo(1))); // Sakura - Add support for stackable buckets
++    public static Item LAVA_BUCKET = registerItem("lava_bucket", new BucketItem(Fluids.LAVA, new Item.Properties().craftRemainder(BUCKET).stacksTo(1))); // Sakura - Add support for stackable buckets
+     public static final Item POWDER_SNOW_BUCKET = registerItem(
+         "powder_snow_bucket", new SolidBucketItem(Blocks.POWDER_SNOW, SoundEvents.BUCKET_EMPTY_POWDER_SNOW, new Item.Properties().stacksTo(1))
+     );
+     public static final Item SNOWBALL = registerItem("snowball", new SnowballItem(new Item.Properties().stacksTo(16)));
+     public static final Item LEATHER = registerItem("leather", new Item(new Item.Properties()));
+-    public static final Item MILK_BUCKET = registerItem("milk_bucket", new MilkBucketItem(new Item.Properties().craftRemainder(BUCKET).stacksTo(1)));
++    public static Item MILK_BUCKET = registerItem("milk_bucket", new MilkBucketItem(new Item.Properties().craftRemainder(BUCKET).stacksTo(1))); // Sakura - Add support for stackable buckets
+     public static final Item PUFFERFISH_BUCKET = registerItem(
+         "pufferfish_bucket",
+         new MobBucketItem(
