@@ -5,7 +5,7 @@ Subject: [PATCH] Cannon Mechanics
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java b/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
-index cc5ef63a99a18f093f600612bf972cf50722e3a5..c1a2345cbf3f2004fc679b1b4b1691cff288c6e4 100644
+index 32811e9d925911864e0c0fa5a2e25031098f423e..e6e38c5f2922989c8616d0cf0bd7bd32403ea863 100644
 --- a/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
 @@ -72,6 +72,7 @@ public class FallingBlockEntity extends Entity implements me.samsuik.sakura.enti
@@ -24,7 +24,7 @@ index cc5ef63a99a18f093f600612bf972cf50722e3a5..c1a2345cbf3f2004fc679b1b4b1691cf
      }
  
      public FallingBlockEntity(Level world, double x, double y, double z, BlockState block) {
-@@ -190,6 +192,13 @@ public class FallingBlockEntity extends Entity implements me.samsuik.sakura.enti
+@@ -199,6 +201,13 @@ public class FallingBlockEntity extends Entity implements me.samsuik.sakura.enti
          return !this.isRemoved();
      }
  
@@ -39,10 +39,10 @@ index cc5ef63a99a18f093f600612bf972cf50722e3a5..c1a2345cbf3f2004fc679b1b4b1691cf
      protected double getDefaultGravity() {
          return 0.04D;
 diff --git a/src/main/java/net/minecraft/world/entity/item/PrimedTnt.java b/src/main/java/net/minecraft/world/entity/item/PrimedTnt.java
-index fdbc990af4190f93f207c3309cf9f89613092c0a..ee5d0dd90ebc2eb3280c9047450f8eac5dca167c 100644
+index 7bb55565208b99db095c5842a7e21fd21700173e..93cf290b25d569820dd1bf9b4b5fb255abdbd8cd 100644
 --- a/src/main/java/net/minecraft/world/entity/item/PrimedTnt.java
 +++ b/src/main/java/net/minecraft/world/entity/item/PrimedTnt.java
-@@ -96,6 +96,12 @@ public class PrimedTnt extends Entity implements TraceableEntity, me.samsuik.sak
+@@ -102,6 +102,12 @@ public class PrimedTnt extends Entity implements TraceableEntity, me.samsuik.sak
          this.yo = y;
          this.zo = z;
          this.owner = igniter;
@@ -55,7 +55,7 @@ index fdbc990af4190f93f207c3309cf9f89613092c0a..ee5d0dd90ebc2eb3280c9047450f8eac
      }
  
      @Override
-@@ -268,7 +274,7 @@ public class PrimedTnt extends Entity implements TraceableEntity, me.samsuik.sak
+@@ -286,7 +292,7 @@ public class PrimedTnt extends Entity implements TraceableEntity, me.samsuik.sak
      // Paper start - Option to prevent TNT from moving in water
      @Override
      public boolean isPushedByFluid() {

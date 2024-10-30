@@ -5,10 +5,10 @@ Subject: [PATCH] Optimise cannon entity movement
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index a636c0331b6c963224727eaaed9c09d29ba9d2d7..ccbe81eb8df2406554c34e771b16855136db111c 100644
+index c8b33f6d5b820da4b9e16b7d251ca4aad1875aa8..fcb0df76474b641ea86eeb87755faead66397d26 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
-@@ -1166,6 +1166,93 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1249,6 +1249,75 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          return this.moveStartZ;
      }
      // Paper end - detailed watchdog information
@@ -18,31 +18,28 @@ index a636c0331b6c963224727eaaed9c09d29ba9d2d7..ccbe81eb8df2406554c34e771b168551
 +        if (this.noPhysics) {
 +            this.setPos(this.getX() + movement.x, this.getY() + movement.y, this.getZ() + movement.z);
 +        } else {
-+            if (movementType == MoverType.PISTON) {  // Paper
++            if (movementType == MoverType.PISTON) {
 +                movement = this.limitPistonMovement(movement);
 +                if (movement.equals(Vec3.ZERO)) {
 +                    return;
 +                }
 +            }
 +
-+            this.level().getProfiler().push("move");
++            ProfilerFiller gameprofilerfiller = Profiler.get();
++            gameprofilerfiller.push("move");
 +            if (this.stuckSpeedMultiplier.lengthSqr() > 1.0E-7D) {
 +                movement = movement.multiply(this.stuckSpeedMultiplier);
 +                this.stuckSpeedMultiplier = Vec3.ZERO;
 +                this.setDeltaMovement(Vec3.ZERO);
 +            }
 +
-+            // collideScan for optimised large movements
 +            Vec3 vec3d1 = this.sakura_collide(movement);
 +            double d0 = vec3d1.lengthSqr();
 +
-+            if (d0 > 1.0E-7D) {
-+                // NOTE: Every minecraft update check if there are any new blocks that make sure of fallDistance.
-+                // As of 1.21 the only block is powdered snow which returns a solid collision for falling blocks.
++            if (d0 > 1.0E-7D || movement.lengthSqr() - d0 < 1.0E-7D) {
 +                if (this.fallDistance != 0.0F && d0 >= 1.0D && !this.isFallingBlock) {
-+                    BlockHitResult movingobjectpositionblock = this.level().clip(new ClipContext(this.position(), this.position().add(vec3d1), ClipContext.Block.FALLDAMAGE_RESETTING, ClipContext.Fluid.WATER, this));
-+
-+                    if (movingobjectpositionblock.getType() != HitResult.Type.MISS) {
++                    BlockHitResult clipResult = this.level().clip(new ClipContext(this.position(), this.position().add(vec3d1), ClipContext.Block.FALLDAMAGE_RESETTING, ClipContext.Fluid.WATER, this));
++                    if (clipResult.getType() != HitResult.Type.MISS) {
 +                        this.resetFallDistance();
 +                    }
 +                }
@@ -50,59 +47,44 @@ index a636c0331b6c963224727eaaed9c09d29ba9d2d7..ccbe81eb8df2406554c34e771b168551
 +                this.setPos(this.getX() + vec3d1.x, this.getY() + vec3d1.y, this.getZ() + vec3d1.z);
 +            }
 +
-+            this.level().getProfiler().pop();
-+            this.level().getProfiler().push("rest");
-+            boolean flag = !Mth.equal(movement.x, vec3d1.x);
-+            boolean flag1 = !Mth.equal(movement.z, vec3d1.z);
++            gameprofilerfiller.pop();
++            gameprofilerfiller.push("rest");
++            boolean movedX = !Mth.equal(movement.x, vec3d1.x);
++            boolean movedZ = !Mth.equal(movement.z, vec3d1.z);
 +
-+            this.horizontalCollision = flag || flag1;
++            this.horizontalCollision = movedX || movedZ;
 +            this.verticalCollision = movement.y != vec3d1.y;
 +            this.verticalCollisionBelow = this.verticalCollision && movement.y < 0.0D;
-+            if (this.horizontalCollision) {
-+                this.minorHorizontalCollision = this.isHorizontalCollisionMinor(vec3d1);
-+            } else {
-+                this.minorHorizontalCollision = false;
-+            }
 +
-+            this.setOnGroundWithMovement(this.verticalCollisionBelow, vec3d1);
-+            BlockPos blockposition = this.getOnPosLegacy();
-+            BlockState iblockdata = this.level().getBlockState(blockposition);
++            this.setOnGroundWithMovement(this.verticalCollisionBelow, this.horizontalCollision, vec3d1);
++            BlockPos blockPosBelow = this.getOnPosLegacy();
++            BlockState blockstate = this.level().getBlockState(blockPosBelow);
 +
-+            this.checkFallDamage(vec3d1.y, this.onGround(), iblockdata, blockposition);
++            this.checkFallDamage(vec3d1.y, this.onGround(), blockstate, blockPosBelow);
 +            if (this.isRemoved()) {
-+                this.level().getProfiler().pop();
++                gameprofilerfiller.pop();
 +            } else {
 +                if (this.horizontalCollision) {
 +                    Vec3 vec3d2 = this.getDeltaMovement();
-+
-+                    this.setDeltaMovement(flag ? 0.0D : vec3d2.x, vec3d2.y, flag1 ? 0.0D : vec3d2.z);
++                    this.setDeltaMovement(movedX ? 0.0D : vec3d2.x, vec3d2.y, movedZ ? 0.0D : vec3d2.z);
 +                }
 +
-+                Block block = iblockdata.getBlock();
-+
-+                if (movement.y != vec3d1.y) {
-+                    block.updateEntityAfterFallOn(this.level(), this);
++                Block block = blockstate.getBlock();
++                if (movement.y != vec3d1.y) { // remove y momentum
++                    block.updateEntityMovementAfterFallOn(this.level(), this);
 +                }
-+
-+                if (this.onGround()) {
-+                    // used for slowing down entities on top of slime
-+                    block.stepOn(this.level(), blockposition, iblockdata, this);
-+                }
-+
-+                this.tryCheckInsideBlocks();
 +
 +                float f = this.getBlockSpeedFactor();
-+
 +                this.setDeltaMovement(this.getDeltaMovement().multiply((double) f, 1.0D, (double) f));
-+                this.level().getProfiler().pop();
++                gameprofilerfiller.pop();
 +            }
 +        }
 +    }
 +    // Sakura end -  optimise cannon entity movement; stripped back movement method
  
-     public void move(MoverType movementType, Vec3 movement) {
+     public void move(MoverType type, Vec3 movement) {
          final Vec3 originalMovement = movement; // Paper - Expose pre-collision velocity
-@@ -1510,6 +1597,104 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1610,6 +1679,107 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          return offsetFactor;
      }
  
@@ -175,10 +157,13 @@ index a636c0331b6c963224727eaaed9c09d29ba9d2d7..ccbe81eb8df2406554c34e771b168551
 +
 +    private void collectCollisions(AABB collisionBox, List<VoxelShape> voxelList, List<AABB> bbList) {
 +        // Copied from the collide method below
-+        ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.getCollisions(
++        ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.getCollisionsForBlocksOrWorldBorder(
 +            this.level, this, collisionBox, voxelList, bbList,
-+            ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.COLLISION_FLAG_CHECK_BORDER | this.getExtraCollisionFlags(), // Sakura - load chunks on movement
-+            null, null
++            ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.COLLISION_FLAG_CHECK_BORDER  | this.getExtraCollisionFlags(), null // Sakura - load chunks on movement
++        );
++
++        ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.getEntityHardCollisions(
++            this.level, this, collisionBox, bbList, 0, null
 +        );
 +    }
 +
@@ -208,28 +193,28 @@ index a636c0331b6c963224727eaaed9c09d29ba9d2d7..ccbe81eb8df2406554c34e771b168551
          // Paper start - optimise collisions
          final boolean xZero = movement.x == 0.0;
 diff --git a/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java b/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
-index 53488a1d0c56e7da4cf93c08cab01a033fb4f1f8..d1e06ef173468fa722d4b121e44ac0a9a314ee78 100644
+index f0617e9d71fa47dfc0566f31d85b8a05ba3b16fc..32811e9d925911864e0c0fa5a2e25031098f423e 100644
 --- a/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
-@@ -204,7 +204,7 @@ public class FallingBlockEntity extends Entity implements me.samsuik.sakura.enti
+@@ -213,7 +213,7 @@ public class FallingBlockEntity extends Entity implements me.samsuik.sakura.enti
  
              ++this.time;
              this.applyGravity();
 -            this.move(MoverType.SELF, this.getDeltaMovement());
 +            this.moveStripped(MoverType.SELF, this.getDeltaMovement()); // Sakura - optimise cannon entity movement
+             this.applyEffectsFromBlocks();
              // Paper start - Configurable falling blocks height nerf
              if (this.level().paperConfig().fixes.fallingBlockHeightNerf.test(v -> this.getY() > v)) {
-                 if (this.dropItem && this.level().getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
 diff --git a/src/main/java/net/minecraft/world/entity/item/PrimedTnt.java b/src/main/java/net/minecraft/world/entity/item/PrimedTnt.java
-index e64c85bf8fbd3ad0d7e8a6e4a34aed8140f4f8bc..1a2cdd2235dfa930e82151a370ddf2e60f2866fa 100644
+index 0a9e62dd90c6aba4ff97391d69f9a92d9555cae6..7bb55565208b99db095c5842a7e21fd21700173e 100644
 --- a/src/main/java/net/minecraft/world/entity/item/PrimedTnt.java
 +++ b/src/main/java/net/minecraft/world/entity/item/PrimedTnt.java
-@@ -124,7 +124,7 @@ public class PrimedTnt extends Entity implements TraceableEntity, me.samsuik.sak
+@@ -130,7 +130,7 @@ public class PrimedTnt extends Entity implements TraceableEntity, me.samsuik.sak
          if (this.level().spigotConfig.maxTntTicksPerTick > 0 && ++this.level().spigotConfig.currentPrimedTnt > this.level().spigotConfig.maxTntTicksPerTick) { return; } // Spigot
          this.handlePortal();
          this.applyGravity();
 -        this.move(MoverType.SELF, this.getDeltaMovement());
 +        this.moveStripped(MoverType.SELF, this.getDeltaMovement()); // Sakura - optimise cannon entity movement
+         this.applyEffectsFromBlocks();
          // Paper start - Configurable TNT height nerf
          if (this.level().paperConfig().fixes.tntEntityHeightNerf.test(v -> this.getY() > v)) {
-             this.discard(EntityRemoveEvent.Cause.OUT_OF_WORLD);

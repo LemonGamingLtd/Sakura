@@ -209,10 +209,10 @@ index 0000000000000000000000000000000000000000..3df11f07ce533b8b911ec423be850374
 +
 +}
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index 7c56182acaf827f4b1a986a61cea8e9960604c98..4c2e82a6421722d9a990ff4a216cedc159c7e579 100644
+index 95f0b3186e313c7fbd5c8531d52b82a69e525f94..a1d6e58d466b94d65c830a7e50b9a5eae76138aa 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
-@@ -59,6 +59,15 @@ import org.jetbrains.annotations.Nullable;
+@@ -60,6 +60,15 @@ import org.jetbrains.annotations.Nullable;
   */
  public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginMessageRecipient, net.kyori.adventure.identity.Identified, net.kyori.adventure.bossbar.BossBarViewer, com.destroystokyo.paper.network.NetworkClient { // Paper
  

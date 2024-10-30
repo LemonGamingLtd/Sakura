@@ -5,10 +5,10 @@ Subject: [PATCH] Optional Force Position Updates
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/item/PrimedTnt.java b/src/main/java/net/minecraft/world/entity/item/PrimedTnt.java
-index 28a15f612239614c6c56974da5855ce3bfd7c89e..ef245198ce6385c66f58e0dbcdebffbe6d2b625e 100644
+index 5bd189fad703ac99d57258fa448dbcc103077297..eff8a8353b513da72e18f993fd41494291bdff3a 100644
 --- a/src/main/java/net/minecraft/world/entity/item/PrimedTnt.java
 +++ b/src/main/java/net/minecraft/world/entity/item/PrimedTnt.java
-@@ -129,6 +129,14 @@ public class PrimedTnt extends Entity implements TraceableEntity {
+@@ -136,6 +136,14 @@ public class PrimedTnt extends Entity implements TraceableEntity {
              }
          }
  

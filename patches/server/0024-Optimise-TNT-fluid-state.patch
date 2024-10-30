@@ -5,10 +5,10 @@ Subject: [PATCH] Optimise TNT fluid state
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index 33027663cd43f2a56b9cf09f280a277149aad427..c1c1737bc7f57b7112567fe22a31c964cf4d10f7 100644
+index 1fa30edd2609523ede356d0ce30aa4f7b74968cc..4fe857bf47bc471eaf5c5bf40f59e117c4574798 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
-@@ -2162,7 +2162,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -2268,7 +2268,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          return this.isInWater() || flag;
      }
  
@@ -16,12 +16,12 @@ index 33027663cd43f2a56b9cf09f280a277149aad427..c1c1737bc7f57b7112567fe22a31c964
 +    protected void updateInWaterStateAndDoWaterCurrentPushing() { // Sakura
          Entity entity = this.getVehicle();
  
-         if (entity instanceof Boat entityboat) {
+         if (entity instanceof AbstractBoat abstractboat) {
 diff --git a/src/main/java/net/minecraft/world/entity/item/PrimedTnt.java b/src/main/java/net/minecraft/world/entity/item/PrimedTnt.java
-index 12983f598ffbd395b718878ac3865c0c5e5104fb..89d297bbec6034630fe0dbb84c079023611194a3 100644
+index 93cf290b25d569820dd1bf9b4b5fb255abdbd8cd..f2206e57c04d29ed470ae2083b25ab502144ccb1 100644
 --- a/src/main/java/net/minecraft/world/entity/item/PrimedTnt.java
 +++ b/src/main/java/net/minecraft/world/entity/item/PrimedTnt.java
-@@ -120,6 +120,21 @@ public class PrimedTnt extends Entity implements TraceableEntity, me.samsuik.sak
+@@ -126,6 +126,21 @@ public class PrimedTnt extends Entity implements TraceableEntity, me.samsuik.sak
          return !this.isRemoved();
      }
  

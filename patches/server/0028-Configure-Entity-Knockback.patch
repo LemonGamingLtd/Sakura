@@ -5,10 +5,10 @@ Subject: [PATCH] Configure Entity Knockback
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-index a744a01f3ef98e06af3696a58f5b1ae072dc8953..b188cc18d8bb6c37c1993bdaf39f521048d44956 100644
+index a2724a075fc2f8c8127ed87cfa35d7ae72c347e8..9c21000c7e5202504ca08e5d87bb32bc674aa76c 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-@@ -1570,7 +1570,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
+@@ -1604,7 +1604,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
                      }
                      // Paper end - Check distance in entity interactions
  
@@ -17,7 +17,7 @@ index a744a01f3ef98e06af3696a58f5b1ae072dc8953..b188cc18d8bb6c37c1993bdaf39f5210
                      if (!flag) {
                          this.indicateDamage(d0, d1);
                      }
-@@ -1636,7 +1636,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
+@@ -1674,7 +1674,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
      }
  
      protected void blockedByShield(LivingEntity target) {
@@ -26,7 +26,7 @@ index a744a01f3ef98e06af3696a58f5b1ae072dc8953..b188cc18d8bb6c37c1993bdaf39f5210
      }
  
      private boolean checkTotemDeathProtection(DamageSource source) {
-@@ -1955,7 +1955,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
+@@ -2018,7 +2018,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
      }
  
      public void knockback(double d0, double d1, double d2, @Nullable Entity attacker, io.papermc.paper.event.entity.EntityKnockbackEvent.Cause cause) { // Paper - knockback events
@@ -35,7 +35,7 @@ index a744a01f3ef98e06af3696a58f5b1ae072dc8953..b188cc18d8bb6c37c1993bdaf39f5210
          if (true || d0 > 0.0D) { // CraftBukkit - Call event even when force is 0
              //this.hasImpulse = true; // CraftBukkit - Move down
  
-@@ -1966,9 +1966,21 @@ public abstract class LivingEntity extends Entity implements Attackable {
+@@ -2029,9 +2029,21 @@ public abstract class LivingEntity extends Entity implements Attackable {
              }
  
              Vec3 vec3d1 = (new Vec3(d1, 0.0D, d2)).normalize().scale(d0);
@@ -59,7 +59,7 @@ index a744a01f3ef98e06af3696a58f5b1ae072dc8953..b188cc18d8bb6c37c1993bdaf39f5210
              io.papermc.paper.event.entity.EntityKnockbackEvent event = CraftEventFactory.callEntityKnockbackEvent((org.bukkit.craftbukkit.entity.CraftLivingEntity) this.getBukkitEntity(), attacker, attacker, cause, d0, diff);
              // Paper end - knockback events
 diff --git a/src/main/java/net/minecraft/world/entity/player/Player.java b/src/main/java/net/minecraft/world/entity/player/Player.java
-index 8b2b495f34b1ae96901ed8f2ca2d8d753b4eb2c8..4c5779112c5e7b880627ecc446a295eeeadb396e 100644
+index c3e90356ab409f408b767618db718e3926edf8d1..e50b64ba18fe8a4536b6f8aadca93064cd9f47f7 100644
 --- a/src/main/java/net/minecraft/world/entity/player/Player.java
 +++ b/src/main/java/net/minecraft/world/entity/player/Player.java
 @@ -197,6 +197,7 @@ public abstract class Player extends LivingEntity {
@@ -70,7 +70,7 @@ index 8b2b495f34b1ae96901ed8f2ca2d8d753b4eb2c8..4c5779112c5e7b880627ecc446a295ee
  
      // CraftBukkit start
      public boolean fauxSleeping;
-@@ -1304,7 +1305,7 @@ public abstract class Player extends LivingEntity {
+@@ -1261,7 +1262,7 @@ public abstract class Player extends LivingEntity {
                      boolean flag = f2 > 0.9F;
                      boolean flag1;
  
@@ -79,7 +79,7 @@ index 8b2b495f34b1ae96901ed8f2ca2d8d753b4eb2c8..4c5779112c5e7b880627ecc446a295ee
                          sendSoundEffect(this, this.getX(), this.getY(), this.getZ(), SoundEvents.PLAYER_ATTACK_KNOCKBACK, this.getSoundSource(), 1.0F, 1.0F); // Paper - send while respecting visibility
                          flag1 = true;
                      } else {
-@@ -1347,7 +1348,21 @@ public abstract class Player extends LivingEntity {
+@@ -1304,7 +1305,21 @@ public abstract class Player extends LivingEntity {
                          float f5 = this.getKnockback(target, damagesource) + (flag1 ? 1.0F : 0.0F);
  
                          if (f5 > 0.0F) {
@@ -102,7 +102,7 @@ index 8b2b495f34b1ae96901ed8f2ca2d8d753b4eb2c8..4c5779112c5e7b880627ecc446a295ee
                                  LivingEntity entityliving1 = (LivingEntity) target;
  
                                  entityliving1.knockback((double) (f5 * 0.5F), (double) Mth.sin(this.getYRot() * 0.017453292F), (double) (-Mth.cos(this.getYRot() * 0.017453292F)), this, io.papermc.paper.event.entity.EntityKnockbackEvent.Cause.ENTITY_ATTACK); // Paper - knockback events
-@@ -1380,7 +1395,7 @@ public abstract class Player extends LivingEntity {
+@@ -1337,7 +1352,7 @@ public abstract class Player extends LivingEntity {
                                          continue;
                                      }
                                      // CraftBukkit end
@@ -112,10 +112,10 @@ index 8b2b495f34b1ae96901ed8f2ca2d8d753b4eb2c8..4c5779112c5e7b880627ecc446a295ee
                                      Level world = this.level();
  
 diff --git a/src/main/java/net/minecraft/world/entity/projectile/FishingHook.java b/src/main/java/net/minecraft/world/entity/projectile/FishingHook.java
-index 1223c5d23d0ea6aed068bdf0f5725e2ad49fc82c..43a3ac5858ffb2007e6f63ec0f3bc5a9971dce14 100644
+index 4daa69c6be6d48563e30343a7e40e4da9ec7e5ad..c563f71fb79990771d032b8044b8f676d8d21058 100644
 --- a/src/main/java/net/minecraft/world/entity/projectile/FishingHook.java
 +++ b/src/main/java/net/minecraft/world/entity/projectile/FishingHook.java
-@@ -299,6 +299,12 @@ public class FishingHook extends Projectile {
+@@ -304,6 +304,12 @@ public class FishingHook extends Projectile {
              this.setHookedEntity(entityHitResult.getEntity());
          }
  

@@ -155,19 +155,19 @@ index 0f99733660f91280e4c6262cf75b3c9cae86f65a..ba9f8fe6fafc54bbdfb104de28af4b39
              return SynchedEntityData.DataValue.create(this.accessor, this.value);
          }
 diff --git a/src/main/java/net/minecraft/server/level/ServerEntity.java b/src/main/java/net/minecraft/server/level/ServerEntity.java
-index 8ea2f24695f5dad55e21f238b69442513e7a90c6..66ce58684d7a571ebcb33e62ef1d67fe3f1250e3 100644
+index 90eb4927fa51ce3df86aa7b6c71f49150a03e337..a960c7ac83cb32b2eb1f292fd9a561bae5677324 100644
 --- a/src/main/java/net/minecraft/server/level/ServerEntity.java
 +++ b/src/main/java/net/minecraft/server/level/ServerEntity.java
-@@ -152,7 +152,7 @@ public class ServerEntity {
+@@ -156,7 +156,7 @@ public class ServerEntity {
              }
          }
  
 -        if (this.forceStateResync || this.tickCount % this.updateInterval == 0 || this.entity.hasImpulse || this.entity.getEntityData().isDirty()) { // Paper - fix desync when a player is added to the tracker
 +        if (this.forceStateResync || this.tickCount % this.updateInterval == 0 || this.entity.hasImpulse || this.entity.getEntityData().isForeignDirty()) { // Slice // Paper - fix desync when a player is added to the tracker
-             int i;
-             int j;
- 
-@@ -411,7 +411,15 @@ public class ServerEntity {
+             byte b0 = Mth.packDegrees(this.entity.getYRot());
+             byte b1 = Mth.packDegrees(this.entity.getXRot());
+             boolean flag = Math.abs(b0 - this.lastSentYRot) >= 1 || Math.abs(b1 - this.lastSentXRot) >= 1;
+@@ -449,7 +449,15 @@ public class ServerEntity {
  
          if (list != null) {
              this.trackedDataValues = datawatcher.getNonDefaultValues();
@@ -185,10 +185,10 @@ index 8ea2f24695f5dad55e21f238b69442513e7a90c6..66ce58684d7a571ebcb33e62ef1d67fe
  
          if (this.entity instanceof LivingEntity) {
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index 87a117c74dcee2e58126e133b853a56a7965e55f..9c890b1bc77834799abdbb403aeeb928ed0125ec 100644
+index 4be6b57d11c48da84a58b025fddb2b6aafaec55a..2d8618541d2e673686485901ffc8e693545354a3 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
-@@ -3495,7 +3495,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -3708,7 +3708,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
              this.entityData.markDirty(Entity.DATA_AIR_SUPPLY_ID);
              return;
          }
@@ -198,10 +198,10 @@ index 87a117c74dcee2e58126e133b853a56a7965e55f..9c890b1bc77834799abdbb403aeeb928
      }
  
 diff --git a/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java b/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
-index eaafd4905229d111381c188d5373196a9f9288ab..0891d4107c9a724522a7abbb6cf61298b18e42a6 100644
+index 6127993804a8c0b342d74c62f163b8371f7c049b..35d8422ea3bcdc52db6a7f6702fd593346b30c2c 100644
 --- a/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
-@@ -115,7 +115,7 @@ public class FallingBlockEntity extends Entity {
+@@ -124,7 +124,7 @@ public class FallingBlockEntity extends Entity {
      }
  
      public void setStartPos(BlockPos pos) {
@@ -211,10 +211,10 @@ index eaafd4905229d111381c188d5373196a9f9288ab..0891d4107c9a724522a7abbb6cf61298
  
      public BlockPos getStartPos() {
 diff --git a/src/main/java/net/minecraft/world/entity/item/PrimedTnt.java b/src/main/java/net/minecraft/world/entity/item/PrimedTnt.java
-index b7c8c2335d59853dbc97d3b9496b5e3a63f0d9ab..888d018a8e73234332455b7d3700e70e1a50c5db 100644
+index 2ddfea0dd64cf6a2295583b747ab195346c24530..25a25b5c6497c9823a41e6bd8fd22f0841377c62 100644
 --- a/src/main/java/net/minecraft/world/entity/item/PrimedTnt.java
 +++ b/src/main/java/net/minecraft/world/entity/item/PrimedTnt.java
-@@ -203,7 +203,7 @@ public class PrimedTnt extends Entity implements TraceableEntity {
+@@ -217,7 +217,7 @@ public class PrimedTnt extends Entity implements TraceableEntity {
      }
  
      public void setFuse(int fuse) {
@@ -224,10 +224,10 @@ index b7c8c2335d59853dbc97d3b9496b5e3a63f0d9ab..888d018a8e73234332455b7d3700e70e
  
      public int getFuse() {
 diff --git a/src/main/java/net/minecraft/world/entity/player/Player.java b/src/main/java/net/minecraft/world/entity/player/Player.java
-index 09bcbc0ae36e4e69fee87a7e0c49acf496117a39..8b2b495f34b1ae96901ed8f2ca2d8d753b4eb2c8 100644
+index 61d412c4f1ebd55661cc3f0260468e3ac0efe0bb..c3e90356ab409f408b767618db718e3926edf8d1 100644
 --- a/src/main/java/net/minecraft/world/entity/player/Player.java
 +++ b/src/main/java/net/minecraft/world/entity/player/Player.java
-@@ -650,7 +650,7 @@ public abstract class Player extends LivingEntity {
+@@ -676,7 +676,7 @@ public abstract class Player extends LivingEntity {
      public void increaseScore(int score) {
          int j = this.getScore();
  

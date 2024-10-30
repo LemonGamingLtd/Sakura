@@ -5,15 +5,15 @@ Subject: [PATCH] Despawn falling blocks inside moving pistons
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java b/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
-index c1a2345cbf3f2004fc679b1b4b1691cff288c6e4..e7c6074a83be4d93367c7465b74d79b4c00d1afd 100644
+index e6e38c5f2922989c8616d0cf0bd7bd32403ea863..2f719d88d292fdf8e9fe51e3445b49e2ecc71e29 100644
 --- a/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
-@@ -240,7 +240,7 @@ public class FallingBlockEntity extends Entity implements me.samsuik.sakura.enti
+@@ -255,7 +255,7 @@ public class FallingBlockEntity extends Entity implements me.samsuik.sakura.enti
+                         }
                      }
-                 }
  
--                if (!this.onGround() && !flag1) {
-+                if (!this.onGround() && !flag1 || level().sakuraConfig().cannons.sand.despawnInsideMovingPistons && autoExpire && this.time > 600) { // Sakura - allow falling blocks to despawn inside moving pistons
-                     if (!this.level().isClientSide && ((this.time > 100 && autoExpire) && (blockposition.getY() <= this.level().getMinBuildHeight() || blockposition.getY() > this.level().getMaxBuildHeight()) || (this.time > 600 && autoExpire))) { // Paper - Expand FallingBlock API
-                         if (this.dropItem && this.level().getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
-                             this.spawnAtLocation((ItemLike) block);
+-                    if (!this.onGround() && !flag1) {
++                    if (!this.onGround() && !flag1 || this.level().sakuraConfig().cannons.sand.despawnInsideMovingPistons && autoExpire && this.time > 600) { // Sakura - allow falling blocks to despawn inside moving pistons
+                         if ((this.time > 100 && autoExpire) && (blockposition.getY() <= this.level().getMinY() || blockposition.getY() > this.level().getMaxY()) || (this.time > 600 && autoExpire)) { // Paper - Expand FallingBlock API
+                             if (this.dropItem && worldserver.getGameRules().getBoolean(GameRules.RULE_DOENTITYDROPS)) {
+                                 this.spawnAtLocation(worldserver, (ItemLike) block);

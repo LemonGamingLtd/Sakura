@@ -27,9 +27,18 @@ index 87e5f614ba988547a827486740db217e28585773..0375c9eb296ba7e8ed64e8d00dbc13a5
          } else {
              this.verifyWorldConfigVersion(contextMap, worldNode);
 diff --git a/src/main/java/io/papermc/paper/configuration/PaperConfigurations.java b/src/main/java/io/papermc/paper/configuration/PaperConfigurations.java
-index 1029b6de6f36b08bf634b4056ef5701383f6f258..f8c4b602756eeb2f3daab910e1d75bbb962880d2 100644
+index 1029b6de6f36b08bf634b4056ef5701383f6f258..4b4087c316460c8ae262b62746430f521a9cc1a2 100644
 --- a/src/main/java/io/papermc/paper/configuration/PaperConfigurations.java
 +++ b/src/main/java/io/papermc/paper/configuration/PaperConfigurations.java
+@@ -165,7 +165,7 @@ public class PaperConfigurations extends Configurations<GlobalConfiguration, Wor
+             .defaultOptions(PaperConfigurations::defaultOptions);
+     }
+ 
+-    private static ConfigurationOptions defaultOptions(ConfigurationOptions options) {
++    public static ConfigurationOptions defaultOptions(ConfigurationOptions options) { // Sakura - sakura configuration files
+         return options.serializers(builder -> builder
+             .register(MapSerializer.TYPE, new MapSerializer(false))
+             .register(new EnumValueSerializer())
 @@ -459,7 +459,7 @@ public class PaperConfigurations extends Configurations<GlobalConfiguration, Wor
      }
  
@@ -251,7 +260,7 @@ index 0000000000000000000000000000000000000000..c41f188fdaf510a127771b1782e95705
 +}
 diff --git a/src/main/java/me/samsuik/sakura/configuration/GlobalConfiguration.java b/src/main/java/me/samsuik/sakura/configuration/GlobalConfiguration.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..ab790630fe4a95ac0e7139e5d41fd8df3393e738
+index 0000000000000000000000000000000000000000..1b49023726fc80231ba952c555923228130a2bdb
 --- /dev/null
 +++ b/src/main/java/me/samsuik/sakura/configuration/GlobalConfiguration.java
 @@ -0,0 +1,62 @@
@@ -267,7 +276,7 @@ index 0000000000000000000000000000000000000000..ab790630fe4a95ac0e7139e5d41fd8df
 +import org.spongepowered.configurate.objectmapping.meta.Setting;
 +
 +@SuppressWarnings({"CanBeFinal", "FieldCanBeLocal", "FieldMayBeFinal", "NotNullFieldNotInitialized", "InnerClassMayBeStatic", "RedundantSuppression"})
-+public class GlobalConfiguration extends ConfigurationPart {
++public final class GlobalConfiguration extends ConfigurationPart {
 +
 +    private static final Logger LOGGER = LogUtils.getClassLogger();
 +    static final int CURRENT_VERSION = 3;// (when you change the version, change the comment, so it conflicts on rebases): rename filter bad nbt from spawn eggs
@@ -319,10 +328,10 @@ index 0000000000000000000000000000000000000000..ab790630fe4a95ac0e7139e5d41fd8df
 +}
 diff --git a/src/main/java/me/samsuik/sakura/configuration/SakuraConfigurations.java b/src/main/java/me/samsuik/sakura/configuration/SakuraConfigurations.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..94dd734ca4049354f925af1736bda57cd9be43dd
+index 0000000000000000000000000000000000000000..9460afc669594ddb53b097ae105abb29da3a7e10
 --- /dev/null
 +++ b/src/main/java/me/samsuik/sakura/configuration/SakuraConfigurations.java
-@@ -0,0 +1,270 @@
+@@ -0,0 +1,241 @@
 +package me.samsuik.sakura.configuration;
 +
 +import com.google.common.collect.Table;
@@ -346,6 +355,7 @@ index 0000000000000000000000000000000000000000..94dd734ca4049354f925af1736bda57c
 +import it.unimi.dsi.fastutil.objects.Reference2IntOpenHashMap;
 +import it.unimi.dsi.fastutil.objects.Reference2LongMap;
 +import it.unimi.dsi.fastutil.objects.Reference2LongOpenHashMap;
++import me.samsuik.sakura.configuration.transformation.ConfigurationTransformations;
 +import me.samsuik.sakura.configuration.transformation.global.V1_RelocateMessages;
 +import me.samsuik.sakura.configuration.transformation.global.V2_ConvertIconToMaterial;
 +import me.samsuik.sakura.configuration.transformation.world.*;
@@ -359,6 +369,7 @@ index 0000000000000000000000000000000000000000..94dd734ca4049354f925af1736bda57c
 +import net.minecraft.world.level.block.Block;
 +import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 +import org.checkerframework.checker.nullness.qual.Nullable;
++import org.jspecify.annotations.NullMarked;
 +import org.slf4j.Logger;
 +import org.spongepowered.configurate.ConfigurateException;
 +import org.spongepowered.configurate.ConfigurationNode;
@@ -378,8 +389,9 @@ index 0000000000000000000000000000000000000000..94dd734ca4049354f925af1736bda57c
 +
 +import static io.leangen.geantyref.GenericTypeReflector.erase;
 +
++@NullMarked
 +@SuppressWarnings("Convert2Diamond")
-+public class SakuraConfigurations extends Configurations<GlobalConfiguration, WorldConfiguration> {
++public final class SakuraConfigurations extends Configurations<GlobalConfiguration, WorldConfiguration> {
 +
 +    private static final Logger LOGGER = LogUtils.getClassLogger();
 +    static final String GLOBAL_CONFIG_FILE_NAME = "sakura-global.yml";
@@ -421,15 +433,7 @@ index 0000000000000000000000000000000000000000..94dd734ca4049354f925af1736bda57c
 +    @Override
 +    protected YamlConfigurationLoader.Builder createLoaderBuilder() {
 +        return super.createLoaderBuilder()
-+            .defaultOptions(SakuraConfigurations::defaultOptions);
-+    }
-+
-+    private static ConfigurationOptions defaultOptions(ConfigurationOptions options) {
-+        return options.serializers(builder -> builder
-+            .register(MapSerializer.TYPE, new MapSerializer(false))
-+            .register(new EnumValueSerializer())
-+            .register(new ComponentSerializer())
-+        );
++            .defaultOptions(PaperConfigurations::defaultOptions);
 +    }
 +
 +    @Override
@@ -452,7 +456,6 @@ index 0000000000000000000000000000000000000000..94dd734ca4049354f925af1736bda57c
 +            .header(GLOBAL_HEADER)
 +            .serializers(builder -> builder
 +                .register(new PacketClassSerializer())
-+                .register(IntOr.Default.SERIALIZER)
 +            );
 +    }
 +
@@ -478,9 +481,7 @@ index 0000000000000000000000000000000000000000..94dd734ca4049354f925af1736bda57c
 +    }
 +
 +    private static WorldConfiguration createWorldConfigInstance(ContextMap contextMap) {
-+        return new WorldConfiguration(
-+            contextMap.require(Configurations.WORLD_KEY)
-+        );
++        return new WorldConfiguration(contextMap.require(Configurations.WORLD_KEY));
 +    }
 +
 +    @Override
@@ -494,13 +495,6 @@ index 0000000000000000000000000000000000000000..94dd734ca4049354f925af1736bda57c
 +                    .register(new TypeToken<Reference2LongMap<?>>() {}, new FastutilMapSerializer.SomethingToPrimitive<Reference2LongMap<?>>(Reference2LongOpenHashMap::new, Long.TYPE))
 +                    .register(new TypeToken<Table<?, ?, ?>>() {}, new TableSerializer())
 +                    .register(StringRepresentableSerializer::isValidFor, new StringRepresentableSerializer())
-+                    .register(IntOr.Default.SERIALIZER)
-+                    .register(IntOr.Disabled.SERIALIZER)
-+                    .register(DoubleOr.Default.SERIALIZER)
-+                    .register(BooleanOrDefault.SERIALIZER)
-+                    .register(Duration.SERIALIZER)
-+                    .register(DurationOrDisabled.SERIALIZER)
-+                    .register(NbtPathSerializer.SERIALIZER)
 +                    .register(new RegistryValueSerializer<>(new TypeToken<EntityType<?>>() {}, access, Registries.ENTITY_TYPE, true))
 +                    .register(new RegistryValueSerializer<>(Item.class, access, Registries.ITEM, true))
 +                    .register(new RegistryValueSerializer<>(Block.class, access, Registries.BLOCK, true))
@@ -511,26 +505,12 @@ index 0000000000000000000000000000000000000000..94dd734ca4049354f925af1736bda57c
 +
 +    @Override
 +    protected void applyWorldConfigTransformations(final ContextMap contextMap, final ConfigurationNode node, final @Nullable ConfigurationNode defaultsNode) throws ConfigurateException {
-+        final ConfigurationTransformation.VersionedBuilder versionedBuilder = Transformations.versionedBuilder();
-+        V2_VerticalKnockbackUseDefault.apply(versionedBuilder);
-+        V3_RenameKnockback.apply(versionedBuilder);
-+        V4_RenameNonStrictMergeLevel.apply(versionedBuilder);
-+        V5_CombineLoadChunksOptions.apply(versionedBuilder);
-+        V6_FixIncorrectExtraKnockback.apply(versionedBuilder);
-+        // ADD FUTURE VERSIONED TRANSFORMS TO versionedBuilder HERE
-+        versionedBuilder.build().apply(node);
++        ConfigurationTransformations.worldTransformations(node);
 +    }
 +
 +    @Override
 +    protected void applyGlobalConfigTransformations(final ConfigurationNode node) throws ConfigurateException {
-+        final ConfigurationTransformation.Builder builder = ConfigurationTransformation.builder();
-+        builder.addAction(NodePath.path("cannons"), TransformAction.remove());
-+        builder.build().apply(node);
-+
-+        final ConfigurationTransformation.VersionedBuilder versionedBuilder = Transformations.versionedBuilder();
-+        V1_RelocateMessages.apply(versionedBuilder);
-+        V2_ConvertIconToMaterial.apply(versionedBuilder);
-+        versionedBuilder.build().apply(node);
++        ConfigurationTransformations.globalTransformations(node);
 +    }
 +
 +    @Override
@@ -566,7 +546,7 @@ index 0000000000000000000000000000000000000000..94dd734ca4049354f925af1736bda57c
 +                this.createWorldConfig(createWorldContextMap(level), reloader(this.worldConfigClass, level.sakuraConfig()));
 +            }
 +        } catch (Exception ex) {
-+            throw new RuntimeException("Could not reload paper configuration files", ex);
++            throw new RuntimeException("Could not reload sakura configuration files", ex);
 +        }
 +    }
 +
@@ -595,7 +575,7 @@ index 0000000000000000000000000000000000000000..94dd734ca4049354f925af1736bda57c
 +}
 diff --git a/src/main/java/me/samsuik/sakura/configuration/WorldConfiguration.java b/src/main/java/me/samsuik/sakura/configuration/WorldConfiguration.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..7c579c28294452e107aa32eae3d07fde49087436
+index 0000000000000000000000000000000000000000..3ccd52a58996b60ec860fb50a509b92739f45b28
 --- /dev/null
 +++ b/src/main/java/me/samsuik/sakura/configuration/WorldConfiguration.java
 @@ -0,0 +1,236 @@
@@ -627,7 +607,7 @@ index 0000000000000000000000000000000000000000..7c579c28294452e107aa32eae3d07fde
 +import java.util.Map;
 +
 +@SuppressWarnings({"FieldCanBeLocal", "FieldMayBeFinal", "NotNullFieldNotInitialized", "InnerClassMayBeStatic", "RedundantSuppression"})
-+public class WorldConfiguration extends ConfigurationPart {
++public final class WorldConfiguration extends ConfigurationPart {
 +
 +    private static final Logger LOGGER = LogUtils.getClassLogger();
 +    static final int CURRENT_VERSION = 6; // (when you change the version, change the comment, so it conflicts on rebases): rename filter bad nbt from spawn eggs
@@ -683,7 +663,7 @@ index 0000000000000000000000000000000000000000..7c579c28294452e107aa32eae3d07fde
 +
 +            public boolean isFallingBlockInBounds(FallingBlockEntity entity) {
 +                return (!this.preventAgainstBorder || !ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.isCollidingWithBorder(entity.level().getWorldBorder(), entity.getBoundingBox().inflate(0.01)))
-+                    && (!this.preventAtWorldHeight || entity.blockPosition().getY() < entity.level().getMaxBuildHeight() - 1);
++                    && (!this.preventAtWorldHeight || entity.blockPosition().getY() < entity.level().getMaxY() - 1);
 +            }
 +        }
 +
@@ -834,6 +814,58 @@ index 0000000000000000000000000000000000000000..7c579c28294452e107aa32eae3d07fde
 +        }
 +    }
 +
++}
+diff --git a/src/main/java/me/samsuik/sakura/configuration/transformation/ConfigurationTransformations.java b/src/main/java/me/samsuik/sakura/configuration/transformation/ConfigurationTransformations.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..154ab96b537efc3505cd85935150ddbe7ca1126f
+--- /dev/null
++++ b/src/main/java/me/samsuik/sakura/configuration/transformation/ConfigurationTransformations.java
+@@ -0,0 +1,46 @@
++package me.samsuik.sakura.configuration.transformation;
++
++import io.papermc.paper.configuration.transformation.Transformations;
++import me.samsuik.sakura.configuration.transformation.global.V1_RelocateMessages;
++import me.samsuik.sakura.configuration.transformation.global.V2_ConvertIconToMaterial;
++import me.samsuik.sakura.configuration.transformation.world.*;
++import org.spongepowered.configurate.ConfigurateException;
++import org.spongepowered.configurate.ConfigurationNode;
++import org.spongepowered.configurate.NodePath;
++import org.spongepowered.configurate.transformation.ConfigurationTransformation;
++import org.spongepowered.configurate.transformation.TransformAction;
++
++import java.util.List;
++
++public final class ConfigurationTransformations {
++    private static final List<NodePath> REMOVED_GLOBAL_PATHS = List.of(
++        NodePath.path("cannons")
++    );
++
++    public static void worldTransformations(final ConfigurationNode node) throws ConfigurateException {
++        final ConfigurationTransformation.VersionedBuilder versionedBuilder = Transformations.versionedBuilder();
++        V2_VerticalKnockbackUseDefault.apply(versionedBuilder);
++        V3_RenameKnockback.apply(versionedBuilder);
++        V4_RenameNonStrictMergeLevel.apply(versionedBuilder);
++        V5_CombineLoadChunksOptions.apply(versionedBuilder);
++        V6_FixIncorrectExtraKnockback.apply(versionedBuilder);
++        // ADD FUTURE VERSIONED TRANSFORMS TO versionedBuilder HERE
++        versionedBuilder.build().apply(node);
++    }
++
++    public static void globalTransformations(final ConfigurationNode node) throws ConfigurateException {
++        final ConfigurationTransformation.Builder builder = ConfigurationTransformation.builder();
++        for (final NodePath path : REMOVED_GLOBAL_PATHS) {
++            builder.addAction(path, TransformAction.remove());
++        }
++        builder.build().apply(node);
++
++        final ConfigurationTransformation.VersionedBuilder versionedBuilder = Transformations.versionedBuilder();
++        V1_RelocateMessages.apply(versionedBuilder);
++        V2_ConvertIconToMaterial.apply(versionedBuilder);
++        // ADD FUTURE VERSIONED TRANSFORMS TO versionedBuilder HERE
++        versionedBuilder.build().apply(node);
++    }
++
++    private ConfigurationTransformations() {}
 +}
 diff --git a/src/main/java/me/samsuik/sakura/configuration/transformation/global/V1_RelocateMessages.java b/src/main/java/me/samsuik/sakura/configuration/transformation/global/V1_RelocateMessages.java
 new file mode 100644
@@ -1117,10 +1149,10 @@ index 0000000000000000000000000000000000000000..4024f9738e039ffffd560a07a2210f75
 +public record DurableMaterial(int durability, float resistance) {
 +}
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 696d075ca2883f3c37e35f983c4d020e5db89d16..f7a636990d581ad0230317a716d2662ea25480e3 100644
+index 7933d6900dac67a24fb5f9378097dbde34be30b1..3a47504876cf718935786d7b858cb6d53bd61ddb 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -317,6 +317,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -327,6 +327,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
      public final double[] recentTps = new double[ 3 ];
      // Spigot end
      public final io.papermc.paper.configuration.PaperConfigurations paperConfigurations; // Paper - add paper configuration files
@@ -1128,7 +1160,7 @@ index 696d075ca2883f3c37e35f983c4d020e5db89d16..f7a636990d581ad0230317a716d2662e
      public boolean isIteratingOverLevels = false; // Paper - Throw exception on world create while being ticked
  
      public volatile Thread shutdownThread; // Paper
-@@ -496,6 +497,10 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -511,6 +512,10 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          Runtime.getRuntime().addShutdownHook(new org.bukkit.craftbukkit.util.ServerShutdownThread(this));
          // CraftBukkit end
          this.paperConfigurations = services.paperConfigurations(); // Paper - add paper configuration files
@@ -1140,10 +1172,10 @@ index 696d075ca2883f3c37e35f983c4d020e5db89d16..f7a636990d581ad0230317a716d2662e
  
      private void readScoreboard(DimensionDataStorage persistentStateManager) {
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index dd56c8e041116ef3602a9f89c998c8208ab89b51..6cc0386531bea4ed11d9461c6810d7d119b37bf6 100644
+index 17a158ff6ce6520b69a5a0032ba4c05449dd0cf8..282a0f91e41a0dcdeb48111a64a83b480efb2acd 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -239,6 +239,11 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+@@ -236,6 +236,11 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
          this.server.spark.registerCommandBeforePlugins(this.server); // Paper - spark
          com.destroystokyo.paper.Metrics.PaperMetrics.startMetrics(); // Paper - start metrics
          com.destroystokyo.paper.VersionHistoryManager.INSTANCE.getClass(); // Paper - load version history now
@@ -1156,23 +1188,23 @@ index dd56c8e041116ef3602a9f89c998c8208ab89b51..6cc0386531bea4ed11d9461c6810d7d1
          this.setPvpAllowed(dedicatedserverproperties.pvp);
          this.setFlightAllowed(dedicatedserverproperties.allowFlight);
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index f9abf63e12ea930275121b470e4e4906cff0fc12..1a0819301e0ce05c60b6cb961202a5c60697f6c1 100644
+index 5964d601c05176f48167cc92057a59e52a4da92b..32742470eea2ec86c0fff02aa157bfcc89530ad3 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
-@@ -503,7 +503,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ca.spottedleaf.
-         // Holder holder = worlddimension.type(); // CraftBukkit - decompile error
+@@ -590,7 +590,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
  
-         // Objects.requireNonNull(minecraftserver); // CraftBukkit - decompile error
--        super(iworlddataserver, resourcekey, minecraftserver.registryAccess(), worlddimension.type(), minecraftserver::getProfiler, false, flag, i, minecraftserver.getMaxChainedNeighborUpdates(), gen, biomeProvider, env, spigotConfig -> minecraftserver.paperConfigurations.createWorldConfig(io.papermc.paper.configuration.PaperConfigurations.createWorldContextMap(convertable_conversionsession.levelDirectory.path(), iworlddataserver.getLevelName(), resourcekey.location(), spigotConfig, minecraftserver.registryAccess(), iworlddataserver.getGameRules())), executor); // Paper - create paper world configs; Async-Anti-Xray: Pass executor
-+        super(iworlddataserver, resourcekey, minecraftserver.registryAccess(), worlddimension.type(), minecraftserver::getProfiler, false, flag, i, minecraftserver.getMaxChainedNeighborUpdates(), gen, biomeProvider, env, spigotConfig -> minecraftserver.paperConfigurations.createWorldConfig(io.papermc.paper.configuration.PaperConfigurations.createWorldContextMap(convertable_conversionsession.levelDirectory.path(), iworlddataserver.getLevelName(), resourcekey.location(), spigotConfig, minecraftserver.registryAccess(), iworlddataserver.getGameRules())), () -> minecraftserver.sakuraConfigurations.createWorldConfig(me.samsuik.sakura.configuration.SakuraConfigurations.createWorldContextMap(convertable_conversionsession.levelDirectory.path(), iworlddataserver.getLevelName(), resourcekey.location(), minecraftserver.registryAccess())), executor); // Sakura - sakura configuration files // Paper - create paper world configs; Async-Anti-Xray: Pass executor
+     // Add env and gen to constructor, IWorldDataServer -> WorldDataServer
+     public ServerLevel(MinecraftServer minecraftserver, Executor executor, LevelStorageSource.LevelStorageAccess convertable_conversionsession, PrimaryLevelData iworlddataserver, ResourceKey<Level> resourcekey, LevelStem worlddimension, ChunkProgressListener worldloadlistener, boolean flag, long i, List<CustomSpawner> list, boolean flag1, @Nullable RandomSequences randomsequences, org.bukkit.World.Environment env, org.bukkit.generator.ChunkGenerator gen, org.bukkit.generator.BiomeProvider biomeProvider) {
+-        super(iworlddataserver, resourcekey, minecraftserver.registryAccess(), worlddimension.type(), false, flag, i, minecraftserver.getMaxChainedNeighborUpdates(), gen, biomeProvider, env, spigotConfig -> minecraftserver.paperConfigurations.createWorldConfig(io.papermc.paper.configuration.PaperConfigurations.createWorldContextMap(convertable_conversionsession.levelDirectory.path(), iworlddataserver.getLevelName(), resourcekey.location(), spigotConfig, minecraftserver.registryAccess(), iworlddataserver.getGameRules())), executor); // Paper - create paper world configs; Async-Anti-Xray: Pass executor
++        super(iworlddataserver, resourcekey, minecraftserver.registryAccess(), worlddimension.type(), false, flag, i, minecraftserver.getMaxChainedNeighborUpdates(), gen, biomeProvider, env, spigotConfig -> minecraftserver.paperConfigurations.createWorldConfig(io.papermc.paper.configuration.PaperConfigurations.createWorldContextMap(convertable_conversionsession.levelDirectory.path(), iworlddataserver.getLevelName(), resourcekey.location(), spigotConfig, minecraftserver.registryAccess(), iworlddataserver.getGameRules())), () -> minecraftserver.sakuraConfigurations.createWorldConfig(me.samsuik.sakura.configuration.SakuraConfigurations.createWorldContextMap(convertable_conversionsession.levelDirectory.path(), iworlddataserver.getLevelName(), resourcekey.location(), minecraftserver.registryAccess())), executor); // Sakura - sakura configuration files // Paper - create paper world configs; Async-Anti-Xray: Pass executor
          this.pvpMode = minecraftserver.isPvpAllowed();
          this.convertable = convertable_conversionsession;
          this.uuid = WorldUUID.getUUID(convertable_conversionsession.levelDirectory.path().toFile());
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index 507671476c3d2d92a2fdb05be24443af27d26dcf..48c2d026fd678f7990738a0037780a535f1ac19b 100644
+index 022de445bbbb869c38be4972c98dcf1c665539ec..d95292d388efa4c504440347f1e5dfc2b87b8afe 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
-@@ -171,6 +171,12 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+@@ -172,6 +172,12 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
          return this.paperConfig;
      }
      // Paper end - add paper world config
@@ -1184,13 +1216,18 @@ index 507671476c3d2d92a2fdb05be24443af27d26dcf..48c2d026fd678f7990738a0037780a53
 +    // Sakura end - sakura configuration files
  
      public final com.destroystokyo.paper.antixray.ChunkPacketBlockController chunkPacketBlockController; // Paper - Anti-Xray
-     public final co.aikar.timings.WorldTimingsHandler timings; // Paper
-@@ -684,9 +690,10 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+     public static BlockPos lastPhysicsProblem; // Spigot
+@@ -830,7 +836,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
      }
      // Paper end - optimise random ticking
  
--    protected Level(WritableLevelData worlddatamutable, ResourceKey<Level> resourcekey, RegistryAccess iregistrycustom, Holder<DimensionType> holder, Supplier<ProfilerFiller> supplier, boolean flag, boolean flag1, long i, int j, org.bukkit.generator.ChunkGenerator gen, org.bukkit.generator.BiomeProvider biomeProvider, org.bukkit.World.Environment env, java.util.function.Function<org.spigotmc.SpigotWorldConfig, io.papermc.paper.configuration.WorldConfiguration> paperWorldConfigCreator, java.util.concurrent.Executor executor) { // Paper - create paper world config & Anti-Xray
-+    protected Level(WritableLevelData worlddatamutable, ResourceKey<Level> resourcekey, RegistryAccess iregistrycustom, Holder<DimensionType> holder, Supplier<ProfilerFiller> supplier, boolean flag, boolean flag1, long i, int j, org.bukkit.generator.ChunkGenerator gen, org.bukkit.generator.BiomeProvider biomeProvider, org.bukkit.World.Environment env, java.util.function.Function<org.spigotmc.SpigotWorldConfig, io.papermc.paper.configuration.WorldConfiguration> paperWorldConfigCreator, Supplier<me.samsuik.sakura.configuration.WorldConfiguration> sakuraWorldConfigCreator, java.util.concurrent.Executor executor) { // Sakura - sakura configuration files// Paper - create paper world config & Anti-Xray
+-    protected Level(WritableLevelData worlddatamutable, ResourceKey<Level> resourcekey, RegistryAccess iregistrycustom, Holder<DimensionType> holder, boolean flag, boolean flag1, long i, int j, org.bukkit.generator.ChunkGenerator gen, org.bukkit.generator.BiomeProvider biomeProvider, org.bukkit.World.Environment env, java.util.function.Function<org.spigotmc.SpigotWorldConfig, io.papermc.paper.configuration.WorldConfiguration> paperWorldConfigCreator, java.util.concurrent.Executor executor) { // Paper - create paper world config & Anti-Xray
++    protected Level(WritableLevelData worlddatamutable, ResourceKey<Level> resourcekey, RegistryAccess iregistrycustom, Holder<DimensionType> holder, boolean flag, boolean flag1, long i, int j, org.bukkit.generator.ChunkGenerator gen, org.bukkit.generator.BiomeProvider biomeProvider, org.bukkit.World.Environment env, java.util.function.Function<org.spigotmc.SpigotWorldConfig, io.papermc.paper.configuration.WorldConfiguration> paperWorldConfigCreator, java.util.function.Supplier<me.samsuik.sakura.configuration.WorldConfiguration> sakuraWorldConfigCreator, java.util.concurrent.Executor executor) { // Sakura - sakura configuration files // Paper - create paper world config & Anti-Xray
+         // Paper start - getblock optimisations - cache world height/sections
+         final DimensionType dimType = holder.value();
+         this.minY = dimType.minY();
+@@ -842,6 +848,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+         // Paper end - getblock optimisations - cache world height/sections
          this.spigotConfig = new org.spigotmc.SpigotWorldConfig(((net.minecraft.world.level.storage.PrimaryLevelData) worlddatamutable).getLevelName()); // Spigot
          this.paperConfig = paperWorldConfigCreator.apply(this.spigotConfig); // Paper - create paper world config
 +        this.sakuraConfig = sakuraWorldConfigCreator.get(); // Sakura - sakura configuration files
@@ -1198,18 +1235,18 @@ index 507671476c3d2d92a2fdb05be24443af27d26dcf..48c2d026fd678f7990738a0037780a53
          this.world = new CraftWorld((ServerLevel) this, gen, biomeProvider, env);
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index c7df339aeb62ee627edaf1bb4c8474b61e357ba6..b8ea9773efb2c701eeed3c56df9965d6a99320b4 100644
+index 9f9eefc7346838a9effcda861cecd098092efb0f..2205444180ae615b50a3cbae6bf5fa31504aeff0 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -1072,6 +1072,7 @@ public final class CraftServer implements Server {
+@@ -1074,6 +1074,7 @@ public final class CraftServer implements Server {
  
          org.spigotmc.SpigotConfig.init((File) this.console.options.valueOf("spigot-settings")); // Spigot
          this.console.paperConfigurations.reloadConfigs(this.console);
-+        this.console.sakuraConfigurations.reloadConfigs(this.console); // Sakura - missing comment above :<
++        this.console.sakuraConfigurations.reloadConfigs(this.console); // Sakura - sakura configuration files; missing comment above :<
          for (ServerLevel world : this.console.getAllLevels()) {
              // world.serverLevelData.setDifficulty(config.difficulty); // Paper - per level difficulty
-             world.setSpawnSettings(world.serverLevelData.getDifficulty() != Difficulty.PEACEFUL && config.spawnMonsters, config.spawnAnimals); // Paper - per level difficulty (from MinecraftServer#setDifficulty(ServerLevel, Difficulty, boolean))
-@@ -1103,6 +1104,7 @@ public final class CraftServer implements Server {
+             world.setSpawnSettings(world.serverLevelData.getDifficulty() != Difficulty.PEACEFUL && config.spawnMonsters); // Paper - per level difficulty (from MinecraftServer#setDifficulty(ServerLevel, Difficulty, boolean))
+@@ -1105,6 +1106,7 @@ public final class CraftServer implements Server {
          this.reloadData();
          org.spigotmc.SpigotConfig.registerCommands(); // Spigot
          io.papermc.paper.command.PaperCommands.registerCommands(this.console); // Paper
@@ -1218,7 +1255,7 @@ index c7df339aeb62ee627edaf1bb4c8474b61e357ba6..b8ea9773efb2c701eeed3c56df9965d6
          this.overrideAllCommandBlockCommands = this.commandsConfiguration.getStringList("command-block-overrides").contains("*");
          this.ignoreVanillaPermissions = this.commandsConfiguration.getBoolean("ignore-vanilla-permissions");
 diff --git a/src/main/java/org/bukkit/craftbukkit/Main.java b/src/main/java/org/bukkit/craftbukkit/Main.java
-index b3ba6bccdbb08af27916f0c611c60b2595b90164..b73c0be9ca17f6f490ddd2a4dc9f9ac8418088b2 100644
+index a7524d3853d5b67b6385d2b74832b9267503dfe6..cab99463b969b6414d506c73c71e7e81f39c5541 100644
 --- a/src/main/java/org/bukkit/craftbukkit/Main.java
 +++ b/src/main/java/org/bukkit/craftbukkit/Main.java
 @@ -176,6 +176,14 @@ public class Main {

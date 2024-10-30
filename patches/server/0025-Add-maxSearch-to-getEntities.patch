@@ -5,10 +5,10 @@ Subject: [PATCH] Add maxSearch to getEntities
 
 
 diff --git a/src/main/java/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java b/src/main/java/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java
-index f3832bf2064117ef2fe804ae3fd679b1f2b0343b..9051dc762e48191fd56d26e0d0499ef12b10a240 100644
+index 88b1a9b4b3da23b8e500ec343915e66e9b4f19b6..932d26a8c01414144aa56cdf9f6f63d07aff52d5 100644
 --- a/src/main/java/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java
 +++ b/src/main/java/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java
-@@ -336,10 +336,16 @@ public final class ChunkEntitySlices {
+@@ -315,10 +315,16 @@ public final class ChunkEntitySlices {
          this.allEntities.getEntities(except, box, into, predicate);
      }
  
@@ -27,7 +27,7 @@ index f3832bf2064117ef2fe804ae3fd679b1f2b0343b..9051dc762e48191fd56d26e0d0499ef1
      }
  
      public boolean getEntitiesWithoutDragonParts(final Entity except, final AABB box, final List<Entity> into, final Predicate<? super Entity> predicate,
-@@ -693,8 +699,16 @@ public final class ChunkEntitySlices {
+@@ -672,8 +678,16 @@ public final class ChunkEntitySlices {
              }
          }
  
@@ -44,7 +44,7 @@ index f3832bf2064117ef2fe804ae3fd679b1f2b0343b..9051dc762e48191fd56d26e0d0499ef1
              if (this.count == 0) {
                  return false;
              }
-@@ -716,8 +730,14 @@ public final class ChunkEntitySlices {
+@@ -695,8 +709,14 @@ public final class ChunkEntitySlices {
  
                  final Entity[] storage = list.storage;
  
@@ -62,7 +62,7 @@ index f3832bf2064117ef2fe804ae3fd679b1f2b0343b..9051dc762e48191fd56d26e0d0499ef1
                      if (entity == null || entity == except || !entity.getBoundingBox().intersects(box)) {
                          continue;
 diff --git a/src/main/java/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/EntityLookup.java b/src/main/java/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/EntityLookup.java
-index efc0c1acc8239dd7b00211a1d3bfd3fc3b2c810c..0ffbc8b459c3475ff0a9c307cb7bd144045f5f1c 100644
+index 93335de8cf514dc8417e4b9b2d495663deda2904..774df86ba47ff6a7fa9fa38438824c64b569f665 100644
 --- a/src/main/java/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/EntityLookup.java
 +++ b/src/main/java/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/EntityLookup.java
 @@ -801,8 +801,15 @@ public abstract class EntityLookup implements LevelEntityGetter<Entity> {
@@ -90,18 +90,11 @@ index efc0c1acc8239dd7b00211a1d3bfd3fc3b2c810c..0ffbc8b459c3475ff0a9c307cb7bd144
                              return;
                          }
                      }
-@@ -1080,4 +1087,4 @@ public abstract class EntityLookup implements LevelEntityGetter<Entity> {
-         @Override
-         public void onRemove(final Entity.RemovalReason reason) {}
-     }
--}
-\ No newline at end of file
-+}
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index c3260ad0ddb40fbde9c1aaf25c0a2be901357dcc..75d11642b7246bae4073feec09c0cf21c24622ca 100644
+index b45ad0125cd5c116126e8ffb893585970ea3b960..2d5783a6ff7a9ce6dcb6f2895ff80928e62f0cd2 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
-@@ -1685,10 +1685,18 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+@@ -1692,10 +1692,18 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
          this.getEntities(filter, box, predicate, result, Integer.MAX_VALUE);
      }
  
@@ -118,15 +111,15 @@ index c3260ad0ddb40fbde9c1aaf25c0a2be901357dcc..75d11642b7246bae4073feec09c0cf21
 +                                               final AABB boundingBox, final Predicate<? super T> predicate,
 +                                               final List<? super T> into, final int maxCount, final int maxSearch) {
 +        // Sakura end - add maxSearch to getEntities
-         this.getProfiler().incrementCounter("getEntities");
+         Profiler.get().incrementCounter("getEntities");
  
          if (entityTypeTest instanceof net.minecraft.world.entity.EntityType<T> byType) {
-@@ -1703,7 +1711,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+@@ -1712,7 +1720,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
  
          if (entityTypeTest == null) {
              if (maxCount != Integer.MAX_VALUE) {
 -                ((ca.spottedleaf.moonrise.patches.chunk_system.level.ChunkSystemLevel)this).moonrise$getEntityLookup().getEntities((Entity)null, boundingBox, (List)into, (Predicate)predicate, maxCount);
 +                ((ca.spottedleaf.moonrise.patches.chunk_system.level.ChunkSystemLevel)this).moonrise$getEntityLookup().getEntities((Entity)null, boundingBox, (List)into, (Predicate)predicate, maxCount, maxSearch); // Sakura - add maxSearch to getEntities
+                 ca.spottedleaf.moonrise.common.PlatformHooks.get().addToGetEntities((Level)(Object)this, entityTypeTest, boundingBox, predicate, into, maxCount);
                  return;
              } else {
-                 ((ca.spottedleaf.moonrise.patches.chunk_system.level.ChunkSystemLevel)this).moonrise$getEntityLookup().getEntities((Entity)null, boundingBox, (List)into, (Predicate)predicate);

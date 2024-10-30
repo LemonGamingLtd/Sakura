@@ -4,11 +4,11 @@ Date: Fri, 3 May 2024 15:18:58 +0100
 Subject: [PATCH] Optimise explosions in protected regions
 
 
-diff --git a/src/main/java/net/minecraft/world/level/Explosion.java b/src/main/java/net/minecraft/world/level/Explosion.java
-index d8baaed4ae55c079bdfd684b6d942923dfbbbcd1..220d97947df493d1ab825e6637ca648e0b186d18 100644
---- a/src/main/java/net/minecraft/world/level/Explosion.java
-+++ b/src/main/java/net/minecraft/world/level/Explosion.java
-@@ -354,6 +354,22 @@ public class Explosion {
+diff --git a/src/main/java/net/minecraft/world/level/ServerExplosion.java b/src/main/java/net/minecraft/world/level/ServerExplosion.java
+index 10432b31acd047ac2aa8581f2ee863254ec8d1eb..6001583d054b9690e34b6878b1298d93e6552a2a 100644
+--- a/src/main/java/net/minecraft/world/level/ServerExplosion.java
++++ b/src/main/java/net/minecraft/world/level/ServerExplosion.java
+@@ -345,6 +345,22 @@ public class ServerExplosion implements Explosion {
          return rays;
      }
      // Sakura end - optimise paper explosions
@@ -18,7 +18,7 @@ index d8baaed4ae55c079bdfd684b6d942923dfbbbcd1..220d97947df493d1ab825e6637ca648e
 +        // It tells us if the result was thrown away, so we can avoid the block searching logic.
 +        // As a side effect the event is called twice which may interfere with some plugins.
 +        if (this.source != null && this.level.sakuraConfig().cannons.explosion.optimiseProtectedRegions) {
-+            Location location = new Location(this.level.getWorld(), this.x, this.y, this.z);
++            Location location = new Location(this.level.getWorld(), this.center.x, this.center.y, this.center.z);
 +            List<org.bukkit.block.Block> blocks = new ObjectArrayList<>(1);
 +            blocks.add(location.getBlock());
 +            EntityExplodeEvent event = CraftEventFactory.callEntityExplodeEvent(this.source, blocks, 0.0f, this.blockInteraction);
@@ -29,14 +29,17 @@ index d8baaed4ae55c079bdfd684b6d942923dfbbbcd1..220d97947df493d1ab825e6637ca648e
 +    }
 +    // Sakura end - optimise explosion protected regions
  
-     public static DamageSource getDefaultDamageSource(Level world, @Nullable Entity source) {
-         return world.damageSources().explosion(source, Explosion.getIndirectSourceEntityInternal(source));
-@@ -487,7 +503,7 @@ public class Explosion {
- 
-         // Paper start - collision optimisations
-         // Sakura start - optimise paper explosions
--        if (initialCache.resistance <= (this.radius * 1.3f) && this.interactsWithBlocks()) {
-+        if (initialCache.resistance <= (this.radius * 1.3f) && this.interactsWithBlocks() && this.isRegionUnprotected()) { // Sakura - optimise protected explosions
-             this.searchForBlocks(blockCache, initialCache);
+     public ServerExplosion(ServerLevel world, @Nullable Entity entity, @Nullable DamageSource damageSource, @Nullable ExplosionDamageCalculator behavior, Vec3 pos, float power, boolean createFire, Explosion.BlockInteraction destructionType) {
+         this.level = world;
+@@ -441,6 +457,11 @@ public class ServerExplosion implements Explosion {
+             return ret;
          }
-         this.locateAndImpactEntities(blockCache);
+         // Sakura end - optimise paper explosions
++        // Sakura start - optimise protected explosions
++        if (this.isRegionUnprotected()) {
++            return ret;
++        }
++        // Sakura end - optimise protected explosions
+ 
+         // only ~1/3rd of the loop iterations in vanilla will result in a ray, as it is iterating the perimeter of
+         // a 16x16x16 cube

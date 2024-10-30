@@ -4,11 +4,11 @@ Date: Fri, 19 Apr 2024 22:20:03 +0100
 Subject: [PATCH] Optimise paper explosions
 
 
-diff --git a/src/main/java/net/minecraft/world/level/Explosion.java b/src/main/java/net/minecraft/world/level/Explosion.java
-index f696afd7e241bf1966a2d505b5d59bff824b43e4..611fc40fd7461f6d9cd9e737de71e702bf1f36c5 100644
---- a/src/main/java/net/minecraft/world/level/Explosion.java
-+++ b/src/main/java/net/minecraft/world/level/Explosion.java
-@@ -101,7 +101,7 @@ public class Explosion {
+diff --git a/src/main/java/net/minecraft/world/level/ServerExplosion.java b/src/main/java/net/minecraft/world/level/ServerExplosion.java
+index bbbd451ff184be8fa13bd93d53c89a9502f9951a..a92be80081178cc302a7f0b646bad7daa28f7c66 100644
+--- a/src/main/java/net/minecraft/world/level/ServerExplosion.java
++++ b/src/main/java/net/minecraft/world/level/ServerExplosion.java
+@@ -89,7 +89,7 @@ public class ServerExplosion implements Explosion {
              }
          }
  
@@ -17,10 +17,10 @@ index f696afd7e241bf1966a2d505b5d59bff824b43e4..611fc40fd7461f6d9cd9e737de71e702
      }
  
      private static final int CHUNK_CACHE_SHIFT = 2;
-@@ -316,6 +316,39 @@ public class Explosion {
+@@ -307,6 +307,39 @@ public class ServerExplosion implements Explosion {
          return (float)missedRays / (float)totalRays;
      }
-     // Paper end - optimise collisions
+     // Paper end - collisions optimisations
 +    // Sakura start - optimise paper explosions
 +    /*
 +     * Sort the explosion rays to better utilise the chunk and block cache.
@@ -31,7 +31,7 @@ index f696afd7e241bf1966a2d505b5d59bff824b43e4..611fc40fd7461f6d9cd9e737de71e702
 +     *          2   3       8   2
 +     *            1           1
 +     */
-+    private static double[] sortExplosionRays(final it.unimi.dsi.fastutil.doubles.DoubleArrayList rayCoords) {
++    private static double[] sortExplosionRays(it.unimi.dsi.fastutil.doubles.DoubleArrayList rayCoords) {
 +        List<double[]> explosionRays = new ArrayList<>();
 +
 +        for (int i = 0; i < rayCoords.size(); i += 3) {
@@ -55,69 +55,55 @@ index f696afd7e241bf1966a2d505b5d59bff824b43e4..611fc40fd7461f6d9cd9e737de71e702
 +    }
 +    // Sakura end - optimise paper explosions
  
-     public static DamageSource getDefaultDamageSource(Level world, @Nullable Entity source) {
-         return world.damageSources().explosion(source, Explosion.getIndirectSourceEntityInternal(source));
-@@ -439,6 +472,16 @@ public class Explosion {
-         int j;
+     public ServerExplosion(ServerLevel world, @Nullable Entity entity, @Nullable DamageSource damageSource, @Nullable ExplosionDamageCalculator behavior, Vec3 pos, float power, boolean createFire, Explosion.BlockInteraction destructionType) {
+         this.level = world;
+@@ -389,6 +422,12 @@ public class ServerExplosion implements Explosion {
+             initialCache = this.getOrCacheExplosionBlock(blockX, blockY, blockZ, key, true);
+         }
  
-         // Paper start - collision optimisations
 +        // Sakura start - optimise paper explosions
-+        if (initialCache.resistance <= (this.radius * 1.3f) && this.interactsWithBlocks()) {
-+            this.searchForBlocks(blockCache, initialCache);
++        if (!this.interactsWithBlocks() || initialCache.resistance > (this.radius * 1.3f)) {
++            return ret;
 +        }
-+        this.locateAndImpactEntities(blockCache);
-+        this.clearBlockCache();
-+    }
-+
-+    protected final void searchForBlocks(ca.spottedleaf.moonrise.patches.collisions.ExplosionBlockCache[] blockCache, final ca.spottedleaf.moonrise.patches.collisions.ExplosionBlockCache initialCache) {
 +        // Sakura end - optimise paper explosions
-         for (int ray = 0, len = CACHED_RAYS.length; ray < len;) {
-             ca.spottedleaf.moonrise.patches.collisions.ExplosionBlockCache cachedBlock = initialCache;
- 
-@@ -510,25 +553,64 @@ public class Explosion {
-                     }
- 
-         // Paper - optimise collisions
--        float f2 = this.radius * 2.0F;
-+        // Sakura start - optimise paper explosions
-+    }
- 
--        i = Mth.floor(this.x - (double) f2 - 1.0D);
--        j = Mth.floor(this.x + (double) f2 + 1.0D);
-+    protected final AABB getExplosionBounds(float f2) {
-+        // Sakura - moved into locateAndImpactEntities
 +
-+        int i = Mth.floor(this.x - (double) f2 - 1.0D);
-+        int j = Mth.floor(this.x + (double) f2 + 1.0D);
-         int l = Mth.floor(this.y - (double) f2 - 1.0D);
-         int i1 = Mth.floor(this.y + (double) f2 + 1.0D);
-         int j1 = Mth.floor(this.z - (double) f2 - 1.0D);
-         int k1 = Mth.floor(this.z + (double) f2 + 1.0D);
--        List<Entity> list = this.level.getEntities(excludeSourceFromDamage ? this.source : null, new AABB((double) i, (double) l, (double) j1, (double) j, (double) i1, (double) k1), (com.google.common.base.Predicate<Entity>) entity -> entity.isAlive() && !entity.isSpectator()); // Paper - Fix lag from explosions processing dead entities, Allow explosions to damage source
-+        return new AABB((double) i, (double) l, (double) j1, (double) j, (double) i1, (double) k1);
-+    }
-+
-+    protected final void locateAndImpactEntities(ca.spottedleaf.moonrise.patches.collisions.ExplosionBlockCache[] blockCache) {
-+        float f2 = this.radius * 2.0F;
-         Vec3 vec3d = new Vec3(this.x, this.y, this.z);
+         // only ~1/3rd of the loop iterations in vanilla will result in a ray, as it is iterating the perimeter of
+         // a 16x16x16 cube
+         // we can cache the rays and their normals as well, so that we eliminate the excess iterations / checks and
+@@ -467,19 +506,55 @@ public class ServerExplosion implements Explosion {
+         // Paper end - collision optimisations
+     }
+ 
+-    private void hurtEntities() {
+-        float f = this.radius * 2.0F;
++    // Sakura start - optimise paper explosions
++    protected final AABB getExplosionBounds(float f) {
+         int i = Mth.floor(this.center.x - (double) f - 1.0D);
+         int j = Mth.floor(this.center.x + (double) f + 1.0D);
+         int k = Mth.floor(this.center.y - (double) f - 1.0D);
+         int l = Mth.floor(this.center.y + (double) f + 1.0D);
+         int i1 = Mth.floor(this.center.z - (double) f - 1.0D);
+         int j1 = Mth.floor(this.center.z + (double) f + 1.0D);
+-        List<Entity> list = this.level.getEntities(excludeSourceFromDamage ? this.source : null, new AABB((double) i, (double) k, (double) i1, (double) j, (double) l, (double) j1), (com.google.common.base.Predicate<Entity>) entity -> entity.isAlive() && !entity.isSpectator()); // Paper - Fix lag from explosions processing dead entities, Allow explosions to damage source
 -        Iterator iterator = list.iterator();
- 
-         // Paper start - optimise collisions
-         final BlockPos.MutableBlockPos blockPos = new BlockPos.MutableBlockPos();
-         // Paper end - optimise collisions
++        return new AABB((double) i, (double) k, (double) i1, (double) j, (double) l, (double) j1);
++    }
  
 -        while (iterator.hasNext()) {
 -            Entity entity = (Entity) iterator.next();
++    private void hurtEntities() {
++        float f = this.radius * 2.0F;
++
 +        int minSection = ca.spottedleaf.moonrise.common.util.WorldUtil.getMinSection(this.level);
 +        int maxSection = ca.spottedleaf.moonrise.common.util.WorldUtil.getMaxSection(this.level);
 +
-+        int minChunkX = Mth.floor(this.x - f2) >> 4;
-+        int maxChunkX = Mth.floor(this.x + f2) >> 4;
-+        int minChunkY = Mth.clamp(Mth.floor(this.y - f2) >> 4, minSection, maxSection);
-+        int maxChunkY = Mth.clamp(Mth.floor(this.y + f2) >> 4, minSection, maxSection);
-+        int minChunkZ = Mth.floor(this.z - f2) >> 4;
-+        int maxChunkZ = Mth.floor(this.z + f2) >> 4;
- 
++        int minChunkX = Mth.floor(this.center.x - f) >> 4;
++        int maxChunkX = Mth.floor(this.center.x + f) >> 4;
++        int minChunkY = Mth.clamp(Mth.floor(this.center.y - f) >> 4, minSection, maxSection);
++        int maxChunkY = Mth.clamp(Mth.floor(this.center.y + f) >> 4, minSection, maxSection);
++        int minChunkZ = Mth.floor(this.center.z - f) >> 4;
++        int maxChunkZ = Mth.floor(this.center.z + f) >> 4;
++
 +        ca.spottedleaf.moonrise.patches.chunk_system.level.entity.EntityLookup entityLookup = this.level.moonrise$getEntityLookup();
 +        for (int chunkX = minChunkX; chunkX <= maxChunkX; ++chunkX) {
 +            for (int chunkZ = minChunkZ; chunkZ <= maxChunkZ; ++chunkZ) {
@@ -125,28 +111,28 @@ index f696afd7e241bf1966a2d505b5d59bff824b43e4..611fc40fd7461f6d9cd9e737de71e702
 +                if (chunk == null) continue; // empty slice
 +
 +                for (int chunkY = minChunkY; chunkY <= maxChunkY; ++chunkY) {
-+                    this.impactEntities(blockCache, blockPos, f2, vec3d, chunk.getSectionEntities(chunkY));
++                    this.impactEntities(f, chunk.getSectionEntities(chunkY));
 +                }
 +            }
 +        }
 +    }
 +
-+    protected final void impactEntities(ca.spottedleaf.moonrise.patches.collisions.ExplosionBlockCache[] blockCache, BlockPos.MutableBlockPos blockPos, float f2, Vec3 vec3d, Entity[] entities) {
++    protected final void impactEntities(float f, Entity[] entities) {
 +        for (int i = 0; i < entities.length; i++) {
 +            Entity entity = entities[i];
 +            if (entity == null) break;      // end of entity section
-+            this.impactEntity(blockCache, blockPos, f2, vec3d, entity);
++            this.impactEntity(f, entity);
 +            if (entity != entities[i]) i--; // entities can be removed mid-explosion
 +        }
 +    }
 +
-+    protected final void impactEntity(ca.spottedleaf.moonrise.patches.collisions.ExplosionBlockCache[] blockCache, BlockPos.MutableBlockPos blockPos, float f2, Vec3 vec3d, Entity entity) {
-+        if (entity.isAlive() && !entity.isSpectator() && (!this.excludeSourceFromDamage || entity != this.source)) { // Paper - Fix lag from explosions processing dead entities
++    protected final void impactEntity(float f, Entity entity) {
++        if (entity.isAlive() && !entity.isSpectator() && (!this.excludeSourceFromDamage || entity != this.source)) { // Paper - Fix lag from explosions processing dead entities, Allow explosions to damage source
 +            // Sakura end - optimise paper explosions
-             if (!entity.ignoreExplosion(this)) {
-                 double d7 = Math.sqrt(entity.distanceToSqr(vec3d)) / (double) f2;
  
-@@ -553,7 +635,7 @@ public class Explosion {
+             if (!entity.ignoreExplosion(this)) {
+                 double d0 = Math.sqrt(entity.distanceToSqr(this.center)) / (double) f;
+@@ -508,15 +583,16 @@ public class ServerExplosion implements Explosion {
                              // - Damaging EntityEnderDragon does nothing
                              // - EntityEnderDragon hitbock always covers the other parts and is therefore always present
                              if (entity instanceof EnderDragonPart) {
@@ -155,19 +141,17 @@ index f696afd7e241bf1966a2d505b5d59bff824b43e4..611fc40fd7461f6d9cd9e737de71e702
                              }
  
                              entity.lastDamageCancelled = false;
-@@ -561,9 +643,10 @@ public class Explosion {
-                             seenFraction = (double)this.getBlockDensity(vec3d, entity, blockCache, blockPos); // Paper - optimise collisions
  
                              if (entity instanceof EnderDragon) {
-+                                AABB bounds = this.getExplosionBounds(f2); // Sakura - optimise paper explosions
++                                AABB bounds = this.getExplosionBounds(f); // Sakura - optimise paper explosions
                                  for (EnderDragonPart entityComplexPart : ((EnderDragon) entity).subEntities) {
                                      // Calculate damage separately for each EntityComplexPart
 -                                    if (list.contains(entityComplexPart)) {
 +                                    if (entityComplexPart.getBoundingBox().intersects(bounds)) { // Sakura - optimise paper explosions
-                                         entityComplexPart.hurt(this.damageSource, this.damageCalculator.getEntityDamageAmount(this, entity));
+                                         entityComplexPart.hurtServer(this.level, this.damageSource, this.damageCalculator.getEntityDamageAmount(this, entity, f2));
                                      }
                                  }
-@@ -577,7 +660,7 @@ public class Explosion {
+@@ -525,7 +601,7 @@ public class ServerExplosion implements Explosion {
                              }
  
                              if (entity.lastDamageCancelled) { // SPIGOT-5339, SPIGOT-6252, SPIGOT-6777: Skip entity if damage event was cancelled
@@ -175,16 +159,4 @@ index f696afd7e241bf1966a2d505b5d59bff824b43e4..611fc40fd7461f6d9cd9e737de71e702
 +                                return; // Sakura - optimise paper explosions
                              }
                              // CraftBukkit end
-                         } else { seenFraction = (double)this.getBlockDensity(vec3d, entity, blockCache, blockPos); } // Paper - optimise collisions
-@@ -620,6 +703,11 @@ public class Explosion {
-                 }
-             }
-         }
-+        // Sakura start - optimise paper explosions
-+    }
-+
-+    protected void clearBlockCache() {
-+        // Sakura end - optimise paper explosions
-         // Paper start - optimise collisions
-         this.blockCache = null;
-         this.chunkPosCache = null;
+                         }

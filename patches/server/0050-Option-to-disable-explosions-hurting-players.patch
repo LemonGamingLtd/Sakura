@@ -1,0 +1,22 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Samsuik <40902469+Samsuik@users.noreply.github.com>
+Date: Sat, 9 Dec 2023 00:25:11 +0000
+Subject: [PATCH] Option to disable explosions hurting players
+
+
+diff --git a/src/main/java/net/minecraft/world/entity/player/Player.java b/src/main/java/net/minecraft/world/entity/player/Player.java
+index e50b64ba18fe8a4536b6f8aadca93064cd9f47f7..1a1203a93550cae95f2a82062e16fb21a779ee94 100644
+--- a/src/main/java/net/minecraft/world/entity/player/Player.java
++++ b/src/main/java/net/minecraft/world/entity/player/Player.java
+@@ -925,6 +925,11 @@ public abstract class Player extends LivingEntity {
+ 
+     @Override
+     public boolean isInvulnerableTo(ServerLevel world, DamageSource source) {
++        // Sakura start - allow disabling explosions hurting players
++        if (!this.level().sakuraConfig().cannons.explosion.explosionsHurtPlayers && source.is(DamageTypeTags.IS_EXPLOSION)) {
++            return true;
++        }
++        // Sakura end - allow disabling explosions hurting players
+         return super.isInvulnerableTo(world, source) ? true : (source.is(DamageTypeTags.IS_DROWNING) ? !world.getGameRules().getBoolean(GameRules.RULE_DROWNING_DAMAGE) : (source.is(DamageTypeTags.IS_FALL) ? !world.getGameRules().getBoolean(GameRules.RULE_FALL_DAMAGE) : (source.is(DamageTypeTags.IS_FIRE) ? !world.getGameRules().getBoolean(GameRules.RULE_FIRE_DAMAGE) : (source.is(DamageTypeTags.IS_FREEZING) ? !world.getGameRules().getBoolean(GameRules.RULE_FREEZE_DAMAGE) : false))));
+     }
+ 

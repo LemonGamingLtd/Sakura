@@ -1,0 +1,30 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Samsuik <kfian294ma4@gmail.com>
+Date: Mon, 29 Jul 2024 00:18:58 +0100
+Subject: [PATCH] Set entity impulse on explosion
+
+
+diff --git a/src/main/java/me/samsuik/sakura/explosion/special/SpecialisedExplosion.java b/src/main/java/me/samsuik/sakura/explosion/special/SpecialisedExplosion.java
+index 2ac8bd2cc879c493d9a008f7555c7277977129f5..8f5e17d6c132aedcd49e92bd0c82c9c6a4435282 100644
+--- a/src/main/java/me/samsuik/sakura/explosion/special/SpecialisedExplosion.java
++++ b/src/main/java/me/samsuik/sakura/explosion/special/SpecialisedExplosion.java
+@@ -207,6 +207,7 @@ public abstract class SpecialisedExplosion<T extends Entity> extends ServerExplo
+             moveZ += z;
+         }
+ 
++        entity.hasImpulse = true; // Sakura - set entity impulse on explosion
+         entity.setDeltaMovement(moveX, moveY, moveZ);
+     }
+ }
+diff --git a/src/main/java/net/minecraft/world/level/ServerExplosion.java b/src/main/java/net/minecraft/world/level/ServerExplosion.java
+index 280308766cd41924e209d5816c047ceae0ec1085..2bc39d43c161dcbc2a8ff88fff7409d0c41fd588 100644
+--- a/src/main/java/net/minecraft/world/level/ServerExplosion.java
++++ b/src/main/java/net/minecraft/world/level/ServerExplosion.java
+@@ -748,6 +748,7 @@ public class ServerExplosion implements Explosion {
+                            // Paper end - knockback events
+                         }
+                         // CraftBukkit end
++                        entity.hasImpulse = true; // Sakura - set entity impulse on explosion
+                         entity.setDeltaMovement(entity.getDeltaMovement().add(vec3d));
+                         if (entity instanceof Player) {
+                             Player entityhuman = (Player) entity;

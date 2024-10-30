@@ -126,23 +126,35 @@ index 0000000000000000000000000000000000000000..d7e24638f07f243502004970ab4ce646
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 012bec9a32acc26f65c8efbfde341b0d15a4e822..8041737aa751bec1c51ee3d9dacd6dfb2b845265 100644
+index c871ef194962d1fc574a8d3d9f27dd817ead5fc9..31dd38d80c648e3f946c123878529b3393be5a91 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -1823,6 +1823,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
-             worldserver.explosionDensityCache.clear(); // Paper - Optimize explosions
+@@ -1891,6 +1891,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+             gameprofilerfiller.pop();
              worldserver.localConfig().expire(currentTick); // Sakura - add local config
              worldserver.mergeHandler.expire(currentTick); // Sakura - merge cannon entities
 +            worldserver.densityCache.invalidate(); // Sakura - explosion density cache
          }
          this.isIteratingOverLevels = false; // Paper - Throw exception on world create while being ticked
  
-diff --git a/src/main/java/net/minecraft/world/level/Explosion.java b/src/main/java/net/minecraft/world/level/Explosion.java
-index 611fc40fd7461f6d9cd9e737de71e702bf1f36c5..d8baaed4ae55c079bdfd684b6d942923dfbbbcd1 100644
---- a/src/main/java/net/minecraft/world/level/Explosion.java
-+++ b/src/main/java/net/minecraft/world/level/Explosion.java
-@@ -306,7 +306,12 @@ public class Explosion {
-                         Math.fma(dz, diffZ, offZ)
+diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
+index d036cdcc17b8429c986946a020cb34cd6ced322e..b45ad0125cd5c116126e8ffb893585970ea3b960 100644
+--- a/src/main/java/net/minecraft/world/level/Level.java
++++ b/src/main/java/net/minecraft/world/level/Level.java
+@@ -842,6 +842,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+     }
+     // Paper end - optimise random ticking
+     public final me.samsuik.sakura.entity.merge.EntityMergeHandler mergeHandler = new me.samsuik.sakura.entity.merge.EntityMergeHandler(); // Sakura - merge cannon entities
++    public final me.samsuik.sakura.explosion.density.BlockDensityCache densityCache = new me.samsuik.sakura.explosion.density.BlockDensityCache(); // Sakura - explosion density cache
+ 
+     protected Level(WritableLevelData worlddatamutable, ResourceKey<Level> resourcekey, RegistryAccess iregistrycustom, Holder<DimensionType> holder, boolean flag, boolean flag1, long i, int j, org.bukkit.generator.ChunkGenerator gen, org.bukkit.generator.BiomeProvider biomeProvider, org.bukkit.World.Environment env, java.util.function.Function<org.spigotmc.SpigotWorldConfig, io.papermc.paper.configuration.WorldConfiguration> paperWorldConfigCreator, java.util.function.Supplier<me.samsuik.sakura.configuration.WorldConfiguration> sakuraWorldConfigCreator, java.util.concurrent.Executor executor) { // Sakura - sakura configuration files // Paper - create paper world config & Anti-Xray
+         // Paper start - getblock optimisations - cache world height/sections
+diff --git a/src/main/java/net/minecraft/world/level/ServerExplosion.java b/src/main/java/net/minecraft/world/level/ServerExplosion.java
+index a92be80081178cc302a7f0b646bad7daa28f7c66..10432b31acd047ac2aa8581f2ee863254ec8d1eb 100644
+--- a/src/main/java/net/minecraft/world/level/ServerExplosion.java
++++ b/src/main/java/net/minecraft/world/level/ServerExplosion.java
+@@ -297,7 +297,12 @@ public class ServerExplosion implements Explosion {
+                             Math.fma(dz, diffZ, offZ)
                      );
  
 -                    if (!this.clipsAnything(from, source, context, blockCache, blockPos)) {
@@ -155,71 +167,59 @@ index 611fc40fd7461f6d9cd9e737de71e702bf1f36c5..d8baaed4ae55c079bdfd684b6d942923
                          ++missedRays;
                      }
                  }
-@@ -412,7 +417,16 @@ public class Explosion {
+@@ -377,7 +382,16 @@ public class ServerExplosion implements Explosion {
                          double d10 = Mth.lerp(d7, axisalignedbb.minZ, axisalignedbb.maxZ);
                          Vec3 vec3d1 = new Vec3(d8 + d3, d9, d10 + d4);
  
--                        if (entity.level().clip(new ClipContext(vec3d1, source, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity)).getType() == HitResult.Type.MISS) {
+-                        if (entity.level().clip(new ClipContext(vec3d1, pos, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity)).getType() == HitResult.Type.MISS) {
 +                        // Sakura start - replace density cache
 +                        final net.minecraft.world.phys.HitResult.Type hitResult;
 +                        final float density = entity.level().densityCache.getKnownDensity(vec3d1);
 +                        if (density != me.samsuik.sakura.explosion.density.BlockDensityCache.UNKNOWN_DENSITY) {
 +                            hitResult = density != 0.0f ? net.minecraft.world.phys.HitResult.Type.MISS : net.minecraft.world.phys.HitResult.Type.BLOCK;
 +                        } else {
-+                            hitResult = entity.level().clip(new ClipContext(vec3d1, source, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity)).getType();
++                            hitResult = entity.level().clip(new ClipContext(vec3d1, pos, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, entity)).getType();
 +                        }
 +                        if (hitResult == HitResult.Type.MISS) {
 +                            // Sakura end - replace density cache
                              ++i;
                          }
  
-@@ -802,6 +816,11 @@ public class Explosion {
-                 });
-             }
+@@ -691,6 +705,12 @@ public class ServerExplosion implements Explosion {
+             return;
+         }
+         // CraftBukkit end
++        // Sakura start - explosion density cache
++        if (!positions.isEmpty() && !this.level.paperConfig().environment.optimizeExplosions) {
++            this.level.densityCache.invalidate();
++        }
++        // Sakura end - explosion density cache
++
+         Iterator iterator = positions.iterator();
  
-+            // Sakura start - explosion density cache
-+            if (!this.toBlow.isEmpty() && !this.level.paperConfig().environment.optimizeExplosions) {
-+                this.level.densityCache.invalidate();
-+            }
-+            // Sakura end - explosion density cache
-             Iterator iterator = list.iterator();
+         while (iterator.hasNext()) {
+@@ -864,14 +884,12 @@ public class ServerExplosion implements Explosion {
  
-             while (iterator.hasNext()) {
-@@ -930,14 +949,12 @@ public class Explosion {
-     }
      // Paper start - Optimize explosions
-     private float getBlockDensity(Vec3 vec3d, Entity entity, ca.spottedleaf.moonrise.patches.collisions.ExplosionBlockCache[] blockCache, BlockPos.MutableBlockPos blockPos) { // Paper - optimise collisions
+     private float getBlockDensity(Vec3 vec3d, Entity entity) {
 -        if (!this.level.paperConfig().environment.optimizeExplosions) {
--            return this.getSeenFraction(vec3d, entity, blockCache, blockPos); // Paper - optimise collisions
+-            return this.getSeenFraction(vec3d, entity, this.directMappedBlockCache, this.mutablePos); // Paper - collision optimisations
 -        }
 -        CacheKey key = new CacheKey(this, entity.getBoundingBox());
 -        Float blockDensity = this.level.explosionDensityCache.get(key);
 -        if (blockDensity == null) {
--            blockDensity = this.getSeenFraction(vec3d, entity, blockCache, blockPos); // Paper - optimise collisions
--            this.level.explosionDensityCache.put(key, blockDensity);
 +        // Sakura start - replace density cache
 +        float blockDensity = this.level.densityCache.getDensity(vec3d, entity);
 +        if (blockDensity == me.samsuik.sakura.explosion.density.BlockDensityCache.UNKNOWN_DENSITY) {
-+            blockDensity = this.getSeenFraction(vec3d, entity, blockCache, blockPos); // Paper - optimise explosions;
+             blockDensity = this.getSeenFraction(vec3d, entity, this.directMappedBlockCache, this.mutablePos); // Paper - collision optimisations
+-            this.level.explosionDensityCache.put(key, blockDensity);
 +            this.level.densityCache.putDensity(vec3d, entity, blockDensity);
 +            // Sakura end - replace density cache
          }
  
          return blockDensity;
-diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index dc2b8e054a3dd89e1c45d0c96ad640a7d32a2c0d..ed049df61d38ed06076273115b841e2852963844 100644
---- a/src/main/java/net/minecraft/world/level/Level.java
-+++ b/src/main/java/net/minecraft/world/level/Level.java
-@@ -696,6 +696,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
-     }
-     // Paper end - optimise random ticking
-     public final me.samsuik.sakura.entity.merge.EntityMergeHandler mergeHandler = new me.samsuik.sakura.entity.merge.EntityMergeHandler(); // Sakura - merge cannon entities
-+    public final me.samsuik.sakura.explosion.density.BlockDensityCache densityCache = new me.samsuik.sakura.explosion.density.BlockDensityCache(); // Sakura - explosion density cache
- 
-     protected Level(WritableLevelData worlddatamutable, ResourceKey<Level> resourcekey, RegistryAccess iregistrycustom, Holder<DimensionType> holder, Supplier<ProfilerFiller> supplier, boolean flag, boolean flag1, long i, int j, org.bukkit.generator.ChunkGenerator gen, org.bukkit.generator.BiomeProvider biomeProvider, org.bukkit.World.Environment env, java.util.function.Function<org.spigotmc.SpigotWorldConfig, io.papermc.paper.configuration.WorldConfiguration> paperWorldConfigCreator, Supplier<me.samsuik.sakura.configuration.WorldConfiguration> sakuraWorldConfigCreator, java.util.concurrent.Executor executor) { // Sakura - sakura configuration files// Paper - create paper world config & Anti-Xray
-         this.spigotConfig = new org.spigotmc.SpigotWorldConfig(((net.minecraft.world.level.storage.PrimaryLevelData) worlddatamutable).getLevelName()); // Spigot
 diff --git a/src/main/java/net/minecraft/world/level/block/BasePressurePlateBlock.java b/src/main/java/net/minecraft/world/level/block/BasePressurePlateBlock.java
-index 1aa36b456b1c635d3184aeab70d1d84266e22c4b..afb76b13f404a12a5f5b9ffe72756d31290a9a85 100644
+index c2eb63de04fc48bd2cc1aad8d9cba272c0829c80..0d9f944a3777ac3a0f569832468c5c97b0fdf488 100644
 --- a/src/main/java/net/minecraft/world/level/block/BasePressurePlateBlock.java
 +++ b/src/main/java/net/minecraft/world/level/block/BasePressurePlateBlock.java
 @@ -109,6 +109,11 @@ public abstract class BasePressurePlateBlock extends Block {
@@ -235,10 +235,10 @@ index 1aa36b456b1c635d3184aeab70d1d84266e22c4b..afb76b13f404a12a5f5b9ffe72756d31
              this.updateNeighbours(world, pos);
              world.setBlocksDirty(pos, state, iblockdata1);
 diff --git a/src/main/java/net/minecraft/world/level/block/TripWireHookBlock.java b/src/main/java/net/minecraft/world/level/block/TripWireHookBlock.java
-index 76aca266d3f3222502ff4c196228f08fcd88c5f8..b965d1b38a0a3f08531060039e46913dff3bfd0e 100644
+index c2589f42c467ca672417c24076313da51bb2dcbb..5ae5ef6edf3a6e2b8be9ce11ca46c7714accc4f3 100644
 --- a/src/main/java/net/minecraft/world/level/block/TripWireHookBlock.java
 +++ b/src/main/java/net/minecraft/world/level/block/TripWireHookBlock.java
-@@ -173,6 +173,11 @@ public class TripWireHookBlock extends Block {
+@@ -175,6 +175,11 @@ public class TripWireHookBlock extends Block {
                  blockposition1 = pos.relative(enumdirection, j);
                  Direction enumdirection1 = enumdirection.getOpposite();
  
@@ -251,10 +251,10 @@ index 76aca266d3f3222502ff4c196228f08fcd88c5f8..b965d1b38a0a3f08531060039e46913d
                  TripWireHookBlock.notifyNeighbors(block, world, blockposition1, enumdirection1);
                  TripWireHookBlock.emitState(world, blockposition1, flag4, flag5, flag2, flag3);
 diff --git a/src/main/java/net/minecraft/world/phys/AABB.java b/src/main/java/net/minecraft/world/phys/AABB.java
-index 29123f3a2f211c08d1a9ccf62ca9bc9822f90111..a63bd7945eef572615b1aa4a4914fa385b25cad2 100644
+index 6cf6d4ec7b9e43c7b2b4c0e2fb080964ff588130..a867ec0347038c7246af3f3377eceda17e695ec3 100644
 --- a/src/main/java/net/minecraft/world/phys/AABB.java
 +++ b/src/main/java/net/minecraft/world/phys/AABB.java
-@@ -508,4 +508,28 @@ public class AABB {
+@@ -551,4 +551,28 @@ public class AABB {
      public static AABB ofSize(Vec3 center, double dx, double dy, double dz) {
          return new AABB(center.x - dx / 2.0, center.y - dy / 2.0, center.z - dz / 2.0, center.x + dx / 2.0, center.y + dy / 2.0, center.z + dz / 2.0);
      }

@@ -5,10 +5,10 @@ Subject: [PATCH] Add utility methods to EntitySlices
 
 
 diff --git a/src/main/java/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java b/src/main/java/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java
-index 01e29fc7c91aa7ffeb54584c8ca0989900235251..8126c4fdbbc586cf3722c6ee2986338de044602e 100644
+index a24c509fc1f1052047d73847aacdd863fe8ea6e1..88b1a9b4b3da23b8e500ec343915e66e9b4f19b6 100644
 --- a/src/main/java/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java
 +++ b/src/main/java/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java
-@@ -318,6 +318,12 @@ public final class ChunkEntitySlices {
+@@ -297,6 +297,12 @@ public final class ChunkEntitySlices {
          return true;
      }
  
@@ -21,7 +21,7 @@ index 01e29fc7c91aa7ffeb54584c8ca0989900235251..8126c4fdbbc586cf3722c6ee2986338d
      public void getHardCollidingEntities(final Entity except, final AABB box, final List<Entity> into, final Predicate<? super Entity> predicate) {
          this.hardCollidingEntities.getEntities(except, box, into, predicate);
      }
-@@ -542,6 +548,18 @@ public final class ChunkEntitySlices {
+@@ -521,6 +527,18 @@ public final class ChunkEntitySlices {
              }
          }
  

@@ -5,15 +5,15 @@ Subject: [PATCH] Use Optimised TrackedEntityMap
 
 
 diff --git a/src/main/java/net/minecraft/server/level/ChunkMap.java b/src/main/java/net/minecraft/server/level/ChunkMap.java
-index 76d4b7e9dad6536c100e5940f9f528ba2561e3b8..e80e1d7ac52ef6f81dab85916f8107bc3e9339c6 100644
+index 464fc90376075ecc46f7b7731ba5e2c705324e7d..dff0b8a1f2afcef21ca7e7aea3ee635826a2e9ef 100644
 --- a/src/main/java/net/minecraft/server/level/ChunkMap.java
 +++ b/src/main/java/net/minecraft/server/level/ChunkMap.java
-@@ -180,7 +180,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+@@ -187,7 +187,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
          this.toDrop = new LongOpenHashSet();
          this.tickingGenerated = new AtomicInteger();
          this.playerMap = new PlayerMap();
 -        this.entityMap = new Int2ObjectOpenHashMap();
 +        this.entityMap = new me.samsuik.sakura.utils.collections.TrackedEntityChunkMap(); // Sakura - optimised tracked entity map
          this.chunkTypeCache = new Long2ByteOpenHashMap();
-         this.chunkSaveCooldowns = new Long2LongOpenHashMap();
          // Paper - rewrite chunk system
+         Path path = session.getDimensionPath(world.dimension());

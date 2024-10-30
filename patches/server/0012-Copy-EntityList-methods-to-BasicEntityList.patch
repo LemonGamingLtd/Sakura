@@ -5,10 +5,10 @@ Subject: [PATCH] Copy EntityList methods to BasicEntityList
 
 
 diff --git a/src/main/java/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java b/src/main/java/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java
-index 87d2b3ec165e2e9e4bdbedd7adddaa2130ed507b..01e29fc7c91aa7ffeb54584c8ca0989900235251 100644
+index b3c993a790fc3fab6a408c731deb297f74c959ce..a24c509fc1f1052047d73847aacdd863fe8ea6e1 100644
 --- a/src/main/java/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java
 +++ b/src/main/java/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java
-@@ -413,6 +413,13 @@ public final class ChunkEntitySlices {
+@@ -392,6 +392,13 @@ public final class ChunkEntitySlices {
  
          private E[] storage;
          private int size;
@@ -22,7 +22,7 @@ index 87d2b3ec165e2e9e4bdbedd7adddaa2130ed507b..01e29fc7c91aa7ffeb54584c8ca09899
  
          public BasicEntityList() {
              this(0);
-@@ -433,6 +440,7 @@ public final class ChunkEntitySlices {
+@@ -412,6 +419,7 @@ public final class ChunkEntitySlices {
          private void resize() {
              if (this.storage == EMPTY) {
                  this.storage = (E[])new Entity[DEFAULT_CAPACITY];
@@ -30,7 +30,7 @@ index 87d2b3ec165e2e9e4bdbedd7adddaa2130ed507b..01e29fc7c91aa7ffeb54584c8ca09899
              } else {
                  this.storage = Arrays.copyOf(this.storage, this.storage.length * 2);
              }
-@@ -446,6 +454,7 @@ public final class ChunkEntitySlices {
+@@ -425,6 +433,7 @@ public final class ChunkEntitySlices {
              } else {
                  this.storage[idx] = entity;
              }
@@ -38,7 +38,7 @@ index 87d2b3ec165e2e9e4bdbedd7adddaa2130ed507b..01e29fc7c91aa7ffeb54584c8ca09899
          }
  
          public int indexOf(final E entity) {
-@@ -461,24 +470,32 @@ public final class ChunkEntitySlices {
+@@ -440,24 +449,32 @@ public final class ChunkEntitySlices {
          }
  
          public boolean remove(final E entity) {

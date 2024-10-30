@@ -227,22 +227,22 @@ index 0000000000000000000000000000000000000000..5b3e2cca7ee16bc6ecfa0f29438fa658
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index f7a636990d581ad0230317a716d2662ea25480e3..f0ba7597de6f1eb025639cbe0f35f51d839fe4c2 100644
+index 3a47504876cf718935786d7b858cb6d53bd61ddb..3ef2f8b523b940db18a5d512f21f037fc799f487 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -1818,6 +1818,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
-             this.profiler.pop();
-             this.profiler.pop();
-             worldserver.explosionDensityCache.clear(); // Paper - Optimize explosions
+@@ -1886,6 +1886,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+ 
+             gameprofilerfiller.pop();
+             gameprofilerfiller.pop();
 +            worldserver.localConfig().expire(currentTick); // Sakura - add local config
          }
          this.isIteratingOverLevels = false; // Paper - Throw exception on world create while being ticked
  
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index 48c2d026fd678f7990738a0037780a535f1ac19b..613c402744314644f86b401fa84dbd20ffb108f5 100644
+index d95292d388efa4c504440347f1e5dfc2b87b8afe..b5ce268d1b9d8e57a3927c8e0b91746361fb6778 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
-@@ -177,6 +177,12 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+@@ -178,6 +178,12 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
          return this.sakuraConfig;
      }
      // Sakura end - sakura configuration files
@@ -254,12 +254,12 @@ index 48c2d026fd678f7990738a0037780a535f1ac19b..613c402744314644f86b401fa84dbd20
 +    // Sakura end - add local config
  
      public final com.destroystokyo.paper.antixray.ChunkPacketBlockController chunkPacketBlockController; // Paper - Anti-Xray
-     public final co.aikar.timings.WorldTimingsHandler timings; // Paper
+     public static BlockPos lastPhysicsProblem; // Spigot
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index 33e4818ba5a90d78d69baad9f6b1be1b1382e9f3..d14c942a4505222c13bf0e7bc15ac4904f3ebbd1 100644
+index d41c81158c00931e6b11093cce141f6a3085ba05..6809c9fbc67b40c24d913d28c8dc54f8cc0c9989 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-@@ -291,6 +291,13 @@ public class CraftWorld extends CraftRegionAccessor implements World {
+@@ -295,6 +295,13 @@ public class CraftWorld extends CraftRegionAccessor implements World {
      }
      // Paper end
  

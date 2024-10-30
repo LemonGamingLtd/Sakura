@@ -5,10 +5,10 @@ Subject: [PATCH] Entity pushed by fluid API
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index ccbe81eb8df2406554c34e771b16855136db111c..33027663cd43f2a56b9cf09f280a277149aad427 100644
+index fcb0df76474b641ea86eeb87755faead66397d26..1fa30edd2609523ede356d0ce30aa4f7b74968cc 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
-@@ -603,6 +603,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -664,6 +664,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          }
      }
      // Sakura end - merge cannon entities
@@ -16,7 +16,7 @@ index ccbe81eb8df2406554c34e771b16855136db111c..33027663cd43f2a56b9cf09f280a2771
  
      public Entity(EntityType<?> type, Level world) {
          this.id = Entity.ENTITY_COUNTER.incrementAndGet();
-@@ -4180,7 +4181,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4481,7 +4482,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
      }
  
      public boolean isPushedByFluid() {
@@ -26,10 +26,10 @@ index ccbe81eb8df2406554c34e771b16855136db111c..33027663cd43f2a56b9cf09f280a2771
  
      public static double getViewScale() {
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
-index 89c8713d2c2206d1b0d8c0a392c9d13b3e736f0c..38ef55af47c7eb24ebc719c63298a9b071693f4e 100644
+index 179886dcbda29c5cdb7dbd43e44951ae38d9df96..d0da1b34fe10be266f5b711e5755f07521e0bf08 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
-@@ -203,6 +203,18 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
+@@ -204,6 +204,18 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
          return this.entity.isInWater();
      }
  

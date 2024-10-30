@@ -4,11 +4,11 @@ Date: Thu, 16 Nov 2023 00:59:04 +0000
 Subject: [PATCH] Destroy Waterlogged Blocks
 
 
-diff --git a/src/main/java/net/minecraft/world/level/Explosion.java b/src/main/java/net/minecraft/world/level/Explosion.java
-index 407154670acbec704ef6804a33c320ab9246c16d..b32f377079a7c97840079b0a6b541be936c822dd 100644
---- a/src/main/java/net/minecraft/world/level/Explosion.java
-+++ b/src/main/java/net/minecraft/world/level/Explosion.java
-@@ -168,6 +168,11 @@ public class Explosion {
+diff --git a/src/main/java/net/minecraft/world/level/ServerExplosion.java b/src/main/java/net/minecraft/world/level/ServerExplosion.java
+index 8268f8df624a73eaf0b8baad9aa16bab2ed0f0bc..cc97e3a88ea99362ec043edf13c1f54c2c75daaa 100644
+--- a/src/main/java/net/minecraft/world/level/ServerExplosion.java
++++ b/src/main/java/net/minecraft/world/level/ServerExplosion.java
+@@ -402,6 +402,11 @@ public class ServerExplosion implements Explosion {
              if (material != null && material.resistance() >= 0.0f && (this.level.sakuraConfig().cannons.explosion.allowNonTntBreakingDurableBlocks || this.source instanceof net.minecraft.world.entity.item.PrimedTnt)) {
                  return Optional.of(material.resistance());
              }
@@ -19,4 +19,4 @@ index 407154670acbec704ef6804a33c320ab9246c16d..b32f377079a7c97840079b0a6b541be9
 +            // Sakura end - destroy water logged blocks
          }
  
-         return this.damageCalculator.getBlockExplosionResistance((Explosion)(Object)this, this.level, pos, blockState, fluidState);
+         return this.damageCalculator.getBlockExplosionResistance(this, this.level, pos, blockState, fluidState);

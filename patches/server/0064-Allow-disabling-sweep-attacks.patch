@@ -1,0 +1,19 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Samsuik <kfian294ma4@gmail.com>
+Date: Fri, 23 Feb 2024 01:49:20 +0000
+Subject: [PATCH] Allow disabling sweep attacks
+
+
+diff --git a/src/main/java/net/minecraft/world/entity/player/Player.java b/src/main/java/net/minecraft/world/entity/player/Player.java
+index 8c8cf4b640439ca10bc030fa3194f3ff61d10e6b..a99903df673f7cde190a880b681d44be0b747c90 100644
+--- a/src/main/java/net/minecraft/world/entity/player/Player.java
++++ b/src/main/java/net/minecraft/world/entity/player/Player.java
+@@ -1348,7 +1348,7 @@ public abstract class Player extends LivingEntity {
+ 
+                         LivingEntity entityliving2;
+ 
+-                        if (flag3) {
++                        if (flag3 && this.level().sakuraConfig().players.combat.allowSweepAttacks) { // Sakura - allow disabling sweep attacks
+                             float f6 = 1.0F + (float) this.getAttributeValue(Attributes.SWEEPING_DAMAGE_RATIO) * f;
+                             List<LivingEntity> list = this.level().getEntitiesOfClass(LivingEntity.class, target.getBoundingBox().inflate(1.0D, 0.25D, 1.0D));
+                             Iterator iterator = list.iterator();
