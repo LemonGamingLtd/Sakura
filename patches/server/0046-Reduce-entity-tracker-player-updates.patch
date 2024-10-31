@@ -5,10 +5,10 @@ Subject: [PATCH] Reduce entity tracker player updates
 
 
 diff --git a/src/main/java/net/minecraft/server/level/ChunkMap.java b/src/main/java/net/minecraft/server/level/ChunkMap.java
-index e80e1d7ac52ef6f81dab85916f8107bc3e9339c6..47e1bec18c9bed6028b63ed6a1bcc66bcd4df238 100644
+index 5799d608972310271f9a0da7cb9323daa8024f58..dcdd9a3482940ea970b8601ff9d97d9e81e7ca0e 100644
 --- a/src/main/java/net/minecraft/server/level/ChunkMap.java
 +++ b/src/main/java/net/minecraft/server/level/ChunkMap.java
-@@ -928,7 +928,11 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+@@ -932,7 +932,11 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
              if (tracker == null) {
                  continue;
              }
@@ -20,7 +20,7 @@ index e80e1d7ac52ef6f81dab85916f8107bc3e9339c6..47e1bec18c9bed6028b63ed6a1bcc66b
              tracker.serverEntity.sendChanges();
          }
  
-@@ -1205,12 +1209,30 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+@@ -1209,12 +1213,30 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
              return true;
          }
          // Sakura end - visibility api and command

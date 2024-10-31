@@ -251,18 +251,29 @@ index 1a37654aff9a9c86c9f7af10a1cf721371f0c5ec..82644b34a77dc5e5af38260b7b07b3ec
      public ClientboundSectionBlocksUpdatePacket(SectionPos sectionPos, ShortSet positions, LevelChunkSection section) {
          this.sectionPos = sectionPos;
 diff --git a/src/main/java/net/minecraft/server/level/ChunkMap.java b/src/main/java/net/minecraft/server/level/ChunkMap.java
-index af8cb316ac169aa8d98a88765b85bb013b9ba961..76d4b7e9dad6536c100e5940f9f528ba2561e3b8 100644
+index af8cb316ac169aa8d98a88765b85bb013b9ba961..7e77a384855904a36c717c311db7cf24566774b9 100644
 --- a/src/main/java/net/minecraft/server/level/ChunkMap.java
 +++ b/src/main/java/net/minecraft/server/level/ChunkMap.java
 @@ -172,6 +172,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
          return null; // Paper - rewrite chunk system
      }
      // Paper end
-+    private final it.unimi.dsi.fastutil.longs.Long2IntMap minimalEntities = new it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap(); // Sakura - visibility api
++    private final it.unimi.dsi.fastutil.longs.Long2IntMap minimalEntities; // Sakura - visibility api; minimal tnt/sand
  
      public ChunkMap(ServerLevel world, LevelStorageSource.LevelStorageAccess session, DataFixer dataFixer, StructureTemplateManager structureTemplateManager, Executor executor, BlockableEventLoop<Runnable> mainThreadExecutor, LightChunkGetter chunkProvider, ChunkGenerator chunkGenerator, ChunkProgressListener worldGenerationProgressListener, ChunkStatusUpdateListener chunkStatusChangeListener, Supplier<DimensionDataStorage> persistentStateManagerFactory, int viewDistance, boolean dsync) {
          super(new RegionStorageInfo(session.getLevelId(), world.dimension(), "chunk"), session.getDimensionPath(world.dimension()).resolve("region"), dataFixer, dsync);
-@@ -943,6 +944,8 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+@@ -220,6 +221,10 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+         this.poiManager = new PoiManager(new RegionStorageInfo(session.getLevelId(), world.dimension(), "poi"), path.resolve("poi"), dataFixer, dsync, iregistrycustom, world.getServer(), world);
+         this.setServerViewDistance(viewDistance);
+         this.worldGenContext = new WorldGenContext(world, chunkGenerator, structureTemplateManager, this.lightEngine, null); // Paper - rewrite chunk system
++        // Sakura start - visibility api; minimal tnt/sand
++        this.minimalEntities = new it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap();
++        this.minimalEntities.defaultReturnValue(Integer.MIN_VALUE);
++        // Sakura end - visibility api; minimal tnt/sand
+     }
+ 
+     // Paper start
+@@ -943,6 +948,8 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
              }
              ((ca.spottedleaf.moonrise.patches.entity_tracker.EntityTrackerTrackedEntity)tracker).moonrise$clearPlayers();
          }
@@ -271,13 +282,13 @@ index af8cb316ac169aa8d98a88765b85bb013b9ba961..76d4b7e9dad6536c100e5940f9f528ba
      }
      // Paper end - optimise entity tracker
  
-@@ -1179,6 +1182,29 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+@@ -1179,6 +1186,29 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
              }
          }
          // Paper end - optimise entity tracker
 +        // Sakura start - visibility api and command
 +        private boolean checkEntityVisibility(ServerPlayer player) {
-+            if (player.visibility.isModified() || !(this.entity.isPrimedTNT || this.entity.isFallingBlock)) {
++            if (!player.visibility.isModified() || !(this.entity.isPrimedTNT || this.entity.isFallingBlock)) {
 +                return true;
 +            }
 +            if (this.entity.isPrimedTNT && player.visibility.isToggled(me.samsuik.sakura.player.visibility.Visibility.Setting.TNT_VISIBILITY)) {
@@ -301,7 +312,7 @@ index af8cb316ac169aa8d98a88765b85bb013b9ba961..76d4b7e9dad6536c100e5940f9f528ba
  
          public TrackedEntity(final Entity entity, final int i, final int j, final boolean flag) {
              this.serverEntity = new ServerEntity(ChunkMap.this.level, entity, j, flag, this::broadcast, this.seenBy); // CraftBukkit
-@@ -1256,6 +1282,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+@@ -1256,6 +1286,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
                  }
                  flag = flag && this.entity.broadcastToPlayer(player) && ChunkMap.this.isChunkTracked(player, this.entity.chunkPosition().x, this.entity.chunkPosition().z);
                  // Paper end - Configurable entity tracking range by Y
