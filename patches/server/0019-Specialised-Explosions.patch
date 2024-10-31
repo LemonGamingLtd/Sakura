@@ -23,10 +23,10 @@ index c21e00812f1aaa1279834a0562d360d6b89e146c..1e1329adde1457898a3002279b53b1bb
          if (index >= 0) {
 diff --git a/src/main/java/me/samsuik/sakura/explosion/special/SpecialisedExplosion.java b/src/main/java/me/samsuik/sakura/explosion/special/SpecialisedExplosion.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..4cbef703a70208191d13075c2c54581eb8239f70
+index 0000000000000000000000000000000000000000..161728f788ef6bfebbc9efb6560d1af933907f42
 --- /dev/null
 +++ b/src/main/java/me/samsuik/sakura/explosion/special/SpecialisedExplosion.java
-@@ -0,0 +1,206 @@
+@@ -0,0 +1,205 @@
 +package me.samsuik.sakura.explosion.special;
 +
 +import ca.spottedleaf.moonrise.common.util.WorldUtil;
@@ -37,7 +37,6 @@ index 0000000000000000000000000000000000000000..4cbef703a70208191d13075c2c54581e
 +import net.minecraft.util.Mth;
 +import net.minecraft.world.damagesource.DamageSource;
 +import net.minecraft.world.entity.Entity;
-+import net.minecraft.world.entity.item.PrimedTnt;
 +import net.minecraft.world.level.ExplosionDamageCalculator;
 +import net.minecraft.world.level.ServerExplosion;
 +import net.minecraft.world.phys.AABB;
@@ -235,30 +234,24 @@ index 0000000000000000000000000000000000000000..4cbef703a70208191d13075c2c54581e
 +}
 diff --git a/src/main/java/me/samsuik/sakura/explosion/special/TntExplosion.java b/src/main/java/me/samsuik/sakura/explosion/special/TntExplosion.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..d5bd783cca91ab292cd9957fe25803773f75c4ee
+index 0000000000000000000000000000000000000000..45d9204f888c57d27ac5544e42f779ba425fcc4a
 --- /dev/null
 +++ b/src/main/java/me/samsuik/sakura/explosion/special/TntExplosion.java
-@@ -0,0 +1,208 @@
+@@ -0,0 +1,202 @@
 +package me.samsuik.sakura.explosion.special;
 +
 +import ca.spottedleaf.moonrise.common.list.IteratorSafeOrderedReferenceSet;
-+import ca.spottedleaf.moonrise.patches.collisions.ExplosionBlockCache;
 +import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 +import me.samsuik.sakura.entity.EntityState;
 +import me.samsuik.sakura.entity.merge.MergeLevel;
 +import me.samsuik.sakura.entity.merge.MergeableEntity;
 +import net.minecraft.core.BlockPos;
 +import net.minecraft.core.Direction;
-+import net.minecraft.core.Holder;
-+import net.minecraft.core.particles.ParticleOptions;
 +import net.minecraft.server.level.ServerLevel;
-+import net.minecraft.sounds.SoundEvent;
-+import net.minecraft.util.Mth;
 +import net.minecraft.world.damagesource.DamageSource;
 +import net.minecraft.world.entity.Entity;
 +import net.minecraft.world.entity.item.PrimedTnt;
 +import net.minecraft.world.level.ExplosionDamageCalculator;
-+import net.minecraft.world.level.Level;
 +import net.minecraft.world.phys.AABB;
 +import net.minecraft.world.phys.Vec3;
 +import org.bukkit.craftbukkit.util.CraftVector;

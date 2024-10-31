@@ -67,10 +67,10 @@ index 149e461fcb23b2ed7ae8dcc09837de501ba9eafb..613d2d90571546a482ba493fae5cbc7c
          if (xSmaller && z != 0.0) {
              z = performAABBCollisionsZ(axisalignedbb, z, aabbs);
 diff --git a/src/main/java/me/samsuik/sakura/explosion/special/SpecialisedExplosion.java b/src/main/java/me/samsuik/sakura/explosion/special/SpecialisedExplosion.java
-index 4cbef703a70208191d13075c2c54581eb8239f70..2ac8bd2cc879c493d9a008f7555c7277977129f5 100644
+index 161728f788ef6bfebbc9efb6560d1af933907f42..ca96bec3333b59b620a657c3c0d153e4596a5459 100644
 --- a/src/main/java/me/samsuik/sakura/explosion/special/SpecialisedExplosion.java
 +++ b/src/main/java/me/samsuik/sakura/explosion/special/SpecialisedExplosion.java
-@@ -164,9 +164,15 @@ public abstract class SpecialisedExplosion<T extends Entity> extends ServerExplo
+@@ -163,9 +163,15 @@ public abstract class SpecialisedExplosion<T extends Entity> extends ServerExplo
  
          if (distanceFromBottom <= 1.0) {
              double x = entity.getX() - pos.x;
@@ -88,10 +88,10 @@ index 4cbef703a70208191d13075c2c54581eb8239f70..2ac8bd2cc879c493d9a008f7555c7277
              if (distance != 0.0D) {
                  x /= distance;
 diff --git a/src/main/java/me/samsuik/sakura/explosion/special/TntExplosion.java b/src/main/java/me/samsuik/sakura/explosion/special/TntExplosion.java
-index d5bd783cca91ab292cd9957fe25803773f75c4ee..f08500cb89099896de45270386bb9b85f1230157 100644
+index 45d9204f888c57d27ac5544e42f779ba425fcc4a..048946c210e263b90880a431ea5ff243932c3e0f 100644
 --- a/src/main/java/me/samsuik/sakura/explosion/special/TntExplosion.java
 +++ b/src/main/java/me/samsuik/sakura/explosion/special/TntExplosion.java
-@@ -43,6 +43,13 @@ public final class TntExplosion extends SpecialisedExplosion<PrimedTnt> {
+@@ -37,6 +37,13 @@ public final class TntExplosion extends SpecialisedExplosion<PrimedTnt> {
          this.bounds = new AABB(center, center);
      }
  

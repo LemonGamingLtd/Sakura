@@ -5,10 +5,10 @@ Subject: [PATCH] Set entity impulse on explosion
 
 
 diff --git a/src/main/java/me/samsuik/sakura/explosion/special/SpecialisedExplosion.java b/src/main/java/me/samsuik/sakura/explosion/special/SpecialisedExplosion.java
-index 2ac8bd2cc879c493d9a008f7555c7277977129f5..8f5e17d6c132aedcd49e92bd0c82c9c6a4435282 100644
+index ca96bec3333b59b620a657c3c0d153e4596a5459..51388b968a96fef99e0db250a55266ebde03d903 100644
 --- a/src/main/java/me/samsuik/sakura/explosion/special/SpecialisedExplosion.java
 +++ b/src/main/java/me/samsuik/sakura/explosion/special/SpecialisedExplosion.java
-@@ -207,6 +207,7 @@ public abstract class SpecialisedExplosion<T extends Entity> extends ServerExplo
+@@ -206,6 +206,7 @@ public abstract class SpecialisedExplosion<T extends Entity> extends ServerExplo
              moveZ += z;
          }
  
