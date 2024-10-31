@@ -414,10 +414,10 @@ index 0000000000000000000000000000000000000000..6903863ad293a335a8ed1aeaa06fccb4
 +
 +}
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 3ef2f8b523b940db18a5d512f21f037fc799f487..873f37587a850fab964c11e96411252fd01e29f9 100644
+index 24aa17ae5f15f330b128a752dee4f79fa619b75d..06c09e3e4233a7a9ce3fac3c432a6bf645db9cd4 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -1230,6 +1230,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1229,6 +1229,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          }
      }
      private static final java.math.BigDecimal TPS_BASE = new java.math.BigDecimal(1E9).multiply(new java.math.BigDecimal(SAMPLE_INTERVAL));
@@ -425,7 +425,7 @@ index 3ef2f8b523b940db18a5d512f21f037fc799f487..873f37587a850fab964c11e96411252f
      // Paper end
      // Spigot End
  
-@@ -1299,6 +1300,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1298,6 +1299,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
                  if (++MinecraftServer.currentTick % MinecraftServer.SAMPLE_INTERVAL == 0) {
                      final long diff = currentTime - tickSection;
                      final java.math.BigDecimal currentTps = TPS_BASE.divide(new java.math.BigDecimal(diff), 30, java.math.RoundingMode.HALF_UP);
@@ -433,7 +433,7 @@ index 3ef2f8b523b940db18a5d512f21f037fc799f487..873f37587a850fab964c11e96411252f
                      tps1.add(currentTps, diff);
                      tps5.add(currentTps, diff);
                      tps15.add(currentTps, diff);
-@@ -1341,6 +1343,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1340,6 +1342,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
                              throw new RuntimeException("Chunk system crash propagated to tick()", crash);
                          }
                          // Paper end - rewrite chunk system

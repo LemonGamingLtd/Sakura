@@ -33,10 +33,10 @@ index ad85e5ebe00918a7fea4071351741566e4883dd0..58202fab518f8072ad8dc8d10aa2a9f6
      public ServerPlayer(MinecraftServer server, ServerLevel world, GameProfile profile, ClientInformation clientOptions) {
          super(world, world.getSharedSpawnPos(), world.getSharedSpawnAngle(), profile);
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 20c271879a79cc23c57421782e1199e0d52dfc2f..c946be760aa6c0503ca0727b7b372701f3586c9b 100644
+index 7976eb7496d57d5d1fe29c902e167d79a86bac32..5a984bb4900609b1dd6a7d9f6d4e4dd11281a6cb 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -3046,6 +3046,18 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -3044,6 +3044,18 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          return (this.getHandle().requestedViewDistance() == 0) ? Bukkit.getViewDistance() : this.getHandle().requestedViewDistance();
      }
  

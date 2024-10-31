@@ -1149,7 +1149,7 @@ index 0000000000000000000000000000000000000000..4024f9738e039ffffd560a07a2210f75
 +public record DurableMaterial(int durability, float resistance) {
 +}
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 7933d6900dac67a24fb5f9378097dbde34be30b1..3a47504876cf718935786d7b858cb6d53bd61ddb 100644
+index af8dbfcc9df105896c8574d2d9dd647ac30ae04d..9a741b30f1f8e3b151d54e36184e7e867163a6b4 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -327,6 +327,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -1160,7 +1160,7 @@ index 7933d6900dac67a24fb5f9378097dbde34be30b1..3a47504876cf718935786d7b858cb6d5
      public boolean isIteratingOverLevels = false; // Paper - Throw exception on world create while being ticked
  
      public volatile Thread shutdownThread; // Paper
-@@ -511,6 +512,10 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -510,6 +511,10 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          Runtime.getRuntime().addShutdownHook(new org.bukkit.craftbukkit.util.ServerShutdownThread(this));
          // CraftBukkit end
          this.paperConfigurations = services.paperConfigurations(); // Paper - add paper configuration files

@@ -126,11 +126,11 @@ index 0000000000000000000000000000000000000000..d7e24638f07f243502004970ab4ce646
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index c871ef194962d1fc574a8d3d9f27dd817ead5fc9..31dd38d80c648e3f946c123878529b3393be5a91 100644
+index b78b642b77a5cef54044b079916fef9b22e50fcc..7aaf3794338b8208ded6549e61479010c369ad87 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -1891,6 +1891,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
-             gameprofilerfiller.pop();
+             worldserver.explosionDensityCache.clear(); // Paper - Optimize explosions
              worldserver.localConfig().expire(currentTick); // Sakura - add local config
              worldserver.mergeHandler.expire(currentTick); // Sakura - merge cannon entities
 +            worldserver.densityCache.invalidate(); // Sakura - explosion density cache

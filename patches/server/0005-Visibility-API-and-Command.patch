@@ -498,10 +498,10 @@ index b0bc66dc7248aae691dcab68b925b52a1695e63f..b1a04865b0efee94227f0868910fc007
              throw new ReportedException(crashreport);
          }
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index c4b016a2fb5c79fb3f191e243712bee7cbe5cd2c..d8767738733a4d936723c1dccd2c4d273407b649 100644
+index d7ac001d53a083e9881f2320eb7fd5dcbd20416e..1acc9a0a5c95f6002d5654d49a1dae3ed51818da 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -3246,6 +3246,7 @@ public class ServerGamePacketListenerImpl extends ServerCommonPacketListenerImpl
+@@ -3247,6 +3247,7 @@ public class ServerGamePacketListenerImpl extends ServerCommonPacketListenerImpl
  
                          event.setCancelled(cancelled);
                          AbstractContainerMenu oldContainer = this.player.containerMenu; // SPIGOT-1224
@@ -549,7 +549,7 @@ index de87483600e55d88176fe25db621bbd3e464729f..5bd189fad703ac99d57258fa448dbcc1
  
      public PrimedTnt(Level world, double x, double y, double z, @Nullable LivingEntity igniter) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 9e4c416ddeccff87ea9ed5b45a2ef04eae2280bf..20c271879a79cc23c57421782e1199e0d52dfc2f 100644
+index 2c7ec674f55b3178b9dcba7f2bc1ff5efccb50ea..7976eb7496d57d5d1fe29c902e167d79a86bac32 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -552,6 +552,13 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
