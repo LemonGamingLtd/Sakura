@@ -5,10 +5,10 @@ Subject: [PATCH] Entity tracking range modifier
 
 
 diff --git a/src/main/java/net/minecraft/server/level/ChunkMap.java b/src/main/java/net/minecraft/server/level/ChunkMap.java
-index 44e897e9a4bcb75858e1d32b1095b2d4b70f2463..d7d29b0e8c4dbc4db52dd52a2e5572f1f4d052f9 100644
+index 3ffffb1214bece205ec1e36fbe7aa39631e7e2a2..cf7f94c0b08eca6aa9156fa6ffd1ce6bf89b7192 100644
 --- a/src/main/java/net/minecraft/server/level/ChunkMap.java
 +++ b/src/main/java/net/minecraft/server/level/ChunkMap.java
-@@ -1327,7 +1327,10 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+@@ -1331,7 +1331,10 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
                  double vec3d_dz = player.getZ() - this.entity.getZ();
                  // Paper end - remove allocation of Vec3D here
                  int i = ChunkMap.this.getPlayerViewDistance(player);
