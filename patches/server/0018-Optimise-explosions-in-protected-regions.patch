@@ -5,7 +5,7 @@ Subject: [PATCH] Optimise explosions in protected regions
 
 
 diff --git a/src/main/java/net/minecraft/world/level/ServerExplosion.java b/src/main/java/net/minecraft/world/level/ServerExplosion.java
-index 10432b31acd047ac2aa8581f2ee863254ec8d1eb..6001583d054b9690e34b6878b1298d93e6552a2a 100644
+index 10432b31acd047ac2aa8581f2ee863254ec8d1eb..b07c2eb8cc3cc54e8ab72c5ed3d6d7623416e7fb 100644
 --- a/src/main/java/net/minecraft/world/level/ServerExplosion.java
 +++ b/src/main/java/net/minecraft/world/level/ServerExplosion.java
 @@ -345,6 +345,22 @@ public class ServerExplosion implements Explosion {
@@ -36,7 +36,7 @@ index 10432b31acd047ac2aa8581f2ee863254ec8d1eb..6001583d054b9690e34b6878b1298d93
          }
          // Sakura end - optimise paper explosions
 +        // Sakura start - optimise protected explosions
-+        if (this.isRegionUnprotected()) {
++        if (!this.isRegionUnprotected()) {
 +            return ret;
 +        }
 +        // Sakura end - optimise protected explosions

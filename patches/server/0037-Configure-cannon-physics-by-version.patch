@@ -67,10 +67,10 @@ index 149e461fcb23b2ed7ae8dcc09837de501ba9eafb..613d2d90571546a482ba493fae5cbc7c
          if (xSmaller && z != 0.0) {
              z = performAABBCollisionsZ(axisalignedbb, z, aabbs);
 diff --git a/src/main/java/me/samsuik/sakura/explosion/special/SpecialisedExplosion.java b/src/main/java/me/samsuik/sakura/explosion/special/SpecialisedExplosion.java
-index 161728f788ef6bfebbc9efb6560d1af933907f42..ca96bec3333b59b620a657c3c0d153e4596a5459 100644
+index 82a448a18415ff0e050d26aaa8fcfe844631768f..449fa5518a1f9013dbd41dc4bfe3ff8a57b94a30 100644
 --- a/src/main/java/me/samsuik/sakura/explosion/special/SpecialisedExplosion.java
 +++ b/src/main/java/me/samsuik/sakura/explosion/special/SpecialisedExplosion.java
-@@ -163,9 +163,15 @@ public abstract class SpecialisedExplosion<T extends Entity> extends ServerExplo
+@@ -160,9 +160,15 @@ public abstract class SpecialisedExplosion<T extends Entity> extends ServerExplo
  
          if (distanceFromBottom <= 1.0) {
              double x = entity.getX() - pos.x;
@@ -88,7 +88,7 @@ index 161728f788ef6bfebbc9efb6560d1af933907f42..ca96bec3333b59b620a657c3c0d153e4
              if (distance != 0.0D) {
                  x /= distance;
 diff --git a/src/main/java/me/samsuik/sakura/explosion/special/TntExplosion.java b/src/main/java/me/samsuik/sakura/explosion/special/TntExplosion.java
-index 45d9204f888c57d27ac5544e42f779ba425fcc4a..048946c210e263b90880a431ea5ff243932c3e0f 100644
+index ebe5f0c8c2f09920b5f5ef734e63f5e7cd8bd3a1..320cdb1f4e655a2d093890e88476df90ed436ae5 100644
 --- a/src/main/java/me/samsuik/sakura/explosion/special/TntExplosion.java
 +++ b/src/main/java/me/samsuik/sakura/explosion/special/TntExplosion.java
 @@ -37,6 +37,13 @@ public final class TntExplosion extends SpecialisedExplosion<PrimedTnt> {
@@ -631,7 +631,7 @@ index 0ae2d83055252146e346b06cc8360eef56d39f5c..8c41282eafc1201bf1c0d001fb4fe791
      public final me.samsuik.sakura.explosion.density.BlockDensityCache densityCache = new me.samsuik.sakura.explosion.density.BlockDensityCache(); // Sakura - explosion density cache
      public final me.samsuik.sakura.explosion.durable.DurableBlockManager durabilityManager = new me.samsuik.sakura.explosion.durable.DurableBlockManager(); // Sakura - explosion durable blocks
 diff --git a/src/main/java/net/minecraft/world/level/ServerExplosion.java b/src/main/java/net/minecraft/world/level/ServerExplosion.java
-index 1a912813ab7fa112379876ea1d4c903afe45c069..97debcf36d4aa3f8a6c83d35c53ba95342966fbf 100644
+index 5f2657e3baa6a9be301d36a456dd8d1135d78857..145417fd4623b5bdf6daac8fd100d6b572651153 100644
 --- a/src/main/java/net/minecraft/world/level/ServerExplosion.java
 +++ b/src/main/java/net/minecraft/world/level/ServerExplosion.java
 @@ -413,6 +413,7 @@ public class ServerExplosion implements Explosion {

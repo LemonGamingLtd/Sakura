@@ -23,15 +23,16 @@ index c21e00812f1aaa1279834a0562d360d6b89e146c..1e1329adde1457898a3002279b53b1bb
          if (index >= 0) {
 diff --git a/src/main/java/me/samsuik/sakura/explosion/special/SpecialisedExplosion.java b/src/main/java/me/samsuik/sakura/explosion/special/SpecialisedExplosion.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..161728f788ef6bfebbc9efb6560d1af933907f42
+index 0000000000000000000000000000000000000000..82a448a18415ff0e050d26aaa8fcfe844631768f
 --- /dev/null
 +++ b/src/main/java/me/samsuik/sakura/explosion/special/SpecialisedExplosion.java
-@@ -0,0 +1,205 @@
+@@ -0,0 +1,202 @@
 +package me.samsuik.sakura.explosion.special;
 +
 +import ca.spottedleaf.moonrise.common.util.WorldUtil;
 +import ca.spottedleaf.moonrise.patches.chunk_system.level.entity.ChunkEntitySlices;
 +import ca.spottedleaf.moonrise.patches.chunk_system.level.entity.EntityLookup;
++import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 +import net.minecraft.core.BlockPos;
 +import net.minecraft.server.level.ServerLevel;
 +import net.minecraft.util.Mth;
@@ -73,7 +74,7 @@ index 0000000000000000000000000000000000000000..161728f788ef6bfebbc9efb6560d1af9
 +    public final void explode() {
 +        if (this.radius() < 0.1F) {
 +            // (radius < 0.1F) in bukkit is assumed to not be able to find any blocks or entities.
-+            for (int i = 1; i < this.getExplosionCount(); ++i) {
++            for (int i = this.getExplosionCount() - 1; i >= 0; --i) {
 +                this.finalizeExplosionAndParticles(List.of());
 +            }
 +        } else {
@@ -93,18 +94,14 @@ index 0000000000000000000000000000000000000000..161728f788ef6bfebbc9efb6560d1af9
 +
 +    protected final boolean finalizeExplosionAndParticles(List<BlockPos> blocks) {
 +        this.wasCanceled = false;
-+        this.interactWithBlocks(blocks);
-+        boolean destroyedBlocks = !blocks.isEmpty();
-+
-+        if (!this.interactsWithBlocks()) {
-+            blocks.clear(); // server sends block changes in the explosion packet
-+        }
++        List<BlockPos> explodedPositions = new ObjectArrayList<>(blocks);
++        this.interactWithBlocks(explodedPositions);
 +
 +        if (!this.wasCanceled) {
 +            this.applyEffects.accept(this);
 +        }
 +
-+        return destroyedBlocks;
++        return !explodedPositions.isEmpty();
 +    }
 +
 +    protected void postExplosion(List<BlockPos> foundBlocks, boolean destroyedBlocks) {
@@ -234,10 +231,10 @@ index 0000000000000000000000000000000000000000..161728f788ef6bfebbc9efb6560d1af9
 +}
 diff --git a/src/main/java/me/samsuik/sakura/explosion/special/TntExplosion.java b/src/main/java/me/samsuik/sakura/explosion/special/TntExplosion.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..45d9204f888c57d27ac5544e42f779ba425fcc4a
+index 0000000000000000000000000000000000000000..ebe5f0c8c2f09920b5f5ef734e63f5e7cd8bd3a1
 --- /dev/null
 +++ b/src/main/java/me/samsuik/sakura/explosion/special/TntExplosion.java
-@@ -0,0 +1,202 @@
+@@ -0,0 +1,201 @@
 +package me.samsuik.sakura.explosion.special;
 +
 +import ca.spottedleaf.moonrise.common.list.IteratorSafeOrderedReferenceSet;
@@ -291,12 +288,11 @@ index 0000000000000000000000000000000000000000..45d9204f888c57d27ac5544e42f779ba
 +            Vec3 previousMomentum = this.cause.entityState().momentum();
 +            boolean lastCycle = i == 0;
 +            List<BlockPos> toBlow = this.midExplosion(previousMomentum, lastCycle); // search for blocks and impact entities
++            boolean destroyedBlocks = this.finalizeExplosionAndParticles(toBlow);
 +
 +            if (!lastCycle) {
 +                EntityState entityState = this.nextSourceVelocity();
-+                List<BlockPos> foundBlocks = new ObjectArrayList<>(toBlow);
-+                boolean destroyedBlocks = this.finalizeExplosionAndParticles(toBlow);
-+                this.postExplosion(foundBlocks, destroyedBlocks); // update wrapped, clear recent block cache
++                this.postExplosion(toBlow, destroyedBlocks); // update wrapped, clear recent block cache
 +                this.updateExplosionPosition(entityState, destroyedBlocks);
 +            }
 +        }
@@ -512,7 +508,7 @@ index 6b739e820af6333c1ff3a4b87154d4c00c9a5559..0a9e62dd90c6aba4ff97391d69f9a92d
      // Sakura end - merge cannon entities
  
 diff --git a/src/main/java/net/minecraft/world/level/ServerExplosion.java b/src/main/java/net/minecraft/world/level/ServerExplosion.java
-index 6001583d054b9690e34b6878b1298d93e6552a2a..11b12c1c4eff015bc40c7e7e965badb3f3fd272e 100644
+index b07c2eb8cc3cc54e8ab72c5ed3d6d7623416e7fb..9381a6810e709194dc50651cd2518942f1d91dec 100644
 --- a/src/main/java/net/minecraft/world/level/ServerExplosion.java
 +++ b/src/main/java/net/minecraft/world/level/ServerExplosion.java
 @@ -52,9 +52,9 @@ public class ServerExplosion implements Explosion {
