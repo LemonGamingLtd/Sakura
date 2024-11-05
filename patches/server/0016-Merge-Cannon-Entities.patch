@@ -438,11 +438,11 @@ index ac43d1d91f7ac554f1267b3d76e22bd8f06d8f08..1f278f6ef7e39df676334e7e5853dec4
                              this.guardEntityTick(this::tickNonPassenger, entity);
                              gameprofilerfiller.pop();
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index 4a295091629acd9a540f1194b006f445e4432d4f..c8b33f6d5b820da4b9e16b7d251ca4aad1875aa8 100644
+index 105b2d368891685642c6c5a7b08969a71085c9bb..a26a562e283b306d265b53612d1c04eccb74e962 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
 @@ -647,6 +647,23 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
-         return to.entityState() != null && to.entityState().isCurrentState(this);
+         return to.entityState() != null && to.entityState().comparePositionAndMotion(this);
      }
      // Sakura end - store entity data/state
 +    // Sakura start - merge cannon entities

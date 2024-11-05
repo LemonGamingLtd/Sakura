@@ -6,49 +6,53 @@ Subject: [PATCH] Store Entity Data/State
 
 diff --git a/src/main/java/me/samsuik/sakura/entity/EntityState.java b/src/main/java/me/samsuik/sakura/entity/EntityState.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..10630c7e04a137ce766f4a45cb0f2e51bd967c98
+index 0000000000000000000000000000000000000000..aeb5f128b369753cb20b7310fa382ddf2b6e8f0f
 --- /dev/null
 +++ b/src/main/java/me/samsuik/sakura/entity/EntityState.java
-@@ -0,0 +1,37 @@
+@@ -0,0 +1,41 @@
 +package me.samsuik.sakura.entity;
 +
 +import net.minecraft.core.BlockPos;
 +import net.minecraft.world.entity.Entity;
++import net.minecraft.world.level.block.Blocks;
 +import net.minecraft.world.phys.AABB;
 +import net.minecraft.world.phys.Vec3;
++import org.jspecify.annotations.NullMarked;
 +
 +import java.util.Optional;
 +
++@NullMarked
 +public record EntityState(Vec3 position, Vec3 momentum, AABB bb, Vec3 stuckSpeed, Optional<BlockPos> supportingPos, boolean onGround, float fallDistance) {
 +    public static EntityState of(Entity entity) {
-+        return new EntityState(entity.position(), entity.getDeltaMovement(), entity.getBoundingBox(), entity.stuckSpeedMultiplier(), entity.mainSupportingBlockPos, entity.onGround(), entity.fallDistance);
++        return new EntityState(
++            entity.position(), entity.getDeltaMovement(), entity.getBoundingBox(),
++            entity.stuckSpeedMultiplier(), entity.mainSupportingBlockPos,
++            entity.onGround(), entity.fallDistance
++        );
 +    }
 +
 +    public void apply(Entity entity) {
 +        entity.setPos(this.position);
 +        entity.setDeltaMovement(this.momentum);
 +        entity.setBoundingBox(this.bb);
-+        // null here is only safe for our use case (tnt and sand)
-+        //noinspection DataFlowIssue
-+        entity.makeStuckInBlock(null, this.stuckSpeed);
++        entity.makeStuckInBlock(Blocks.AIR.defaultBlockState(), this.stuckSpeed);
 +        entity.onGround = this.onGround;
 +        entity.mainSupportingBlockPos = this.supportingPos;
 +        entity.fallDistance = this.fallDistance;
 +    }
 +
-+    public void position(Entity entity) {
++    public void applyEntityPosition(Entity entity) {
 +        entity.setPos(this.position);
 +        entity.setBoundingBox(this.bb);
 +    }
 +
-+    public boolean isCurrentState(Entity entity) {
++    public boolean comparePositionAndMotion(Entity entity) {
 +        return entity.position().equals(this.position)
 +            && entity.getDeltaMovement().equals(this.momentum);
-+            // && entity.getBoundingBox().equals(bb); // uncomment if there are issues with morphed bounding boxes
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index 2d8618541d2e673686485901ffc8e693545354a3..4a295091629acd9a540f1194b006f445e4432d4f 100644
+index 2d8618541d2e673686485901ffc8e693545354a3..105b2d368891685642c6c5a7b08969a71085c9bb 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
 @@ -628,6 +628,25 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
@@ -71,7 +75,7 @@ index 2d8618541d2e673686485901ffc8e693545354a3..4a295091629acd9a540f1194b006f445
 +    }
 +
 +    public final boolean compareState(Entity to) {
-+        return to.entityState() != null && to.entityState().isCurrentState(this);
++        return to.entityState() != null && to.entityState().comparePositionAndMotion(this);
 +    }
 +    // Sakura end - store entity data/state
  
