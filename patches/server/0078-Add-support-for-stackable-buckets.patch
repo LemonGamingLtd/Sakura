@@ -1,23 +1,14 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Nahuel Dolores <contact@nahu.me>
-Date: Wed, 18 Sep 2024 10:54:50 +0200
+Date: Wed, 6 Nov 2024 13:27:19 +0100
 Subject: [PATCH] Add support for stackable buckets
 
 
 diff --git a/src/main/java/me/samsuik/sakura/configuration/GlobalConfiguration.java b/src/main/java/me/samsuik/sakura/configuration/GlobalConfiguration.java
-index 5296d4e0a1041932e36562f42fbf3e1dcfea33fe..31f37fdaf658feed820f511c9c2d424ca3788bb9 100644
+index ab790630fe4a95ac0e7139e5d41fd8df3393e738..0594e27f3745f31b64ddc9793ca1b68611379137 100644
 --- a/src/main/java/me/samsuik/sakura/configuration/GlobalConfiguration.java
 +++ b/src/main/java/me/samsuik/sakura/configuration/GlobalConfiguration.java
-@@ -11,7 +11,7 @@ import org.spongepowered.configurate.objectmapping.meta.Setting;
- public class GlobalConfiguration extends ConfigurationPart {
- 
-     private static final Logger LOGGER = LogUtils.getClassLogger();
--    static final int CURRENT_VERSION = 1;// (when you change the version, change the comment, so it conflicts on rebases): rename filter bad nbt from spawn eggs
-+    static final int CURRENT_VERSION = 2;// (when you change the version, change the comment, so it conflicts on rebases): buckets !
- 
-     private static GlobalConfiguration instance;
-     public static GlobalConfiguration get() {
-@@ -25,6 +25,12 @@ public class GlobalConfiguration extends ConfigurationPart {
+@@ -27,6 +27,12 @@ public class GlobalConfiguration extends ConfigurationPart {
      @Setting(Configuration.VERSION_FIELD)
      public int version = CURRENT_VERSION;
  
@@ -27,14 +18,14 @@ index 5296d4e0a1041932e36562f42fbf3e1dcfea33fe..31f37fdaf658feed820f511c9c2d424c
 +        public int maxBucketStackSize = 16;
 +    }
 +
-     public Fps fps;
-     public class Fps extends ConfigurationPart {
-         public String message = "<dark_gray>(<light_purple>S</light_purple>) <gray><state> <yellow><name>";
+     public Messages messages;
+     public class Messages extends ConfigurationPart {
+         public String durableBlockInteraction = "<dark_gray>(<light_purple>S</light_purple>) <white>This block has <gray><remaining></gray> of <gray><durability>";
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 5f066ffa28b6eb6560c4645ce52f7cbc36c7d3f5..556aa40d867406476c242d0f416664fcdd0d7b19 100644
+index b0b6bd0fe9c50a237d889e7bdcab290c8424af42..fdfb034df5b535261e50f5a50782bdd90e96b436 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -3222,6 +3222,18 @@ public class ServerGamePacketListenerImpl extends ServerCommonPacketListenerImpl
+@@ -3230,6 +3230,18 @@ public class ServerGamePacketListenerImpl extends ServerCommonPacketListenerImpl
                          switch (event.getResult()) {
                              case ALLOW:
                              case DEFAULT:
