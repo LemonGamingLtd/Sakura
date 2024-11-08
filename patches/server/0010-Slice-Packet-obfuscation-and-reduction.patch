@@ -185,10 +185,10 @@ index 90eb4927fa51ce3df86aa7b6c71f49150a03e337..a960c7ac83cb32b2eb1f292fd9a561ba
  
          if (this.entity instanceof LivingEntity) {
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index 4be6b57d11c48da84a58b025fddb2b6aafaec55a..2d8618541d2e673686485901ffc8e693545354a3 100644
+index eb0026368463aaac46dbbf1800032809041f7874..c1c933bd6d40b533e332948168db40ac7164fdea 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
-@@ -3708,7 +3708,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -3709,7 +3709,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
              this.entityData.markDirty(Entity.DATA_AIR_SUPPLY_ID);
              return;
          }

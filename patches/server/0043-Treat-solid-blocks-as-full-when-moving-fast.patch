@@ -48,10 +48,10 @@ index 613d2d90571546a482ba493fae5cbc7c69dd8f08..72b135bbd5eed8e3f94f815a7b7ee827
                                          blockCollision = blockData.getCollisionShape(world, mutablePos, collisionShape);
                                      }
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index 671bd5aa322a1516776163827c0fc4c85c84615e..80451700fac1da06401097c80d416100dd331c31 100644
+index fce41d825a35700deaa0475aef85fa6e6b431790..2c84608aba2bfb610a7f2898e45f9a047691b3f4 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
-@@ -625,6 +625,14 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -626,6 +626,14 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
              flags |= ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.COLLISION_FLAG_ADD_TICKET;
          }
  

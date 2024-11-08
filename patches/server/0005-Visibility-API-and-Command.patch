@@ -498,7 +498,7 @@ index b0bc66dc7248aae691dcab68b925b52a1695e63f..b1a04865b0efee94227f0868910fc007
              throw new ReportedException(crashreport);
          }
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index d7ac001d53a083e9881f2320eb7fd5dcbd20416e..1acc9a0a5c95f6002d5654d49a1dae3ed51818da 100644
+index b5d5dbc50a7b8c40739a15f164ffd08fdc534f9c..5af07a78bf29c52f4138d551b5fc6d7ce41bb8ca 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -3247,6 +3247,7 @@ public class ServerGamePacketListenerImpl extends ServerCommonPacketListenerImpl
@@ -510,10 +510,10 @@ index d7ac001d53a083e9881f2320eb7fd5dcbd20416e..1acc9a0a5c95f6002d5654d49a1dae3e
                          if (this.player.containerMenu != oldContainer) {
                              return;
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index 6574219da33a7b9a4906883e65b78d7806f6e67b..eec06c841ae4dc9b3bf9c59d47352b4bd859c9c8 100644
+index a0876d3f88620bb24ef69101fc67b0dcd5dca0d2..35da89072cea86c1b1bc54784908bfb7bd449f4a 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
-@@ -610,6 +610,10 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -611,6 +611,10 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          }
      }
      // Paper end - optimise entity tracker

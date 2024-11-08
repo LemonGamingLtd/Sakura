@@ -5,10 +5,10 @@ Subject: [PATCH] Add max armour durability damage
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-index 88dc63e5c739eb39822999d226856205a3c6099b..26f3a8a0e0ab07908f1130b404d792e5e0d21aae 100644
+index d40dbe4bd5c4983337453d753f20a8b555236f16..a7709e4fc5ade9882d115fdbcf37146574fffcbd 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-@@ -2512,6 +2512,12 @@ public abstract class LivingEntity extends Entity implements Attackable {
+@@ -2513,6 +2513,12 @@ public abstract class LivingEntity extends Entity implements Attackable {
              // Apply damage to armor
              if (!damagesource.is(DamageTypeTags.BYPASSES_ARMOR)) {
                  float armorDamage = (float) (event.getDamage() + event.getDamage(DamageModifier.BLOCKING) + event.getDamage(DamageModifier.HARD_HAT));

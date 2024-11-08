@@ -21,10 +21,10 @@ index a9315006379f7ab5b40cb6aba7ed82727afe3a5a..292ec3f8332631c6614e5ed25eeb82f9
          } else { entity.inactiveTick(); } // Paper - EAR 2
          gameprofilerfiller.pop();
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index 80451700fac1da06401097c80d416100dd331c31..17255cc9739392d23b5b55f2be5660fc56d538d5 100644
+index 2c84608aba2bfb610a7f2898e45f9a047691b3f4..0868f3d8d93e4c360a0a53df741950789f3c6a1c 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
-@@ -680,6 +680,19 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -681,6 +681,19 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          return this.physics;
      }
      // Sakura end - physics version api
@@ -44,7 +44,7 @@ index 80451700fac1da06401097c80d416100dd331c31..17255cc9739392d23b5b55f2be5660fc
  
      public Entity(EntityType<?> type, Level world) {
          this.id = Entity.ENTITY_COUNTER.incrementAndGet();
-@@ -732,6 +745,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -733,6 +746,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          this.entityData = datawatcher_a.build();
          this.setPos(0.0D, 0.0D, 0.0D);
          this.eyeHeight = this.dimensions.eyeHeight();

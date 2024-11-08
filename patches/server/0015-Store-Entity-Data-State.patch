@@ -52,10 +52,10 @@ index 0000000000000000000000000000000000000000..aeb5f128b369753cb20b7310fa382ddf
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index 2d8618541d2e673686485901ffc8e693545354a3..105b2d368891685642c6c5a7b08969a71085c9bb 100644
+index c1c933bd6d40b533e332948168db40ac7164fdea..1fbe29291e2c8318427525f126842b9ce9f5b946 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
-@@ -628,6 +628,25 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -629,6 +629,25 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          return flags;
      }
      // Sakura end - load chunks on movement

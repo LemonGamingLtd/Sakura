@@ -5,10 +5,10 @@ Subject: [PATCH] Optimise LivingEntity#pushEntities
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-index e3b81e5b2591fde8e15dfd0bee393000dd633096..a2724a075fc2f8c8127ed87cfa35d7ae72c347e8 100644
+index e86314de8d908a0c3e9f17d3e163c11180cf3f59..799250a0b2056743fde37d28a032f15ad1850d49 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-@@ -3766,7 +3766,12 @@ public abstract class LivingEntity extends Entity implements Attackable {
+@@ -3767,7 +3767,12 @@ public abstract class LivingEntity extends Entity implements Attackable {
                  return;
              }
              // Paper end - don't run getEntities if we're not going to use its result

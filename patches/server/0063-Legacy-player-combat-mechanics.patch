@@ -145,7 +145,7 @@ index 0000000000000000000000000000000000000000..b4ab8f172d713204bb9c1ebf575dcc28
 +    private LegacyDamageMapping() {}
 +}
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-index c477eb3ea41e7d7caa04179248f116f617317cbd..3534821c8b600b9b3d3655c071fc59a3e3b4c23e 100644
+index 57d5a4a1c819f2e06df8cb958783f99990a27557..bf323c5941d348c0c72bdda2a04a20a6653ad70a 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
 @@ -310,6 +310,43 @@ public abstract class LivingEntity extends Entity implements Attackable {
@@ -209,7 +209,7 @@ index c477eb3ea41e7d7caa04179248f116f617317cbd..3534821c8b600b9b3d3655c071fc59a3
          }
  
          return amount;
-@@ -3458,6 +3504,11 @@ public abstract class LivingEntity extends Entity implements Attackable {
+@@ -3459,6 +3505,11 @@ public abstract class LivingEntity extends Entity implements Attackable {
  
                          EnchantmentHelper.runLocationChangedEffects(worldserver, itemstack, this, enumitemslot1);
                      }

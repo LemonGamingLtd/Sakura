@@ -5,10 +5,10 @@ Subject: [PATCH] Optimise cannon entity movement
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index c8b33f6d5b820da4b9e16b7d251ca4aad1875aa8..fcb0df76474b641ea86eeb87755faead66397d26 100644
+index e369034397cabd79b67714402cf6431b94594285..b3eea40ba5315e1dd4ea7b2a5a61c53b63e909dc 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
-@@ -1249,6 +1249,75 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1250,6 +1250,75 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          return this.moveStartZ;
      }
      // Paper end - detailed watchdog information
@@ -84,7 +84,7 @@ index c8b33f6d5b820da4b9e16b7d251ca4aad1875aa8..fcb0df76474b641ea86eeb87755faead
  
      public void move(MoverType type, Vec3 movement) {
          final Vec3 originalMovement = movement; // Paper - Expose pre-collision velocity
-@@ -1610,6 +1679,107 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1611,6 +1680,107 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          return offsetFactor;
      }
  

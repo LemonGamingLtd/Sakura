@@ -398,7 +398,7 @@ index 0000000000000000000000000000000000000000..2c2a26fdb3081ced574070e5e6f3a1b4
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 06c09e3e4233a7a9ce3fac3c432a6bf645db9cd4..b78b642b77a5cef54044b079916fef9b22e50fcc 100644
+index 68894f38607025943f86be7a7857733dafaf37fd..61b24eac8f17d5a433817ae2ebb3baf2599af210 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -1890,6 +1890,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -438,10 +438,10 @@ index ac43d1d91f7ac554f1267b3d76e22bd8f06d8f08..1f278f6ef7e39df676334e7e5853dec4
                              this.guardEntityTick(this::tickNonPassenger, entity);
                              gameprofilerfiller.pop();
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index 105b2d368891685642c6c5a7b08969a71085c9bb..a26a562e283b306d265b53612d1c04eccb74e962 100644
+index 1fbe29291e2c8318427525f126842b9ce9f5b946..e369034397cabd79b67714402cf6431b94594285 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
-@@ -647,6 +647,23 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -648,6 +648,23 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          return to.entityState() != null && to.entityState().comparePositionAndMotion(this);
      }
      // Sakura end - store entity data/state
@@ -465,7 +465,7 @@ index 105b2d368891685642c6c5a7b08969a71085c9bb..a26a562e283b306d265b53612d1c04ec
  
      public Entity(EntityType<?> type, Level world) {
          this.id = Entity.ENTITY_COUNTER.incrementAndGet();
-@@ -5209,6 +5226,11 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -5239,6 +5256,11 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          if (this.removalReason != Entity.RemovalReason.UNLOADED_TO_CHUNK) { this.getPassengers().forEach(Entity::stopRiding); } // Paper - rewrite chunk system
          this.levelCallback.onRemove(entity_removalreason);
          this.onRemoval(entity_removalreason);

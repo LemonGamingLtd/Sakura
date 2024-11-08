@@ -5,10 +5,10 @@ Subject: [PATCH] Entity pushed by fluid API
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index fcb0df76474b641ea86eeb87755faead66397d26..1fa30edd2609523ede356d0ce30aa4f7b74968cc 100644
+index b3eea40ba5315e1dd4ea7b2a5a61c53b63e909dc..de6a81d222cd5fef81be87c188b5a726710202f7 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
-@@ -664,6 +664,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -665,6 +665,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          }
      }
      // Sakura end - merge cannon entities
@@ -16,7 +16,7 @@ index fcb0df76474b641ea86eeb87755faead66397d26..1fa30edd2609523ede356d0ce30aa4f7
  
      public Entity(EntityType<?> type, Level world) {
          this.id = Entity.ENTITY_COUNTER.incrementAndGet();
-@@ -4481,7 +4482,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4482,7 +4483,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
      }
  
      public boolean isPushedByFluid() {
