@@ -575,10 +575,10 @@ index 0000000000000000000000000000000000000000..9460afc669594ddb53b097ae105abb29
 +}
 diff --git a/src/main/java/me/samsuik/sakura/configuration/WorldConfiguration.java b/src/main/java/me/samsuik/sakura/configuration/WorldConfiguration.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..3ccd52a58996b60ec860fb50a509b92739f45b28
+index 0000000000000000000000000000000000000000..7631050f589151cc61ef144e43e9abfb45c26bfd
 --- /dev/null
 +++ b/src/main/java/me/samsuik/sakura/configuration/WorldConfiguration.java
-@@ -0,0 +1,236 @@
+@@ -0,0 +1,242 @@
 +package me.samsuik.sakura.configuration;
 +
 +import com.mojang.logging.LogUtils;
@@ -714,6 +714,12 @@ index 0000000000000000000000000000000000000000..3ccd52a58996b60ec860fb50a509b927
 +            public boolean redstoneCache = false;
 +            public boolean fluidsBreakRedstone = true;
 +        }
++
++        @Comment(
++            "Allow TNT duplication while `allow-piston-duplication` is disabled.\n" +
++            "This exists so servers can enable TNT duplication without reintroducing the other forms of piston duplication."
++        )
++        public boolean allowTNTDuplication = false;
 +    }
 +
 +    public Players players;
@@ -1149,7 +1155,7 @@ index 0000000000000000000000000000000000000000..4024f9738e039ffffd560a07a2210f75
 +public record DurableMaterial(int durability, float resistance) {
 +}
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index af8dbfcc9df105896c8574d2d9dd647ac30ae04d..9a741b30f1f8e3b151d54e36184e7e867163a6b4 100644
+index 64b56abf8900d0424100da460fc68ac964394793..b771196ac2aa905312d7e106cae710d68e4733d3 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -327,6 +327,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -1235,7 +1241,7 @@ index 022de445bbbb869c38be4972c98dcf1c665539ec..d95292d388efa4c504440347f1e5dfc2
          this.world = new CraftWorld((ServerLevel) this, gen, biomeProvider, env);
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 9f9eefc7346838a9effcda861cecd098092efb0f..2205444180ae615b50a3cbae6bf5fa31504aeff0 100644
+index e80439a0d17adaab7b782626fd2ee9ce1669058c..53d013a3c82f77cd388aadef1fe27f531db7bd89 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -1074,6 +1074,7 @@ public final class CraftServer implements Server {
