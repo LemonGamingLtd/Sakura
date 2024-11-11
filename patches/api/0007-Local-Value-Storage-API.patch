@@ -6,18 +6,24 @@ Subject: [PATCH] Local Value Storage API
 
 diff --git a/src/main/java/me/samsuik/sakura/local/LocalRegion.java b/src/main/java/me/samsuik/sakura/local/LocalRegion.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..34a0755da6c471a51fb18a5e139af42df1362a93
+index 0000000000000000000000000000000000000000..6f76eae76ab40c0aa9e53d66df9af9827d067dda
 --- /dev/null
 +++ b/src/main/java/me/samsuik/sakura/local/LocalRegion.java
-@@ -0,0 +1,36 @@
+@@ -0,0 +1,41 @@
 +package me.samsuik.sakura.local;
 +
-+import org.bukkit.Location;
++import io.papermc.paper.math.Position;
++import org.bukkit.util.Vector;
++import org.jspecify.annotations.NullMarked;
 +
++@NullMarked
 +public record LocalRegion(int minX, int minZ, int maxX, int maxZ) {
-+
-+    public static LocalRegion of(Location min, Location max) {
++    public static LocalRegion of(Vector min, Vector max) {
 +        return of(min.getBlockX(), min.getBlockZ(), max.getBlockX(), max.getBlockZ());
++    }
++
++    public static LocalRegion of(Position min, Position max) {
++        return of(min.blockX(), min.blockZ(), max.blockX(), max.blockZ());
 +    }
 +
 +    public static LocalRegion of(int minX, int minZ, int maxX, int maxZ) {
@@ -32,59 +38,57 @@ index 0000000000000000000000000000000000000000..34a0755da6c471a51fb18a5e139af42d
 +    }
 +
 +    public boolean intersects(LocalRegion region) {
-+        return (minX < region.minX() && maxX > region.minX() || maxX > region.maxX() && minX < region.maxX())
-+            && (minZ < region.minZ() && maxZ > region.minZ() || maxZ > region.maxZ() && minZ < region.maxZ());
++        return (this.minX < region.minX() && this.maxX > region.minX() || this.maxX > region.maxX() && this.minX < region.maxX())
++            && (this.minZ < region.minZ() && this.maxZ > region.minZ() || this.maxZ > region.maxZ() && this.minZ < region.maxZ());
 +    }
 +
 +    public boolean contains(LocalRegion region) {
-+        return minX < region.minX() && maxX > region.maxX()
-+            && maxZ < region.minZ() && maxZ > region.maxZ();
++        return this.minX < region.minX() && this.maxX > region.maxX()
++            && this.maxZ < region.minZ() && this.maxZ > region.maxZ();
 +    }
 +
 +    public boolean contains(int x, int z) {
-+        return minX <= x && maxX >= x && minZ <= z && maxZ >= z;
++        return this.minX <= x && this.maxX >= x && this.minZ <= z && this.maxZ >= z;
 +    }
-+
 +}
 diff --git a/src/main/java/me/samsuik/sakura/local/LocalValueKey.java b/src/main/java/me/samsuik/sakura/local/LocalValueKey.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..ee3057c7969956b9c552ac5ceb2f5e38a30e9cdf
+index 0000000000000000000000000000000000000000..adb2048a02e71433618b26a14f4c71f0e26fe943
 --- /dev/null
 +++ b/src/main/java/me/samsuik/sakura/local/LocalValueKey.java
-@@ -0,0 +1,27 @@
+@@ -0,0 +1,26 @@
 +package me.samsuik.sakura.local;
 +
 +import org.bukkit.NamespacedKey;
++import org.jspecify.annotations.NullMarked;
 +
 +import java.util.Objects;
 +import java.util.function.Supplier;
 +
++@NullMarked
 +public record LocalValueKey<T>(NamespacedKey key, Supplier<T> defaultSupplier) {
-+
 +    // ...
 +
 +    @Override
 +    public boolean equals(Object o) {
 +        if (this == o) return true;
-+        if (o == null || getClass() != o.getClass()) return false;
++        if (o == null || this.getClass() != o.getClass()) return false;
 +
 +        LocalValueKey<?> that = (LocalValueKey<?>) o;
-+
-+        return Objects.equals(key, that.key);
++        return this.key.equals(that.key);
 +    }
 +
 +    @Override
 +    public int hashCode() {
-+        return key != null ? key.hashCode() : 0;
++        return this.key.hashCode();
 +    }
-+
 +}
 diff --git a/src/main/java/me/samsuik/sakura/local/storage/LocalStorageHandler.java b/src/main/java/me/samsuik/sakura/local/storage/LocalStorageHandler.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..5c971fb4266f46de258767fccaf7fe55be467886
+index 0000000000000000000000000000000000000000..220a12eddf3aeaeb7adfd6404b5225e392439ca8
 --- /dev/null
 +++ b/src/main/java/me/samsuik/sakura/local/storage/LocalStorageHandler.java
-@@ -0,0 +1,24 @@
+@@ -0,0 +1,22 @@
 +package me.samsuik.sakura.local.storage;
 +
 +import me.samsuik.sakura.local.LocalRegion;
@@ -93,7 +97,6 @@ index 0000000000000000000000000000000000000000..5c971fb4266f46de258767fccaf7fe55
 +import java.util.List;
 +
 +public interface LocalStorageHandler {
-+
 +    LocalRegion locate(Location location, int searchDistance);
 +
 +    LocalRegion locate(int x, int z, int searchDistance);
@@ -107,21 +110,23 @@ index 0000000000000000000000000000000000000000..5c971fb4266f46de258767fccaf7fe55
 +    void remove(LocalRegion region);
 +
 +    List<LocalRegion> regions();
-+
 +}
 diff --git a/src/main/java/me/samsuik/sakura/local/storage/LocalValueStorage.java b/src/main/java/me/samsuik/sakura/local/storage/LocalValueStorage.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..de18836d1a2a6038a661cdc60161d3bacdcb8bfe
+index 0000000000000000000000000000000000000000..791637f4c817b32e30b47a88adc5a525389cdcdd
 --- /dev/null
 +++ b/src/main/java/me/samsuik/sakura/local/storage/LocalValueStorage.java
-@@ -0,0 +1,39 @@
+@@ -0,0 +1,42 @@
 +package me.samsuik.sakura.local.storage;
 +
 +import me.samsuik.sakura.local.LocalValueKey;
++import org.jspecify.annotations.NullMarked;
 +
 +import java.util.HashMap;
 +import java.util.Map;
 +
++@NullMarked
++@SuppressWarnings("unchecked")
 +public final class LocalValueStorage {
 +    private final Map<LocalValueKey<?>, Object> map = new HashMap<>();
 +

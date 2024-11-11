@@ -5,22 +5,24 @@ Subject: [PATCH] Add durable material API
 
 
 diff --git a/src/main/java/me/samsuik/sakura/local/LocalValueKey.java b/src/main/java/me/samsuik/sakura/local/LocalValueKey.java
-index 58f220a3f48a8cc1a25249d4a56cf356dc2c9c99..4735e5d8dcea4835061b5cada9d601794efdf390 100644
+index f80f7f299c2208c5160bcf763f686f7bd6375eec..8a688431aaa56166afd2c95731220c0aba2147ed 100644
 --- a/src/main/java/me/samsuik/sakura/local/LocalValueKey.java
 +++ b/src/main/java/me/samsuik/sakura/local/LocalValueKey.java
-@@ -1,8 +1,11 @@
+@@ -1,10 +1,12 @@
  package me.samsuik.sakura.local;
  
  import me.samsuik.sakura.physics.PhysicsVersion;
 +import org.bukkit.Material;
  import org.bukkit.NamespacedKey;
+ import org.jspecify.annotations.NullMarked;
  
+-import java.util.Objects;
 +import java.util.HashMap;
 +import java.util.Map;
- import java.util.Objects;
  import java.util.function.Supplier;
  
-@@ -13,6 +16,10 @@ public record LocalValueKey<T>(NamespacedKey key, Supplier<T> defaultSupplier) {
+ @NullMarked
+@@ -14,6 +16,10 @@ public record LocalValueKey<T>(NamespacedKey key, Supplier<T> defaultSupplier) {
              new NamespacedKey("sakura", "physics-version"), () -> PhysicsVersion.LATEST
      );
  

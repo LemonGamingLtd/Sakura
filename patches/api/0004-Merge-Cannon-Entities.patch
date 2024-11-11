@@ -6,14 +6,15 @@ Subject: [PATCH] Merge Cannon Entities
 
 diff --git a/src/main/java/me/samsuik/sakura/entity/merge/MergeLevel.java b/src/main/java/me/samsuik/sakura/entity/merge/MergeLevel.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..506ea3cb8c3b965661a65f9a91903999c1eba309
+index 0000000000000000000000000000000000000000..f8010a92ac82e76611ff7a9be259f11db0a1cc90
 --- /dev/null
 +++ b/src/main/java/me/samsuik/sakura/entity/merge/MergeLevel.java
-@@ -0,0 +1,64 @@
+@@ -0,0 +1,42 @@
 +package me.samsuik.sakura.entity.merge;
 +
-+import java.util.Locale;
++import org.jspecify.annotations.NullMarked;
 +
++@NullMarked
 +public enum MergeLevel {
 +    /**
 +     * Disabled.
@@ -44,50 +45,28 @@ index 0000000000000000000000000000000000000000..506ea3cb8c3b965661a65f9a91903999
 +    }
 +
 +    public boolean atLeast(MergeLevel level) {
-+        return getLevel() >= level.getLevel();
++        return this.getLevel() >= level.getLevel();
 +    }
 +
 +    public int getLevel() {
-+        return level;
-+    }
-+
-+    public static MergeLevel from(int of) {
-+        for (MergeLevel t : values()) {
-+            if (t.getLevel() == of) {
-+                return t;
-+            }
-+        }
-+
-+        return NONE;
-+    }
-+
-+    public static MergeLevel from(String string) {
-+        try {
-+            return from(Integer.parseInt(string));
-+        } catch (NumberFormatException ignored) {}
-+
-+        try {
-+            var name = string.toUpperCase(Locale.ROOT);
-+            return valueOf(name);
-+        } catch (IllegalArgumentException ignored) {}
-+
-+        return NONE;
++        return this.level;
 +    }
 +}
 diff --git a/src/main/java/me/samsuik/sakura/entity/merge/Mergeable.java b/src/main/java/me/samsuik/sakura/entity/merge/Mergeable.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..c241a3a359cad1d7c2cdb690649e0cacc491508b
+index 0000000000000000000000000000000000000000..c33c461b10ff27bc5b0a294b61078c89cceae6b8
 --- /dev/null
 +++ b/src/main/java/me/samsuik/sakura/entity/merge/Mergeable.java
-@@ -0,0 +1,13 @@
+@@ -0,0 +1,14 @@
 +package me.samsuik.sakura.entity.merge;
 +
-+import org.jetbrains.annotations.NotNull;
++import org.jspecify.annotations.NullMarked;
 +
++@NullMarked
 +public interface Mergeable {
-+    @NotNull MergeLevel getMergeLevel();
++    MergeLevel getMergeLevel();
 +
-+    void setMergeLevel(@NotNull MergeLevel level);
++    void setMergeLevel(MergeLevel level);
 +
 +    int getStacked();
 +

@@ -5,7 +5,7 @@ Subject: [PATCH] Add physics version API
 
 
 diff --git a/src/main/java/me/samsuik/sakura/local/LocalValueKey.java b/src/main/java/me/samsuik/sakura/local/LocalValueKey.java
-index ee3057c7969956b9c552ac5ceb2f5e38a30e9cdf..58f220a3f48a8cc1a25249d4a56cf356dc2c9c99 100644
+index adb2048a02e71433618b26a14f4c71f0e26fe943..f80f7f299c2208c5160bcf763f686f7bd6375eec 100644
 --- a/src/main/java/me/samsuik/sakura/local/LocalValueKey.java
 +++ b/src/main/java/me/samsuik/sakura/local/LocalValueKey.java
 @@ -1,5 +1,6 @@
@@ -13,11 +13,11 @@ index ee3057c7969956b9c552ac5ceb2f5e38a30e9cdf..58f220a3f48a8cc1a25249d4a56cf356
  
 +import me.samsuik.sakura.physics.PhysicsVersion;
  import org.bukkit.NamespacedKey;
+ import org.jspecify.annotations.NullMarked;
  
- import java.util.Objects;
-@@ -8,6 +9,9 @@ import java.util.function.Supplier;
+@@ -9,6 +10,9 @@ import java.util.function.Supplier;
+ @NullMarked
  public record LocalValueKey<T>(NamespacedKey key, Supplier<T> defaultSupplier) {
- 
      // ...
 +    public static final LocalValueKey<PhysicsVersion> PHYSICS_VERSION = new LocalValueKey<>(
 +            new NamespacedKey("sakura", "physics-version"), () -> PhysicsVersion.LATEST
@@ -27,18 +27,18 @@ index ee3057c7969956b9c552ac5ceb2f5e38a30e9cdf..58f220a3f48a8cc1a25249d4a56cf356
      public boolean equals(Object o) {
 diff --git a/src/main/java/me/samsuik/sakura/physics/PhysicsVersion.java b/src/main/java/me/samsuik/sakura/physics/PhysicsVersion.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..51aa1c9495170b51182cf76e9b6526d6e9c5287f
+index 0000000000000000000000000000000000000000..685fefb4ac36153f038b28452e3b29ded52cff07
 --- /dev/null
 +++ b/src/main/java/me/samsuik/sakura/physics/PhysicsVersion.java
-@@ -0,0 +1,95 @@
+@@ -0,0 +1,74 @@
 +package me.samsuik.sakura.physics;
 +
-+public enum PhysicsVersion {
++import org.jspecify.annotations.NullMarked;
 +
-+    // replicates patched 1.8.8 mechanics
-+    LEGACY("legacy", 1_0_0),
-+    // vanilla mechanics:
-+    v1_8_2("1.8.2", 1_8_2),
++@NullMarked
++public enum PhysicsVersion {
++    LEGACY("legacy", 1_0_0),  // replicates patched 1.8.8 paper mechanics
++    v1_8_2("1.8.2", 1_8_2),   // vanilla mechanics
 +    v1_9("1.9", 1_9_0),
 +    v1_10("1.10", 1_10_0),
 +    v1_11("1.11", 1_11_0),
@@ -51,43 +51,7 @@ index 0000000000000000000000000000000000000000..51aa1c9495170b51182cf76e9b6526d6
 +    v1_19_3("1.19.3", 1_19_3),
 +    v1_20("1.20", 1_20_0),
 +    v1_21_2("1.21.2", 1_21_2),
-+    // refers to the latest mechanic version
-+    LATEST("latest", 9_99_9);
-+
-+    // utilities:
-+    public static PhysicsVersion of(String string) {
-+        for (PhysicsVersion ver : values()) {
-+            if (ver.getFriendlyName().equalsIgnoreCase(string)) {
-+                return ver;
-+            }
-+        }
-+
-+        return null;
-+    }
-+
-+    public static PhysicsVersion closest(int formattedVersion) {
-+        PhysicsVersion found = null;
-+
-+        for (PhysicsVersion ver : values()) {
-+            if (formattedVersion >= ver.getVersion()) {
-+                found = ver;
-+            }
-+        }
-+
-+        return found;
-+    }
-+
-+    public static PhysicsVersion closest(String provided) {
-+        // check for "legacy" or "latest"
-+        PhysicsVersion physicsVersion = of(provided);
-+
-+        if (physicsVersion != null) {
-+            return physicsVersion;
-+        }
-+
-+        String versionString = provided.replace(".", "");
-+        return closest(Integer.parseInt(versionString));
-+    }
++    LATEST("latest", 9_99_9); // latest version
 +
 +    private final String friendlyName;
 +    private final int version;
@@ -101,16 +65,16 @@ index 0000000000000000000000000000000000000000..51aa1c9495170b51182cf76e9b6526d6
 +        return this == LEGACY;
 +    }
 +
-+    public boolean afterOrEqual(int max) {
-+        return this.version >= max;
++    public boolean afterOrEqual(int version) {
++        return this.version >= version;
 +    }
 +
-+    public boolean before(int max) {
-+        return this.version < max;
++    public boolean before(int version) {
++        return this.version < version;
 +    }
 +
-+    public boolean is(int max) {
-+        return this.version == max;
++    public boolean is(int version) {
++        return this.version == version;
 +    }
 +
 +    public boolean isWithin(int min, int max) {
@@ -125,4 +89,19 @@ index 0000000000000000000000000000000000000000..51aa1c9495170b51182cf76e9b6526d6
 +        return this.friendlyName;
 +    }
 +
++    public static PhysicsVersion from(String string) {
++        int parsedVersion = Integer.MIN_VALUE;
++        try {
++            String versionString = string.replace(".", "");
++            parsedVersion = Integer.parseInt(versionString);
++        } catch (NumberFormatException nfe) {
++            // ignored
++        }
++        for (PhysicsVersion ver : values()) {
++            if (ver.name().equalsIgnoreCase(string) || ver.getFriendlyName().equalsIgnoreCase(string) || ver.is(parsedVersion)) {
++                return ver;
++            }
++        }
++        return LATEST;
++    }
 +}

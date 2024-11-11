@@ -5,7 +5,7 @@ Subject: [PATCH] Add redstone implementation API
 
 
 diff --git a/src/main/java/me/samsuik/sakura/local/LocalValueKey.java b/src/main/java/me/samsuik/sakura/local/LocalValueKey.java
-index 4735e5d8dcea4835061b5cada9d601794efdf390..098ce4d0356fb1dddbd4e34c02f77848da1fb546 100644
+index 8a688431aaa56166afd2c95731220c0aba2147ed..346f6392c82ff27ec4439c645948337ce1832ba3 100644
 --- a/src/main/java/me/samsuik/sakura/local/LocalValueKey.java
 +++ b/src/main/java/me/samsuik/sakura/local/LocalValueKey.java
 @@ -1,6 +1,7 @@
@@ -15,7 +15,7 @@ index 4735e5d8dcea4835061b5cada9d601794efdf390..098ce4d0356fb1dddbd4e34c02f77848
 +import me.samsuik.sakura.redstone.RedstoneImplementation;
  import org.bukkit.Material;
  import org.bukkit.NamespacedKey;
- 
+ import org.jspecify.annotations.NullMarked;
 @@ -20,6 +21,10 @@ public record LocalValueKey<T>(NamespacedKey key, Supplier<T> defaultSupplier) {
              new NamespacedKey("sakura", "durable-materials"), HashMap::new
      );
@@ -29,14 +29,16 @@ index 4735e5d8dcea4835061b5cada9d601794efdf390..098ce4d0356fb1dddbd4e34c02f77848
          if (this == o) return true;
 diff --git a/src/main/java/me/samsuik/sakura/redstone/RedstoneImplementation.java b/src/main/java/me/samsuik/sakura/redstone/RedstoneImplementation.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..f89b5112d98d351435c63b27c64b1a981b8a820f
+index 0000000000000000000000000000000000000000..bfb5e9ec99dfdd6f4664ddb8191496706bc0d2a1
 --- /dev/null
 +++ b/src/main/java/me/samsuik/sakura/redstone/RedstoneImplementation.java
-@@ -0,0 +1,19 @@
+@@ -0,0 +1,20 @@
 +package me.samsuik.sakura.redstone;
 +
-+public enum RedstoneImplementation {
++import org.jspecify.annotations.NullMarked;
 +
++@NullMarked
++public enum RedstoneImplementation {
 +    VANILLA("vanilla"),
 +    EIGENCRAFT("eigencraft"),
 +    ALTERNATE_CURRENT("alternate-current");
@@ -48,7 +50,6 @@ index 0000000000000000000000000000000000000000..f89b5112d98d351435c63b27c64b1a98
 +    }
 +
 +    public String getFriendlyName() {
-+        return friendlyName;
++        return this.friendlyName;
 +    }
-+
 +}
