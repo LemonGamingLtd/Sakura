@@ -1,0 +1,974 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Samsuik <kfian294ma4@gmail.com>
+Date: Tue, 21 Sep 2021 23:54:25 +0100
+Subject: [PATCH] Client Visibility Settings
+
+
+diff --git a/src/main/java/me/samsuik/sakura/command/SakuraCommands.java b/src/main/java/me/samsuik/sakura/command/SakuraCommands.java
+index 3e85c19db0655034c203eaab8d2e6b5504da5da8..cbb2e57f9ab3b48a6e5f792711c4c6fd2d34d445 100644
+--- a/src/main/java/me/samsuik/sakura/command/SakuraCommands.java
++++ b/src/main/java/me/samsuik/sakura/command/SakuraCommands.java
+@@ -1,6 +1,9 @@
+ package me.samsuik.sakura.command;
+ 
+ import me.samsuik.sakura.command.subcommands.ConfigCommand;
++import me.samsuik.sakura.command.subcommands.FPSCommand;
++import me.samsuik.sakura.command.subcommands.VisualCommand;
++import me.samsuik.sakura.player.visibility.VisibilityTypes;
+ import net.minecraft.server.MinecraftServer;
+ import org.bukkit.command.Command;
+ 
+@@ -12,6 +15,9 @@ public final class SakuraCommands {
+     static {
+         COMMANDS.put("sakura", new SakuraCommand("sakura"));
+         COMMANDS.put("config", new ConfigCommand("config"));
++        COMMANDS.put("fps", new FPSCommand("fps"));
++        COMMANDS.put("tntvisibility", new VisualCommand(VisibilityTypes.TNT, "tnttoggle"));
++        COMMANDS.put("sandvisibility", new VisualCommand(VisibilityTypes.SAND, "sandtoggle"));
+     }
+ 
+     public static void registerCommands(MinecraftServer server) {
+diff --git a/src/main/java/me/samsuik/sakura/command/subcommands/FPSCommand.java b/src/main/java/me/samsuik/sakura/command/subcommands/FPSCommand.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..a85f84ebfef4ed3f3dc2a337a057d541f64c9d0e
+--- /dev/null
++++ b/src/main/java/me/samsuik/sakura/command/subcommands/FPSCommand.java
+@@ -0,0 +1,24 @@
++package me.samsuik.sakura.command.subcommands;
++
++import me.samsuik.sakura.command.BaseSubCommand;
++import me.samsuik.sakura.player.visibility.VisibilityGui;
++import org.bukkit.command.CommandSender;
++import org.bukkit.entity.Player;
++import org.checkerframework.checker.nullness.qual.NonNull;
++import org.checkerframework.framework.qual.DefaultQualifier;
++
++@DefaultQualifier(NonNull.class)
++public final class FPSCommand extends BaseSubCommand {
++    private final VisibilityGui visibilityGui = new VisibilityGui();
++
++    public FPSCommand(String name) {
++        super(name);
++    }
++
++    @Override
++    public void execute(CommandSender sender, String[] args) {
++        if (sender instanceof Player player) {
++            this.visibilityGui.showTo(player);
++        }
++    }
++}
+diff --git a/src/main/java/me/samsuik/sakura/command/subcommands/VisualCommand.java b/src/main/java/me/samsuik/sakura/command/subcommands/VisualCommand.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..cd9ebbb7bbb90c87faf75fcc4b487e93573f1387
+--- /dev/null
++++ b/src/main/java/me/samsuik/sakura/command/subcommands/VisualCommand.java
+@@ -0,0 +1,41 @@
++package me.samsuik.sakura.command.subcommands;
++
++import me.samsuik.sakura.command.BaseSubCommand;
++import me.samsuik.sakura.configuration.GlobalConfiguration;
++import me.samsuik.sakura.player.visibility.VisibilitySettings;
++import me.samsuik.sakura.player.visibility.VisibilityState;
++import me.samsuik.sakura.player.visibility.VisibilityType;
++import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
++import org.bukkit.command.CommandSender;
++import org.bukkit.entity.Player;
++import org.checkerframework.checker.nullness.qual.NonNull;
++import org.checkerframework.framework.qual.DefaultQualifier;
++
++import java.util.Arrays;
++
++@DefaultQualifier(NonNull.class)
++public final class VisualCommand extends BaseSubCommand {
++    private final VisibilityType type;
++
++    public VisualCommand(VisibilityType type, String... aliases) {
++        super(type.key() + "visibility");
++        this.setAliases(Arrays.asList(aliases));
++        this.type = type;
++    }
++
++    @Override
++    public void execute(CommandSender sender, String[] args) {
++        if (!(sender instanceof Player player)) {
++            return;
++        }
++
++        VisibilitySettings settings = player.getVisibility();
++        VisibilityState state = settings.toggle(type);
++
++        String stateName = (state == VisibilityState.ON) ? "Enabled" : "Disabled";
++        player.sendRichMessage(GlobalConfiguration.get().messages.fpsSettingChange,
++            Placeholder.unparsed("name", this.type.key()),
++            Placeholder.unparsed("state", stateName)
++        );
++    }
++}
+diff --git a/src/main/java/me/samsuik/sakura/configuration/GlobalConfiguration.java b/src/main/java/me/samsuik/sakura/configuration/GlobalConfiguration.java
+index 1b49023726fc80231ba952c555923228130a2bdb..d1cfd66e8eea7a181d23d931af2402ce88ff1641 100644
+--- a/src/main/java/me/samsuik/sakura/configuration/GlobalConfiguration.java
++++ b/src/main/java/me/samsuik/sakura/configuration/GlobalConfiguration.java
+@@ -9,6 +9,8 @@ import org.slf4j.Logger;
+ import org.spongepowered.configurate.objectmapping.meta.Comment;
+ import org.spongepowered.configurate.objectmapping.meta.Setting;
+ 
++import java.util.Locale;
++
+ @SuppressWarnings({"CanBeFinal", "FieldCanBeLocal", "FieldMayBeFinal", "NotNullFieldNotInitialized", "InnerClassMayBeStatic", "RedundantSuppression"})
+ public final class GlobalConfiguration extends ConfigurationPart {
+ 
+@@ -35,7 +37,7 @@ public final class GlobalConfiguration extends ConfigurationPart {
+ 
+     public Fps fps;
+     public class Fps extends ConfigurationPart {
+-        public Material material = Material.PINK_STAINED_GLASS_PANE;
++        public String guiColour = "pink";
+     }
+ 
+     public Players players;
+diff --git a/src/main/java/me/samsuik/sakura/player/gui/FeatureGui.java b/src/main/java/me/samsuik/sakura/player/gui/FeatureGui.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..49f53c01d61cbe551aa68a91f53782e8f01d9c67
+--- /dev/null
++++ b/src/main/java/me/samsuik/sakura/player/gui/FeatureGui.java
+@@ -0,0 +1,44 @@
++package me.samsuik.sakura.player.gui;
++
++import me.samsuik.sakura.player.gui.components.GuiComponent;
++import net.kyori.adventure.text.Component;
++import org.bukkit.entity.Player;
++import org.bukkit.event.inventory.InventoryClickEvent;
++import org.bukkit.inventory.Inventory;
++import org.jetbrains.annotations.ApiStatus;
++import org.jspecify.annotations.NullMarked;
++
++@NullMarked
++public abstract class FeatureGui {
++    private final int size;
++    private final Component title;
++
++    public FeatureGui(int size, Component title) {
++        this.size = size;
++        this.title = title;
++    }
++
++    protected abstract void fillInventory(Inventory inventory);
++
++    protected abstract void afterFill(Player player, FeatureGuiInventory inventory);
++
++    public final void showTo(Player bukkitPlayer) {
++        FeatureGuiInventory featureInventory = new FeatureGuiInventory(this, this.size, this.title);
++        this.fillInventory(featureInventory.getInventory());
++        this.afterFill(bukkitPlayer, featureInventory);
++        bukkitPlayer.openInventory(featureInventory.getInventory());
++    }
++
++    @ApiStatus.Internal
++    public static void clickEvent(InventoryClickEvent event) {
++        Inventory clicked = event.getClickedInventory();
++        if (clicked != null && clicked.getHolder(false) instanceof FeatureGuiInventory featureInventory) {
++            event.setCancelled(true);
++            for (GuiComponent component : featureInventory.getComponents().reversed()) {
++                if (component.interaction(event, featureInventory)) {
++                    break;
++                }
++            }
++        }
++    }
++}
+diff --git a/src/main/java/me/samsuik/sakura/player/gui/FeatureGuiInventory.java b/src/main/java/me/samsuik/sakura/player/gui/FeatureGuiInventory.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..6c86501b8a392ed04c46646bfac0cad9b2ca33bc
+--- /dev/null
++++ b/src/main/java/me/samsuik/sakura/player/gui/FeatureGuiInventory.java
+@@ -0,0 +1,90 @@
++package me.samsuik.sakura.player.gui;
++
++import com.google.common.base.Preconditions;
++import com.google.common.collect.HashMultimap;
++import com.google.common.collect.ImmutableList;
++import com.google.common.collect.Multimap;
++import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
++import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
++import me.samsuik.sakura.player.gui.components.GuiComponent;
++import net.kyori.adventure.text.Component;
++import org.bukkit.Bukkit;
++import org.bukkit.NamespacedKey;
++import org.bukkit.inventory.Inventory;
++import org.bukkit.inventory.InventoryHolder;
++import org.jspecify.annotations.NullMarked;
++
++import java.util.Collection;
++import java.util.Optional;
++
++@NullMarked
++public final class FeatureGuiInventory implements InventoryHolder {
++    private final Inventory inventory;
++    private final FeatureGui gui;
++    private final Multimap<NamespacedKey, GuiComponent> componentsUnderKey = HashMultimap.create();
++    private final Object2ObjectMap<GuiComponent, NamespacedKey> componentKeys = new Object2ObjectLinkedOpenHashMap<>();
++
++    public FeatureGuiInventory(FeatureGui gui, int size, Component component) {
++        this.inventory = Bukkit.createInventory(this, size, component);
++        this.gui = gui;
++    }
++
++    @Override
++    public Inventory getInventory() {
++        return this.inventory;
++    }
++
++    public FeatureGui getGui() {
++        return this.gui;
++    }
++
++    public ImmutableList<GuiComponent> getComponents() {
++        return ImmutableList.copyOf(this.componentKeys.keySet());
++    }
++
++    public ImmutableList<GuiComponent> findComponents(NamespacedKey key) {
++        return ImmutableList.copyOf(this.componentsUnderKey.get(key));
++    }
++
++    public Optional<GuiComponent> findFirst(NamespacedKey key) {
++        Collection<GuiComponent> components = this.componentsUnderKey.get(key);
++        return components.stream().findFirst();
++    }
++
++    public void removeComponents(NamespacedKey key) {
++        Collection<GuiComponent> removed = this.componentsUnderKey.removeAll(key);
++        for (GuiComponent component : removed) {
++            this.componentKeys.remove(component);
++        }
++    }
++
++    public void addComponent(GuiComponent component, NamespacedKey key) {
++        Preconditions.checkArgument(!this.componentKeys.containsKey(component), "component has already been added");
++        this.componentKeys.put(component, key);
++        this.componentsUnderKey.put(key, component);
++        this.inventoryUpdate(component);
++    }
++
++    public void removeComponent(GuiComponent component) {
++        NamespacedKey key = this.componentKeys.remove(component);
++        this.componentsUnderKey.remove(key, component);
++    }
++
++    public void replaceComponent(GuiComponent component, GuiComponent replacement) {
++        NamespacedKey key = this.componentKeys.remove(component);
++        Preconditions.checkNotNull(key, "component does not exist");
++        this.componentKeys.put(replacement, key);
++        this.componentsUnderKey.remove(key, component);
++        this.componentsUnderKey.put(key, replacement);
++        this.inventoryUpdate(replacement);
++    }
++
++    public void removeAllComponents() {
++        this.componentKeys.clear();
++        this.componentsUnderKey.clear();
++    }
++
++    private void inventoryUpdate(GuiComponent component) {
++        component.creation(this.inventory);
++    }
++}
+diff --git a/src/main/java/me/samsuik/sakura/player/gui/ItemStackUtil.java b/src/main/java/me/samsuik/sakura/player/gui/ItemStackUtil.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..eddf7632f194142c48f4012734128a10e422eea6
+--- /dev/null
++++ b/src/main/java/me/samsuik/sakura/player/gui/ItemStackUtil.java
+@@ -0,0 +1,19 @@
++package me.samsuik.sakura.player.gui;
++
++import net.kyori.adventure.text.Component;
++import org.bukkit.Material;
++import org.bukkit.inventory.ItemStack;
++import org.jspecify.annotations.NullMarked;
++
++@NullMarked
++public class ItemStackUtil {
++    public static ItemStack itemWithBlankName(Material material) {
++        return itemWithName(material, Component.empty());
++    }
++
++    public static ItemStack itemWithName(Material material, Component component) {
++        ItemStack item = new ItemStack(material);
++        item.editMeta(m -> m.itemName(component));
++        return item;
++    }
++}
+diff --git a/src/main/java/me/samsuik/sakura/player/gui/components/GuiClickEvent.java b/src/main/java/me/samsuik/sakura/player/gui/components/GuiClickEvent.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..39065d5003bfa60e7453079eb3202bea1b605d4a
+--- /dev/null
++++ b/src/main/java/me/samsuik/sakura/player/gui/components/GuiClickEvent.java
+@@ -0,0 +1,10 @@
++package me.samsuik.sakura.player.gui.components;
++
++import me.samsuik.sakura.player.gui.FeatureGuiInventory;
++import org.bukkit.event.inventory.InventoryClickEvent;
++import org.jspecify.annotations.NullMarked;
++
++@NullMarked
++public interface GuiClickEvent {
++    void doSomething(InventoryClickEvent event, FeatureGuiInventory inventory);
++}
+diff --git a/src/main/java/me/samsuik/sakura/player/gui/components/GuiComponent.java b/src/main/java/me/samsuik/sakura/player/gui/components/GuiComponent.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..5a2ff0ca3462254bc4e01192b48c321c6f34e909
+--- /dev/null
++++ b/src/main/java/me/samsuik/sakura/player/gui/components/GuiComponent.java
+@@ -0,0 +1,13 @@
++package me.samsuik.sakura.player.gui.components;
++
++import me.samsuik.sakura.player.gui.FeatureGuiInventory;
++import org.bukkit.event.inventory.InventoryClickEvent;
++import org.bukkit.inventory.Inventory;
++import org.jspecify.annotations.NullMarked;
++
++@NullMarked
++public interface GuiComponent {
++    boolean interaction(InventoryClickEvent event, FeatureGuiInventory featureInventory);
++
++    void creation(Inventory inventory);
++}
+diff --git a/src/main/java/me/samsuik/sakura/player/gui/components/ItemButton.java b/src/main/java/me/samsuik/sakura/player/gui/components/ItemButton.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..6d49d3390b2e01fcffd638abdde569d1788f3256
+--- /dev/null
++++ b/src/main/java/me/samsuik/sakura/player/gui/components/ItemButton.java
+@@ -0,0 +1,34 @@
++package me.samsuik.sakura.player.gui.components;
++
++import me.samsuik.sakura.player.gui.FeatureGuiInventory;
++import org.bukkit.event.inventory.InventoryClickEvent;
++import org.bukkit.inventory.Inventory;
++import org.bukkit.inventory.ItemStack;
++import org.jspecify.annotations.NullMarked;
++
++@NullMarked
++public final class ItemButton implements GuiComponent {
++    private final ItemStack bukkitItem;
++    private final int slot;
++    private final GuiClickEvent whenClicked;
++
++    public ItemButton(ItemStack bukkitItem, int slot, GuiClickEvent whenClicked) {
++        this.bukkitItem = bukkitItem;
++        this.slot = slot;
++        this.whenClicked = whenClicked;
++    }
++
++    @Override
++    public boolean interaction(InventoryClickEvent event, FeatureGuiInventory featureInventory) {
++        if (event.getSlot() == this.slot) {
++            this.whenClicked.doSomething(event, featureInventory);
++            return true;
++        }
++        return false;
++    }
++
++    @Override
++    public void creation(Inventory inventory) {
++        inventory.setItem(this.slot, this.bukkitItem);
++    }
++}
+diff --git a/src/main/java/me/samsuik/sakura/player/gui/components/ItemSwitch.java b/src/main/java/me/samsuik/sakura/player/gui/components/ItemSwitch.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..243f1cbabf7054d7d5092f21e923e4dea5085123
+--- /dev/null
++++ b/src/main/java/me/samsuik/sakura/player/gui/components/ItemSwitch.java
+@@ -0,0 +1,44 @@
++package me.samsuik.sakura.player.gui.components;
++
++import com.google.common.base.Preconditions;
++import me.samsuik.sakura.player.gui.FeatureGuiInventory;
++import org.bukkit.event.inventory.InventoryClickEvent;
++import org.bukkit.inventory.Inventory;
++import org.bukkit.inventory.ItemStack;
++import org.jspecify.annotations.NullMarked;
++
++import java.util.Collections;
++import java.util.List;
++
++@NullMarked
++public final class ItemSwitch implements GuiComponent {
++    private final List<ItemStack> items;
++    private final int slot;
++    private final int selected;
++    private final GuiClickEvent whenClicked;
++
++    public ItemSwitch(List<ItemStack> items, int slot, int selected, GuiClickEvent whenClicked) {
++        Preconditions.checkArgument(!items.isEmpty());
++        this.items = Collections.unmodifiableList(items);
++        this.slot = slot;
++        this.selected = selected;
++        this.whenClicked = whenClicked;
++    }
++
++    @Override
++    public boolean interaction(InventoryClickEvent event, FeatureGuiInventory featureInventory) {
++        if (this.slot == event.getSlot()) {
++            int next = (this.selected + 1) % this.items.size();
++            ItemSwitch itemSwitch = new ItemSwitch(this.items, this.slot, next, this.whenClicked);
++            featureInventory.replaceComponent(this, itemSwitch);
++            this.whenClicked.doSomething(event, featureInventory);
++            return true;
++        }
++        return false;
++    }
++
++    @Override
++    public void creation(Inventory inventory) {
++        inventory.setItem(this.slot, this.items.get(this.selected));
++    }
++}
+diff --git a/src/main/java/me/samsuik/sakura/player/visibility/PlayerVisibilitySettings.java b/src/main/java/me/samsuik/sakura/player/visibility/PlayerVisibilitySettings.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..bf765e17032d8d1d203e07350dcfed91791bc9bb
+--- /dev/null
++++ b/src/main/java/me/samsuik/sakura/player/visibility/PlayerVisibilitySettings.java
+@@ -0,0 +1,66 @@
++package me.samsuik.sakura.player.visibility;
++
++import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
++import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
++import net.minecraft.nbt.CompoundTag;
++import org.jetbrains.annotations.NotNull;
++import org.jspecify.annotations.NonNull;
++
++public final class PlayerVisibilitySettings implements VisibilitySettings {
++    private static final String SETTINGS_COMPOUND_TAG = "clientVisibilitySettings";
++    private final Reference2ObjectMap<VisibilityType, VisibilityState> visibilityStates = new Reference2ObjectOpenHashMap<>();
++
++    @Override
++    public @NonNull VisibilityState get(@NonNull VisibilityType type) {
++        VisibilityState state = this.visibilityStates.get(type);
++        return state != null ? state : type.getDefault();
++    }
++
++    @Override
++    public @NotNull VisibilityState set(@NonNull VisibilityType type, @NonNull VisibilityState state) {
++        if (type.isDefault(state)) {
++            this.visibilityStates.remove(type);
++        } else {
++            this.visibilityStates.put(type, state);
++        }
++        return state;
++    }
++
++    @Override
++    public @NonNull VisibilityState currentState() {
++        int modifiedCount = this.visibilityStates.size();
++        if (modifiedCount == 0) {
++            return VisibilityState.ON;
++        } else if (modifiedCount != VisibilityTypes.types().size()) {
++            return VisibilityState.MODIFIED;
++        } else {
++            return VisibilityState.OFF;
++        }
++    }
++
++    @Override
++    public boolean playerModified() {
++        return !this.visibilityStates.isEmpty();
++    }
++
++    public void loadData(@NonNull CompoundTag tag) {
++        if (!tag.contains(SETTINGS_COMPOUND_TAG, CompoundTag.TAG_COMPOUND)) {
++            return;
++        }
++
++        CompoundTag settingsTag = tag.getCompound(SETTINGS_COMPOUND_TAG);
++        for (VisibilityType type : VisibilityTypes.types()) {
++            if (settingsTag.contains(type.key(), CompoundTag.TAG_STRING)) {
++                VisibilityState state = VisibilityState.valueOf(settingsTag.getString(type.key()));
++                this.visibilityStates.put(type, state);
++                break;
++            }
++        }
++    }
++
++    public void saveData(@NonNull CompoundTag tag) {
++        CompoundTag settingsTag = new CompoundTag();
++        this.visibilityStates.forEach((t, s) -> settingsTag.putString(t.key(), s.name()));
++        tag.put(SETTINGS_COMPOUND_TAG, settingsTag);
++    }
++}
+diff --git a/src/main/java/me/samsuik/sakura/player/visibility/VisibilityGui.java b/src/main/java/me/samsuik/sakura/player/visibility/VisibilityGui.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..3777b8077794c2e780aa31dc86cded539a375750
+--- /dev/null
++++ b/src/main/java/me/samsuik/sakura/player/visibility/VisibilityGui.java
+@@ -0,0 +1,106 @@
++package me.samsuik.sakura.player.visibility;
++
++import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
++import me.samsuik.sakura.configuration.GlobalConfiguration;
++import me.samsuik.sakura.player.gui.FeatureGui;
++import me.samsuik.sakura.player.gui.FeatureGuiInventory;
++import me.samsuik.sakura.player.gui.components.ItemButton;
++import me.samsuik.sakura.player.gui.components.ItemSwitch;
++import net.kyori.adventure.text.Component;
++import org.bukkit.Material;
++import org.bukkit.NamespacedKey;
++import org.bukkit.entity.Player;
++import org.bukkit.inventory.Inventory;
++import org.jspecify.annotations.NullMarked;
++
++import java.util.Locale;
++import java.util.Objects;
++
++import static me.samsuik.sakura.player.gui.ItemStackUtil.itemWithBlankName;
++
++@NullMarked
++public final class VisibilityGui extends FeatureGui {
++    private static final NamespacedKey TOGGLE_BUTTON_KEY = new NamespacedKey("sakura", "toggle_button");
++    private static final NamespacedKey MENU_ITEMS_KEY = new NamespacedKey("sakura", "menu_items");
++    private static final Material FALLBACK_MATERIAL = Material.PINK_STAINED_GLASS_PANE;
++
++    public VisibilityGui() {
++        super(45, Component.text("FPS Settings"));
++    }
++
++    @Override
++    protected void fillInventory(Inventory inventory) {
++        for (int slot = 0; slot < inventory.getSize(); ++slot) {
++            // x, y from top left of the inventory
++            int x = slot % 9;
++            int y = slot / 9;
++            // from center
++            int rx = x - 4;
++            int ry = y - 2;
++            double d = Math.sqrt(rx * rx + ry * ry);
++            if (d <= 3.25) {
++                inventory.setItem(slot, itemWithBlankName(getColouredGlassPane()));
++            } else if (x % 8 == 0) {
++                inventory.setItem(slot, itemWithBlankName(Material.BLACK_STAINED_GLASS_PANE));
++            } else {
++                inventory.setItem(slot, itemWithBlankName(Material.WHITE_STAINED_GLASS_PANE));
++            }
++        }
++    }
++
++    @Override
++    protected void afterFill(Player player, FeatureGuiInventory inventory) {
++        VisibilitySettings settings = player.getVisibility();
++        IntArrayFIFOQueue slots = this.availableSlots();
++        this.updateToggleButton(settings, player, inventory);
++        for (VisibilityType type : VisibilityTypes.types()) {
++            VisibilityState state = settings.get(type);
++            int index = type.states().indexOf(state);
++            int slot = slots.dequeueInt();
++
++            ItemSwitch itemSwitch = new ItemSwitch(
++                VisibilityGuiItems.GUI_ITEMS.get(type),
++                slot, index,
++                (e, inv) -> {
++                    settings.cycle(type);
++                    this.updateToggleButton(settings, player, inv);
++                }
++            );
++
++            inventory.addComponent(itemSwitch, MENU_ITEMS_KEY);
++        }
++    }
++
++    private void updateToggleButton(VisibilitySettings settings, Player player, FeatureGuiInventory inventory) {
++        inventory.removeComponents(TOGGLE_BUTTON_KEY);
++        VisibilityState settingsState = settings.currentState();
++        ItemButton button = new ItemButton(
++            VisibilityGuiItems.TOGGLE_BUTTON_ITEMS.get(settingsState),
++            (2 * 9) + 8,
++            (e, inv) -> {
++                settings.toggleAll();
++                inventory.removeAllComponents();
++                this.afterFill(player, inv);
++            }
++        );
++        inventory.addComponent(button, TOGGLE_BUTTON_KEY);
++    }
++
++    private IntArrayFIFOQueue availableSlots() {
++        IntArrayFIFOQueue slots = new IntArrayFIFOQueue();
++        for (int row = 1; row < 4; ++row) {
++            for (int column = 3; column < 6; ++column) {
++                if ((column + row) % 2 == 0) {
++                    slots.enqueue((row * 9) + column);
++                }
++            }
++        }
++        return slots;
++    }
++
++    private static Material getColouredGlassPane() {
++        String upperCase = GlobalConfiguration.get().fps.guiColour.toUpperCase(Locale.ENGLISH);
++        Material foundMaterial = Material.matchMaterial(upperCase + "_STAINED_GLASS_PANE");
++        return Objects.requireNonNullElse(foundMaterial, FALLBACK_MATERIAL);
++    }
++}
+diff --git a/src/main/java/me/samsuik/sakura/player/visibility/VisibilityGuiItems.java b/src/main/java/me/samsuik/sakura/player/visibility/VisibilityGuiItems.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..ca26410b394602f3aa0e50efc8109ad9c6ec0611
+--- /dev/null
++++ b/src/main/java/me/samsuik/sakura/player/visibility/VisibilityGuiItems.java
+@@ -0,0 +1,55 @@
++package me.samsuik.sakura.player.visibility;
++
++import com.google.common.collect.ImmutableList;
++import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
++import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
++import me.samsuik.sakura.player.gui.ItemStackUtil;
++import net.kyori.adventure.text.Component;
++import net.kyori.adventure.text.format.NamedTextColor;
++import org.apache.commons.lang.StringUtils;
++import org.bukkit.Material;
++import org.bukkit.inventory.ItemStack;
++
++import java.util.Locale;
++
++public final class VisibilityGuiItems {
++    static final Reference2ObjectMap<VisibilityType, ImmutableList<ItemStack>> GUI_ITEMS = new Reference2ObjectOpenHashMap<>();
++    static final Reference2ObjectMap<VisibilityState, ItemStack> TOGGLE_BUTTON_ITEMS = new Reference2ObjectOpenHashMap<>();
++
++    static {
++        Reference2ObjectMap<VisibilityType, ItemStack> items = new Reference2ObjectOpenHashMap<>();
++
++        items.put(VisibilityTypes.TNT, ItemStackUtil.itemWithName(Material.TNT, Component.text("Tnt", NamedTextColor.RED)));
++        items.put(VisibilityTypes.SAND, ItemStackUtil.itemWithName(Material.SAND, Component.text("Sand", NamedTextColor.YELLOW)));
++        items.put(VisibilityTypes.EXPLOSIONS, ItemStackUtil.itemWithName(Material.COBWEB, Component.text("Explosions", NamedTextColor.WHITE)));
++        items.put(VisibilityTypes.SPAWNERS, ItemStackUtil.itemWithName(Material.SPAWNER, Component.text("Spawners", NamedTextColor.DARK_GRAY)));
++        items.put(VisibilityTypes.PISTONS, ItemStackUtil.itemWithName(Material.PISTON, Component.text("Pistons", NamedTextColor.GOLD)));
++
++        for (VisibilityType type : VisibilityTypes.types()) {
++            ItemStack item = items.get(type);
++
++            ImmutableList<ItemStack> stateItems = type.states().stream()
++                .map(s -> createItemForState(item, s))
++                .collect(ImmutableList.toImmutableList());
++
++            GUI_ITEMS.put(type, stateItems);
++        }
++
++        TOGGLE_BUTTON_ITEMS.put(VisibilityState.ON, ItemStackUtil.itemWithName(Material.GREEN_STAINED_GLASS_PANE, Component.text("Enabled", NamedTextColor.GREEN)));
++        TOGGLE_BUTTON_ITEMS.put(VisibilityState.MODIFIED, ItemStackUtil.itemWithName(Material.MAGENTA_STAINED_GLASS_PANE, Component.text("Modified", NamedTextColor.LIGHT_PURPLE)));
++        TOGGLE_BUTTON_ITEMS.put(VisibilityState.OFF, ItemStackUtil.itemWithName(Material.RED_STAINED_GLASS_PANE, Component.text("Disabled", NamedTextColor.RED)));
++    }
++
++    private static String lowercaseThenCapitalise(String name) {
++        String lowercaseName = name.toLowerCase(Locale.ENGLISH);
++        return StringUtils.capitalize(lowercaseName);
++    }
++
++    private static ItemStack createItemForState(ItemStack in, VisibilityState state) {
++        String capitalisedName = lowercaseThenCapitalise(state.name());
++        Component component = Component.text(" | " + capitalisedName, NamedTextColor.GRAY);
++        ItemStack itemCopy = in.clone();
++        itemCopy.editMeta(m -> m.itemName(m.itemName().append(component)));
++        return itemCopy;
++    }
++}
+diff --git a/src/main/java/net/minecraft/network/protocol/game/ClientboundSectionBlocksUpdatePacket.java b/src/main/java/net/minecraft/network/protocol/game/ClientboundSectionBlocksUpdatePacket.java
+index 1a37654aff9a9c86c9f7af10a1cf721371f0c5ec..82644b34a77dc5e5af38260b7b07b3ec9aceae33 100644
+--- a/src/main/java/net/minecraft/network/protocol/game/ClientboundSectionBlocksUpdatePacket.java
++++ b/src/main/java/net/minecraft/network/protocol/game/ClientboundSectionBlocksUpdatePacket.java
+@@ -19,7 +19,7 @@ public class ClientboundSectionBlocksUpdatePacket implements Packet<ClientGamePa
+     private static final int POS_IN_SECTION_BITS = 12;
+     private final SectionPos sectionPos;
+     private final short[] positions;
+-    private final BlockState[] states;
++    public final BlockState[] states; // Sakura - private -> public
+ 
+     public ClientboundSectionBlocksUpdatePacket(SectionPos sectionPos, ShortSet positions, LevelChunkSection section) {
+         this.sectionPos = sectionPos;
+diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
+index 281a821c6a53013f8fe798781755ab7be2a359bd..9f34a0c6f4f8157d77ed3cb36a546ec8c1b9b1bd 100644
+--- a/src/main/java/net/minecraft/server/MinecraftServer.java
++++ b/src/main/java/net/minecraft/server/MinecraftServer.java
+@@ -1887,6 +1887,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+             gameprofilerfiller.pop();
+             worldserver.explosionDensityCache.clear(); // Paper - Optimize explosions
+             worldserver.localConfig().expire(currentTick); // Sakura - add local config
++            worldserver.explosionPositions.clear(); // Sakura - client visibility settings
+         }
+         this.isIteratingOverLevels = false; // Paper - Throw exception on world create while being ticked
+ 
+diff --git a/src/main/java/net/minecraft/server/level/ChunkMap.java b/src/main/java/net/minecraft/server/level/ChunkMap.java
+index 5b3a886c624b36557cbfaccdc3fb05a46a4ba36a..b05ecbfd33c9924ae0d3afcfc3756a356a63efe5 100644
+--- a/src/main/java/net/minecraft/server/level/ChunkMap.java
++++ b/src/main/java/net/minecraft/server/level/ChunkMap.java
+@@ -179,6 +179,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+         this.handleLegacyStructureIndex(pos);
+     }
+     // Paper end - rewrite chunk system
++    private final it.unimi.dsi.fastutil.longs.Long2IntMap minimalEntities; // Sakura - client visibility settings; minimal tnt/sand
+ 
+     public ChunkMap(ServerLevel world, LevelStorageSource.LevelStorageAccess session, DataFixer dataFixer, StructureTemplateManager structureTemplateManager, Executor executor, BlockableEventLoop<Runnable> mainThreadExecutor, LightChunkGetter chunkProvider, ChunkGenerator chunkGenerator, ChunkProgressListener worldGenerationProgressListener, ChunkStatusUpdateListener chunkStatusChangeListener, Supplier<DimensionDataStorage> persistentStateManagerFactory, int viewDistance, boolean dsync) {
+         super(new RegionStorageInfo(session.getLevelId(), world.dimension(), "chunk"), session.getDimensionPath(world.dimension()).resolve("region"), dataFixer, dsync);
+@@ -222,6 +223,10 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+         this.poiManager = new PoiManager(new RegionStorageInfo(session.getLevelId(), world.dimension(), "poi"), path.resolve("poi"), dataFixer, dsync, iregistrycustom, world.getServer(), world);
+         this.setServerViewDistance(viewDistance);
+         this.worldGenContext = new WorldGenContext(world, chunkGenerator, structureTemplateManager, this.lightEngine, null, this::setChunkUnsaved); // Paper - rewrite chunk system
++        // Sakura start - client visibility settings; minimal tnt/sand
++        this.minimalEntities = new it.unimi.dsi.fastutil.longs.Long2IntOpenHashMap();
++        this.minimalEntities.defaultReturnValue(Integer.MIN_VALUE);
++        // Sakura end - client visibility settings; minimal tnt/sand
+     }
+ 
+     private void setChunkUnsaved(ChunkPos pos) {
+@@ -979,6 +984,8 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+                 tracker.serverEntity.sendChanges();
+             }
+         }
++
++        this.minimalEntities.clear(); // Sakura - client visibility settings; minimal tnt/sand
+     }
+     // Paper end - optimise entity tracker
+ 
+@@ -1216,6 +1223,32 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+             return !this.seenBy.isEmpty();
+         }
+         // Paper end - optimise entity tracker
++        // Sakura start - client visibility settings; entity visibility
++        private boolean checkEntityVisibility(final ServerPlayer player) {
++            final Entity entity = this.entity;
++            final me.samsuik.sakura.player.visibility.VisibilitySettings settings = player.visibilitySettings;
++            if (!settings.playerModified() || !(entity.isPrimedTNT || entity.isFallingBlock)) {
++                return true;
++            }
++            final me.samsuik.sakura.player.visibility.VisibilityType type;
++            if (entity.isPrimedTNT) {
++                type = me.samsuik.sakura.player.visibility.VisibilityTypes.TNT;
++            } else {
++                type = me.samsuik.sakura.player.visibility.VisibilityTypes.SAND;
++            }
++            final me.samsuik.sakura.player.visibility.VisibilityState state = settings.get(type);
++            if (state == me.samsuik.sakura.player.visibility.VisibilityState.MINIMAL) {
++                final long key = entity.blockPosition().asLong() ^ entity.getType().hashCode();
++                final long visibleEntity = ChunkMap.this.minimalEntities.get(key);
++                if (visibleEntity != Integer.MIN_VALUE) {
++                    return entity.getId() == visibleEntity;
++                } else {
++                    ChunkMap.this.minimalEntities.put(key, entity.getId());
++                }
++            }
++            return state != me.samsuik.sakura.player.visibility.VisibilityState.OFF;
++        }
++        // Sakura end - client visibility settings; entity visibility
+ 
+         public TrackedEntity(final Entity entity, final int i, final int j, final boolean flag) {
+             this.serverEntity = new ServerEntity(ChunkMap.this.level, entity, j, flag, this::broadcast, this.seenBy); // CraftBukkit
+@@ -1293,6 +1326,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+                 }
+                 flag = flag && this.entity.broadcastToPlayer(player) && ChunkMap.this.isChunkTracked(player, this.entity.chunkPosition().x, this.entity.chunkPosition().z);
+                 // Paper end - Configurable entity tracking range by Y
++                flag = flag && this.checkEntityVisibility(player); // Sakura start - client visibility settings; entity visibility
+ 
+                 // CraftBukkit start - respect vanish API
+                 if (flag && !player.getBukkitEntity().canSee(this.entity.getBukkitEntity())) { // Paper - only consider hits
+diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
+index 32742470eea2ec86c0fff02aa157bfcc89530ad3..8042d55095ea16cd370ead0f5de2fa2f65510b6c 100644
+--- a/src/main/java/net/minecraft/server/level/ServerLevel.java
++++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
+@@ -587,6 +587,21 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+         this.lagCompensationTick = (System.nanoTime() - net.minecraft.server.MinecraftServer.SERVER_INIT) / (java.util.concurrent.TimeUnit.MILLISECONDS.toNanos(50L));
+     }
+     // Paper end - lag compensation
++    // Sakura start - client visibility settings
++    public final LongSet explosionPositions = new it.unimi.dsi.fastutil.longs.LongOpenHashSet();
++
++    public final boolean checkExplosionVisibility(final Vec3 position, final ServerPlayer player) {
++        final me.samsuik.sakura.player.visibility.VisibilitySettings settings = player.visibilitySettings;
++        if (settings.isDisabled(me.samsuik.sakura.player.visibility.VisibilityTypes.EXPLOSIONS)) {
++            return false;
++        } else if (settings.isToggled(me.samsuik.sakura.player.visibility.VisibilityTypes.EXPLOSIONS)) {
++            final BlockPos blockPosition = BlockPos.containing(position);
++            final long encodedPosition = blockPosition.asLong();
++            return this.explosionPositions.add(encodedPosition);
++        }
++        return true;
++    }
++    // Sakura end - client visibility settings
+ 
+     // Add env and gen to constructor, IWorldDataServer -> WorldDataServer
+     public ServerLevel(MinecraftServer minecraftserver, Executor executor, LevelStorageSource.LevelStorageAccess convertable_conversionsession, PrimaryLevelData iworlddataserver, ResourceKey<Level> resourcekey, LevelStem worlddimension, ChunkProgressListener worldloadlistener, boolean flag, long i, List<CustomSpawner> list, boolean flag1, @Nullable RandomSequences randomsequences, org.bukkit.World.Environment env, org.bukkit.generator.ChunkGenerator gen, org.bukkit.generator.BiomeProvider biomeProvider) {
+@@ -1898,7 +1913,18 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+             if (entityplayer.distanceToSqr(vec3d) < 4096.0D) {
+                 Optional<Vec3> optional = Optional.ofNullable((Vec3) serverexplosion.getHitPlayers().get(entityplayer));
+ 
+-                entityplayer.connection.send(new ClientboundExplodePacket(vec3d, optional, particleparam2, holder));
++                // Sakura start - client visibility settings; let players toggle explosion particles
++                ParticleOptions particle = particleparam2;
++                Vec3 position = vec3d;
++                // In 1.22 and later this should be replaced with sending the motion through a PlayerPositionPacket.
++                // The problem here is SetEntityMotion is capped to 3.9 b/pt and the only other alternate mean was
++                // implemented in 1.21.3. I believe it's best to just wait on this issue and deal with this hack.
++                if (this.checkExplosionVisibility(vec3d, entityplayer)) {
++                    position = new Vec3(0.0, -1024.0, 0.0);
++                    particle = net.minecraft.core.particles.ParticleTypes.SMOKE;
++                }
++                entityplayer.connection.send(new ClientboundExplodePacket(position, optional, particle, holder));
++                // Sakura end - client visibility settings; let players toggle explosion particles
+             }
+         }
+ 
+diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
+index cffbd3300967e5d80b5973b35a76235bb2aa1b73..55423353ee674d97fbe6a2d659ce8fb5a466e378 100644
+--- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
++++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
+@@ -359,6 +359,7 @@ public class ServerPlayer extends net.minecraft.world.entity.player.Player imple
+         return this.viewDistanceHolder;
+     }
+     // Paper end - rewrite chunk system
++    public final me.samsuik.sakura.player.visibility.PlayerVisibilitySettings visibilitySettings = new me.samsuik.sakura.player.visibility.PlayerVisibilitySettings(); // Sakura - client visibility settings
+ 
+     public ServerPlayer(MinecraftServer server, ServerLevel world, GameProfile profile, ClientInformation clientOptions) {
+         super(world, world.getSharedSpawnPos(), world.getSharedSpawnAngle(), profile);
+diff --git a/src/main/java/net/minecraft/server/network/ServerCommonPacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
+index b0bc66dc7248aae691dcab68b925b52a1695e63f..2f9413b9442cc7f95e1974a772812fe397d4c4bd 100644
+--- a/src/main/java/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
++++ b/src/main/java/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
+@@ -101,6 +101,22 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
+     protected final org.bukkit.craftbukkit.CraftServer cserver;
+     public boolean processedDisconnect;
+ 
++    // Sakura start - client visibility settings
++    private @Nullable Packet<?> recreatePacket(final Packet<?> packet) {
++        final me.samsuik.sakura.player.visibility.VisibilitySettings settings = this.player.visibilitySettings;
++        if (packet instanceof net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket bedPacket) {
++            if (settings.isToggled(me.samsuik.sakura.player.visibility.VisibilityTypes.SPAWNERS) && bedPacket.getType() == net.minecraft.world.level.block.entity.BlockEntityType.MOB_SPAWNER) {
++                return null;
++            }
++        } else if (packet instanceof net.minecraft.network.protocol.game.ClientboundBlockEventPacket bePacket) {
++            if (settings.isToggled(me.samsuik.sakura.player.visibility.VisibilityTypes.PISTONS) && bePacket.getBlock() instanceof net.minecraft.world.level.block.piston.PistonBaseBlock) {
++                return null;
++            }
++        }
++        return packet;
++    }
++    // Sakura end - client visibility settings
++
+     public CraftPlayer getCraftPlayer() {
+         return (this.player == null) ? null : (CraftPlayer) this.player.getBukkitEntity();
+         // CraftBukkit end
+@@ -309,6 +325,12 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
+             ClientboundSetDefaultSpawnPositionPacket packet6 = (ClientboundSetDefaultSpawnPositionPacket) packet;
+             this.player.compassTarget = CraftLocation.toBukkit(packet6.pos, this.getCraftPlayer().getWorld());
+         }
++        // Sakura start - client visibility settings
++        if (this.player.visibilitySettings.playerModified()) {
++            packet = this.recreatePacket(packet);
++            if (packet == null) return;
++        }
++        // Sakura end - client visibility settings
+         // CraftBukkit end
+         if (packet.isTerminal()) {
+             this.close();
+@@ -322,8 +344,11 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
+             CrashReport crashreport = CrashReport.forThrowable(throwable, "Sending packet");
+             CrashReportCategory crashreportsystemdetails = crashreport.addCategory("Packet being sent");
+ 
++            // Sakura start - this has to be effectively final as we're modifying the packet above
++            var packetFinal = packet;
+             crashreportsystemdetails.setDetail("Packet class", () -> {
+-                return packet.getClass().getCanonicalName();
++                return packetFinal.getClass().getCanonicalName();
++                // Sakura end
+             });
+             throw new ReportedException(crashreport);
+         }
+diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
+index b5d5dbc50a7b8c40739a15f164ffd08fdc534f9c..5cfcc7a1e9461fd7dfd6d7100bdc978945c369ad 100644
+--- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
++++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
+@@ -3247,6 +3247,7 @@ public class ServerGamePacketListenerImpl extends ServerCommonPacketListenerImpl
+ 
+                         event.setCancelled(cancelled);
+                         AbstractContainerMenu oldContainer = this.player.containerMenu; // SPIGOT-1224
++                        me.samsuik.sakura.player.gui.FeatureGui.clickEvent(event); // Sakura - client visibility settings
+                         this.cserver.getPluginManager().callEvent(event);
+                         if (this.player.containerMenu != oldContainer) {
+                             return;
+diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
+index a0876d3f88620bb24ef69101fc67b0dcd5dca0d2..35da89072cea86c1b1bc54784908bfb7bd449f4a 100644
+--- a/src/main/java/net/minecraft/world/entity/Entity.java
++++ b/src/main/java/net/minecraft/world/entity/Entity.java
+@@ -611,6 +611,10 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+         }
+     }
+     // Paper end - optimise entity tracker
++    // Sakura start - visibility api and command
++    public boolean isPrimedTNT;
++    public boolean isFallingBlock;
++    // Sakura end - visibility api and command
+ 
+     public Entity(EntityType<?> type, Level world) {
+         this.id = Entity.ENTITY_COUNTER.incrementAndGet();
+diff --git a/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java b/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
+index 06d9a519e64d4b8b8764b3ad7691ad93b5cee065..4a50ef9b25b9162815b879c60c294ed4be2edd5c 100644
+--- a/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
++++ b/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
+@@ -78,6 +78,7 @@ public class FallingBlockEntity extends Entity {
+         this.blockState = Blocks.SAND.defaultBlockState();
+         this.dropItem = true;
+         this.fallDamageMax = 40;
++        this.isFallingBlock = true; // Sakura
+     }
+ 
+     public FallingBlockEntity(Level world, double x, double y, double z, BlockState block) {
+diff --git a/src/main/java/net/minecraft/world/entity/item/PrimedTnt.java b/src/main/java/net/minecraft/world/entity/item/PrimedTnt.java
+index de87483600e55d88176fe25db621bbd3e464729f..5bd189fad703ac99d57258fa448dbcc103077297 100644
+--- a/src/main/java/net/minecraft/world/entity/item/PrimedTnt.java
++++ b/src/main/java/net/minecraft/world/entity/item/PrimedTnt.java
+@@ -63,6 +63,7 @@ public class PrimedTnt extends Entity implements TraceableEntity {
+         super(type, world);
+         this.explosionPower = 4.0F;
+         this.blocksBuilding = true;
++        this.isPrimedTNT = true; // Sakura
+     }
+ 
+     public PrimedTnt(Level world, double x, double y, double z, @Nullable LivingEntity igniter) {
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+index 2c7ec674f55b3178b9dcba7f2bc1ff5efccb50ea..503d7ffab7d7a792e3db740dcba2221f7dbd62eb 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+@@ -2404,6 +2404,13 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+                 handle.keepLevel = data.getBoolean("keepLevel");
+             }
+         }
++
++        // Sakura start - client visibility settings; load from nbt
++        if (nbttagcompound.contains("sakura", 10)) {
++            CompoundTag sakuraTag = nbttagcompound.getCompound("sakura");
++            this.getHandle().visibilitySettings.loadData(sakuraTag);
++        }
++        // Sakura end - client visibility settings; load from nbt
+     }
+ 
+     public void setExtraData(CompoundTag nbttagcompound) {
+@@ -2433,6 +2440,11 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+         paper.putLong("LastLogin", handle.loginTime);
+         paper.putLong("LastSeen", System.currentTimeMillis());
+         // Paper end
++        // Sakura start - client visibility settings; save to nbt
++        CompoundTag sakuraTag = nbttagcompound.getCompound("sakura");
++        this.getHandle().visibilitySettings.saveData(sakuraTag);
++        nbttagcompound.put("sakura", sakuraTag);
++        // Sakura end - client visibility settings; save to nbt
+     }
+ 
+     @Override
+@@ -3107,6 +3119,13 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+         return this.getHandle().allowsListing();
+     }
+ 
++    // Sakura start - client visibility settings; api
++    @Override
++    public final me.samsuik.sakura.player.visibility.VisibilitySettings getVisibility() {
++        return this.getHandle().visibilitySettings;
++    }
++    // Sakura end - client visibility settings; api
++
+     // Paper start
+     @Override
+     public net.kyori.adventure.text.Component displayName() {

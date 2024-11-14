@@ -5,11 +5,11 @@ Subject: [PATCH] Entity tracking range modifier
 
 
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index a1d6e58d466b94d65c830a7e50b9a5eae76138aa..a4a497d20b17fa89106681c00918b08ebca7e87f 100644
+index 0560784e8b71a927db6d8cdf9d36a23e3b56ef74..7cf2361157ac64c1bb959a0c911e27505acf25d0 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
-@@ -69,6 +69,12 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
-     me.samsuik.sakura.player.visibility.Visibility getVisibility();
+@@ -70,6 +70,12 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+     VisibilitySettings getVisibility();
      // Sakura end
  
 +    // Sakura start - entity tracking range modifier

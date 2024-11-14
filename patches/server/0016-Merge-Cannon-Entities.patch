@@ -398,22 +398,22 @@ index 0000000000000000000000000000000000000000..2c2a26fdb3081ced574070e5e6f3a1b4
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 68894f38607025943f86be7a7857733dafaf37fd..61b24eac8f17d5a433817ae2ebb3baf2599af210 100644
+index a4a692c46b7c223c7ade46252e5f01c0b72eee7e..efc1a8bb3d91369fc47b7553a144cd25528ac9bf 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -1890,6 +1890,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
-             gameprofilerfiller.pop();
+@@ -1891,6 +1891,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              worldserver.explosionDensityCache.clear(); // Paper - Optimize explosions
              worldserver.localConfig().expire(currentTick); // Sakura - add local config
+             worldserver.explosionPositions.clear(); // Sakura - client visibility settings
 +            worldserver.mergeHandler.expire(currentTick); // Sakura - merge cannon entities
          }
          this.isIteratingOverLevels = false; // Paper - Throw exception on world create while being ticked
  
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index ac43d1d91f7ac554f1267b3d76e22bd8f06d8f08..1f278f6ef7e39df676334e7e5853dec4617f6baa 100644
+index 689ce5e9ee53c47721b93d77c3b8b7f24680bc81..ea5f858a3ac3e20fe2b00f7ba5bd58e1f7c17425 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
-@@ -784,6 +784,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -799,6 +799,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
              }
  
              org.spigotmc.ActivationRange.activateEntities(this); // Spigot
@@ -421,7 +421,7 @@ index ac43d1d91f7ac554f1267b3d76e22bd8f06d8f08..1f278f6ef7e39df676334e7e5853dec4
              this.entityTickList.forEach((entity) -> {
                  if (!entity.isRemoved()) {
                      if (!tickratemanager.isEntityFrozen(entity)) {
-@@ -801,6 +802,15 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -816,6 +817,15 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
                                  entity.stopRiding();
                              }
  

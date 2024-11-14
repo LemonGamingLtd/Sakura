@@ -5,7 +5,7 @@ Subject: [PATCH] Add consistent explosion radius api
 
 
 diff --git a/src/main/java/me/samsuik/sakura/local/LocalValueKey.java b/src/main/java/me/samsuik/sakura/local/LocalValueKey.java
-index 098ce4d0356fb1dddbd4e34c02f77848da1fb546..34434bf1fa8018bd79a0af8ae0f8e7ca24da6ec6 100644
+index 346f6392c82ff27ec4439c645948337ce1832ba3..07807b9a3c7c1ccd2074333eda82fcdd850ce655 100644
 --- a/src/main/java/me/samsuik/sakura/local/LocalValueKey.java
 +++ b/src/main/java/me/samsuik/sakura/local/LocalValueKey.java
 @@ -25,6 +25,10 @@ public record LocalValueKey<T>(NamespacedKey key, Supplier<T> defaultSupplier) {

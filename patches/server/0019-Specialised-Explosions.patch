@@ -438,10 +438,10 @@ index 0000000000000000000000000000000000000000..ebe5f0c8c2f09920b5f5ef734e63f5e7
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index 3b1fbd1fc480682f6a6c620432e268c4e7d283b7..264b6be15e2f9ca147cf57aa5b659e14025c9b53 100644
+index ea5f858a3ac3e20fe2b00f7ba5bd58e1f7c17425..4a1ed4e1d03b9c01c32938bed964970d7f6917d6 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
-@@ -1890,7 +1890,16 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1905,7 +1905,16 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
  
          Explosion.BlockInteraction explosion_effect1 = explosion_effect;
          Vec3 vec3d = new Vec3(d0, d1, d2);
@@ -459,7 +459,7 @@ index 3b1fbd1fc480682f6a6c620432e268c4e7d283b7..264b6be15e2f9ca147cf57aa5b659e14
          if (configurator != null) configurator.accept(serverexplosion);// Paper - Allow explosions to damage source
  
          serverexplosion.explode();
-@@ -1899,6 +1908,13 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1914,6 +1923,13 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
              return serverexplosion;
          }
          // CraftBukkit end
@@ -473,7 +473,7 @@ index 3b1fbd1fc480682f6a6c620432e268c4e7d283b7..264b6be15e2f9ca147cf57aa5b659e14
          ParticleOptions particleparam2 = serverexplosion.isSmall() ? particleparam : particleparam1;
          Iterator iterator = this.players.iterator();
  
-@@ -1923,7 +1939,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1938,7 +1954,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
              }
          }
  

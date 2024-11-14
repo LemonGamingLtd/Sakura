@@ -5,7 +5,7 @@ Subject: [PATCH] Reduce entity tracker player updates
 
 
 diff --git a/src/main/java/net/minecraft/server/level/ChunkMap.java b/src/main/java/net/minecraft/server/level/ChunkMap.java
-index 4c9d57ef5e2164126521880c60f6bb1ed3ebecb1..3ffffb1214bece205ec1e36fbe7aa39631e7e2a2 100644
+index 04f76f15370fd308b3b264f3a2d2b17b32a8a560..fa77e44a33dd2da678f8ad711f26ce60d3d7d7aa 100644
 --- a/src/main/java/net/minecraft/server/level/ChunkMap.java
 +++ b/src/main/java/net/minecraft/server/level/ChunkMap.java
 @@ -978,7 +978,11 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
@@ -21,10 +21,10 @@ index 4c9d57ef5e2164126521880c60f6bb1ed3ebecb1..3ffffb1214bece205ec1e36fbe7aa396
              if (((ca.spottedleaf.moonrise.patches.entity_tracker.EntityTrackerTrackedEntity)tracker).moonrise$hasPlayers()
                  || ((ca.spottedleaf.moonrise.patches.chunk_system.entity.ChunkSystemEntity)entity).moonrise$getChunkStatus().isOrAfter(FullChunkStatus.ENTITY_TICKING)) {
                  tracker.serverEntity.sendChanges();
-@@ -1248,12 +1252,28 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
-             return true;
+@@ -1249,12 +1253,28 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+             return state != me.samsuik.sakura.player.visibility.VisibilityState.OFF;
          }
-         // Sakura end - visibility api and command
+         // Sakura end - client visibility settings; entity visibility
 +        // Sakura start - reduce entity tracker player updates
 +        private final int playerUpdateInterval;
 +        private Vec3 entityPosition;
