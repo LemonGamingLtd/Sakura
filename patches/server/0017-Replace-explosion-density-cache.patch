@@ -126,7 +126,7 @@ index 0000000000000000000000000000000000000000..d7e24638f07f243502004970ab4ce646
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index b78b642b77a5cef54044b079916fef9b22e50fcc..7aaf3794338b8208ded6549e61479010c369ad87 100644
+index 61b24eac8f17d5a433817ae2ebb3baf2599af210..3f3a7035a07efce5b8438abf989312b6df137ec8 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -1891,6 +1891,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -150,7 +150,7 @@ index d036cdcc17b8429c986946a020cb34cd6ced322e..b45ad0125cd5c116126e8ffb89358597
      protected Level(WritableLevelData worlddatamutable, ResourceKey<Level> resourcekey, RegistryAccess iregistrycustom, Holder<DimensionType> holder, boolean flag, boolean flag1, long i, int j, org.bukkit.generator.ChunkGenerator gen, org.bukkit.generator.BiomeProvider biomeProvider, org.bukkit.World.Environment env, java.util.function.Function<org.spigotmc.SpigotWorldConfig, io.papermc.paper.configuration.WorldConfiguration> paperWorldConfigCreator, java.util.function.Supplier<me.samsuik.sakura.configuration.WorldConfiguration> sakuraWorldConfigCreator, java.util.concurrent.Executor executor) { // Sakura - sakura configuration files // Paper - create paper world config & Anti-Xray
          // Paper start - getblock optimisations - cache world height/sections
 diff --git a/src/main/java/net/minecraft/world/level/ServerExplosion.java b/src/main/java/net/minecraft/world/level/ServerExplosion.java
-index a92be80081178cc302a7f0b646bad7daa28f7c66..10432b31acd047ac2aa8581f2ee863254ec8d1eb 100644
+index a7f64335001c7beb7f4474c9cda3c6988725f69a..c4d167ea4390c6605c99d5868d778e0b3f01f97c 100644
 --- a/src/main/java/net/minecraft/world/level/ServerExplosion.java
 +++ b/src/main/java/net/minecraft/world/level/ServerExplosion.java
 @@ -297,7 +297,12 @@ public class ServerExplosion implements Explosion {
@@ -185,7 +185,7 @@ index a92be80081178cc302a7f0b646bad7daa28f7c66..10432b31acd047ac2aa8581f2ee86325
                              ++i;
                          }
  
-@@ -691,6 +705,12 @@ public class ServerExplosion implements Explosion {
+@@ -694,6 +708,12 @@ public class ServerExplosion implements Explosion {
              return;
          }
          // CraftBukkit end
@@ -198,7 +198,7 @@ index a92be80081178cc302a7f0b646bad7daa28f7c66..10432b31acd047ac2aa8581f2ee86325
          Iterator iterator = positions.iterator();
  
          while (iterator.hasNext()) {
-@@ -864,14 +884,12 @@ public class ServerExplosion implements Explosion {
+@@ -867,14 +887,12 @@ public class ServerExplosion implements Explosion {
  
      // Paper start - Optimize explosions
      private float getBlockDensity(Vec3 vec3d, Entity entity) {

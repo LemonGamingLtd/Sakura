@@ -323,18 +323,29 @@ index 5b3a886c624b36557cbfaccdc3fb05a46a4ba36a..4d3f28d86f6ef1c34f883f1f551201ac
                  // CraftBukkit start - respect vanish API
                  if (flag && !player.getBukkitEntity().canSee(this.entity.getBukkitEntity())) { // Paper - only consider hits
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index 32742470eea2ec86c0fff02aa157bfcc89530ad3..de2f6a27ae4d76bf27f127f448e0692f93b2a971 100644
+index 32742470eea2ec86c0fff02aa157bfcc89530ad3..ec76caea3ae07efc6f5debcd14b24dfed50aa04b 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
-@@ -1895,7 +1895,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
-         while (iterator.hasNext()) {
-             ServerPlayer entityplayer = (ServerPlayer) iterator.next();
- 
--            if (entityplayer.distanceToSqr(vec3d) < 4096.0D) {
-+            if (entityplayer.distanceToSqr(vec3d) < 4096.0D && !entityplayer.visibility.isToggled(me.samsuik.sakura.player.visibility.Visibility.Setting.EXPLOSIONS)) { // Sakura - visibility api
+@@ -1898,7 +1898,18 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+             if (entityplayer.distanceToSqr(vec3d) < 4096.0D) {
                  Optional<Vec3> optional = Optional.ofNullable((Vec3) serverexplosion.getHitPlayers().get(entityplayer));
  
-                 entityplayer.connection.send(new ClientboundExplodePacket(vec3d, optional, particleparam2, holder));
+-                entityplayer.connection.send(new ClientboundExplodePacket(vec3d, optional, particleparam2, holder));
++                // Sakura start - visibility api; let players toggle explosion particles
++                ParticleOptions particle = particleparam2;
++                Vec3 position = vec3d;
++                // In 1.22 and later this should be replaced with sending the motion through a PlayerPositionPacket.
++                // The problem here is SetEntityMotion is capped to 3.9 b/pt and the only other alternate mean was
++                // implemented in 1.21.3. I believe it's best to just wait on this issue and deal with this hack.
++                if (entityplayer.visibility.isToggled(me.samsuik.sakura.player.visibility.Visibility.Setting.EXPLOSIONS)) {
++                    position = new Vec3(0.0, -1024.0, 0.0);
++                    particle = net.minecraft.core.particles.ParticleTypes.SMOKE;
++                }
++                entityplayer.connection.send(new ClientboundExplodePacket(position, optional, particle, holder));
++                // Sakura end - visibility api; let players toggle explosion particles
+             }
+         }
+ 
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
 index cffbd3300967e5d80b5973b35a76235bb2aa1b73..ad85e5ebe00918a7fea4071351741566e4883dd0 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
@@ -548,6 +559,22 @@ index de87483600e55d88176fe25db621bbd3e464729f..5bd189fad703ac99d57258fa448dbcc1
      }
  
      public PrimedTnt(Level world, double x, double y, double z, @Nullable LivingEntity igniter) {
+diff --git a/src/main/java/net/minecraft/world/level/ServerExplosion.java b/src/main/java/net/minecraft/world/level/ServerExplosion.java
+index bbbd451ff184be8fa13bd93d53c89a9502f9951a..7280806cd37a1aed53e304de0a03d68c18b86b09 100644
+--- a/src/main/java/net/minecraft/world/level/ServerExplosion.java
++++ b/src/main/java/net/minecraft/world/level/ServerExplosion.java
+@@ -559,7 +559,10 @@ public class ServerExplosion implements Explosion {
+                             Player entityhuman = (Player) entity;
+ 
+                             if (!entityhuman.isSpectator() && (!entityhuman.isCreative() || !entityhuman.getAbilities().flying) && !level.paperConfig().environment.disableExplosionKnockback) { // Paper - Option to disable explosion knockback
+-                                this.hitPlayers.put(entityhuman, vec3d);
++                                // Sakura start - specialised explosions; tally player velocity
++                                final Vec3 explosionImpact = vec3d;
++                                this.hitPlayers.compute(entityhuman, (p, v) -> v != null ? v.add(explosionImpact) : explosionImpact);
++                                // Sakura end - specialised explosions; tally player velocity
+                             }
+                         }
+ 
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 index 2c7ec674f55b3178b9dcba7f2bc1ff5efccb50ea..7976eb7496d57d5d1fe29c902e167d79a86bac32 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java

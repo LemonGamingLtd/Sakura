@@ -103,7 +103,7 @@ index 2d5783a6ff7a9ce6dcb6f2895ff80928e62f0cd2..0ae2d83055252146e346b06cc8360eef
      protected Level(WritableLevelData worlddatamutable, ResourceKey<Level> resourcekey, RegistryAccess iregistrycustom, Holder<DimensionType> holder, boolean flag, boolean flag1, long i, int j, org.bukkit.generator.ChunkGenerator gen, org.bukkit.generator.BiomeProvider biomeProvider, org.bukkit.World.Environment env, java.util.function.Function<org.spigotmc.SpigotWorldConfig, io.papermc.paper.configuration.WorldConfiguration> paperWorldConfigCreator, java.util.function.Supplier<me.samsuik.sakura.configuration.WorldConfiguration> sakuraWorldConfigCreator, java.util.concurrent.Executor executor) { // Sakura - sakura configuration files // Paper - create paper world config & Anti-Xray
          // Paper start - getblock optimisations - cache world height/sections
 diff --git a/src/main/java/net/minecraft/world/level/ServerExplosion.java b/src/main/java/net/minecraft/world/level/ServerExplosion.java
-index 11b12c1c4eff015bc40c7e7e965badb3f3fd272e..8268f8df624a73eaf0b8baad9aa16bab2ed0f0bc 100644
+index 59e38ee6ac0699350a7021f1d074fdfee4a5ba41..ccca5d7d51cd7e4a77d87293eb66c9732fce4381 100644
 --- a/src/main/java/net/minecraft/world/level/ServerExplosion.java
 +++ b/src/main/java/net/minecraft/world/level/ServerExplosion.java
 @@ -134,7 +134,7 @@ public class ServerExplosion implements Explosion {
@@ -136,7 +136,7 @@ index 11b12c1c4eff015bc40c7e7e965badb3f3fd272e..8268f8df624a73eaf0b8baad9aa16bab
  
      public ServerExplosion(ServerLevel world, @Nullable Entity entity, @Nullable DamageSource damageSource, @Nullable ExplosionDamageCalculator behavior, Vec3 pos, float power, boolean createFire, Explosion.BlockInteraction destructionType) {
          this.level = world;
-@@ -780,6 +794,16 @@ public class ServerExplosion implements Explosion {
+@@ -783,6 +797,16 @@ public class ServerExplosion implements Explosion {
                  }
              }
              // CraftBukkit end

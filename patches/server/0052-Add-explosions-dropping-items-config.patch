@@ -5,10 +5,10 @@ Subject: [PATCH] Add explosions dropping items config
 
 
 diff --git a/src/main/java/net/minecraft/world/level/ServerExplosion.java b/src/main/java/net/minecraft/world/level/ServerExplosion.java
-index 0789f37ae89b22f9e3500b25cbe27ef853950b85..ace34cc86061bb4c9b080c6e9bf912b1fe3533a6 100644
+index e857fd02a5e341a1a701da71874dbd850e3c5a5d..0dae16d140666cae7633bbfef6d1c5b979d7dc9e 100644
 --- a/src/main/java/net/minecraft/world/level/ServerExplosion.java
 +++ b/src/main/java/net/minecraft/world/level/ServerExplosion.java
-@@ -842,6 +842,12 @@ public class ServerExplosion implements Explosion {
+@@ -845,6 +845,12 @@ public class ServerExplosion implements Explosion {
              });
          }
  

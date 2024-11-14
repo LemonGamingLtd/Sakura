@@ -23,10 +23,10 @@ index c21e00812f1aaa1279834a0562d360d6b89e146c..1e1329adde1457898a3002279b53b1bb
          if (index >= 0) {
 diff --git a/src/main/java/me/samsuik/sakura/explosion/special/SpecialisedExplosion.java b/src/main/java/me/samsuik/sakura/explosion/special/SpecialisedExplosion.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..82a448a18415ff0e050d26aaa8fcfe844631768f
+index 0000000000000000000000000000000000000000..ce04a5d9aaef3ca8ba8d7b988bdf0497285f90c1
 --- /dev/null
 +++ b/src/main/java/me/samsuik/sakura/explosion/special/SpecialisedExplosion.java
-@@ -0,0 +1,202 @@
+@@ -0,0 +1,203 @@
 +package me.samsuik.sakura.explosion.special;
 +
 +import ca.spottedleaf.moonrise.common.util.WorldUtil;
@@ -99,6 +99,7 @@ index 0000000000000000000000000000000000000000..82a448a18415ff0e050d26aaa8fcfe84
 +
 +        if (!this.wasCanceled) {
 +            this.applyEffects.accept(this);
++            this.getHitPlayers().clear();
 +        }
 +
 +        return !explodedPositions.isEmpty();
@@ -437,7 +438,7 @@ index 0000000000000000000000000000000000000000..ebe5f0c8c2f09920b5f5ef734e63f5e7
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index 1f278f6ef7e39df676334e7e5853dec4617f6baa..a9315006379f7ab5b40cb6aba7ed82727afe3a5a 100644
+index 3b1fbd1fc480682f6a6c620432e268c4e7d283b7..264b6be15e2f9ca147cf57aa5b659e14025c9b53 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
 @@ -1890,7 +1890,16 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
@@ -472,7 +473,7 @@ index 1f278f6ef7e39df676334e7e5853dec4617f6baa..a9315006379f7ab5b40cb6aba7ed8272
          ParticleOptions particleparam2 = serverexplosion.isSmall() ? particleparam : particleparam1;
          Iterator iterator = this.players.iterator();
  
-@@ -1912,7 +1928,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1923,7 +1939,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
              }
          }
  
@@ -508,7 +509,7 @@ index 6b739e820af6333c1ff3a4b87154d4c00c9a5559..0a9e62dd90c6aba4ff97391d69f9a92d
      // Sakura end - merge cannon entities
  
 diff --git a/src/main/java/net/minecraft/world/level/ServerExplosion.java b/src/main/java/net/minecraft/world/level/ServerExplosion.java
-index b07c2eb8cc3cc54e8ab72c5ed3d6d7623416e7fb..9381a6810e709194dc50651cd2518942f1d91dec 100644
+index 37c32860af0efab2e272ee1ca6e67d6b9b885cbf..59e38ee6ac0699350a7021f1d074fdfee4a5ba41 100644
 --- a/src/main/java/net/minecraft/world/level/ServerExplosion.java
 +++ b/src/main/java/net/minecraft/world/level/ServerExplosion.java
 @@ -52,9 +52,9 @@ public class ServerExplosion implements Explosion {
@@ -588,7 +589,7 @@ index b07c2eb8cc3cc54e8ab72c5ed3d6d7623416e7fb..9381a6810e709194dc50651cd2518942
          // Paper start - collision optimisations
          final ObjectArrayList<BlockPos> ret = new ObjectArrayList<>();
  
-@@ -682,7 +714,7 @@ public class ServerExplosion implements Explosion {
+@@ -685,7 +717,7 @@ public class ServerExplosion implements Explosion {
  
      }
  
@@ -597,7 +598,7 @@ index b07c2eb8cc3cc54e8ab72c5ed3d6d7623416e7fb..9381a6810e709194dc50651cd2518942
          List<ServerExplosion.StackCollector> list1 = new ArrayList();
  
          Util.shuffle(positions, this.level.random);
-@@ -787,14 +819,7 @@ public class ServerExplosion implements Explosion {
+@@ -790,14 +822,7 @@ public class ServerExplosion implements Explosion {
              return;
          }
          // CraftBukkit end
@@ -613,7 +614,7 @@ index b07c2eb8cc3cc54e8ab72c5ed3d6d7623416e7fb..9381a6810e709194dc50651cd2518942
          this.level.gameEvent(this.source, (Holder) GameEvent.EXPLODE, this.center);
          List<BlockPos> list = this.calculateExplodedPositions();
  
-@@ -810,13 +835,7 @@ public class ServerExplosion implements Explosion {
+@@ -813,13 +838,7 @@ public class ServerExplosion implements Explosion {
          if (this.fire) {
              this.createFire(list);
          }
@@ -628,7 +629,7 @@ index b07c2eb8cc3cc54e8ab72c5ed3d6d7623416e7fb..9381a6810e709194dc50651cd2518942
  
      }
  
-@@ -837,7 +856,7 @@ public class ServerExplosion implements Explosion {
+@@ -840,7 +859,7 @@ public class ServerExplosion implements Explosion {
  
      }
  
@@ -637,7 +638,7 @@ index b07c2eb8cc3cc54e8ab72c5ed3d6d7623416e7fb..9381a6810e709194dc50651cd2518942
          return this.blockInteraction != Explosion.BlockInteraction.KEEP;
      }
  
-@@ -904,7 +923,7 @@ public class ServerExplosion implements Explosion {
+@@ -907,7 +926,7 @@ public class ServerExplosion implements Explosion {
      }
  
      // Paper start - Optimize explosions
