@@ -509,7 +509,7 @@ index 6b739e820af6333c1ff3a4b87154d4c00c9a5559..0a9e62dd90c6aba4ff97391d69f9a92d
      // Sakura end - merge cannon entities
  
 diff --git a/src/main/java/net/minecraft/world/level/ServerExplosion.java b/src/main/java/net/minecraft/world/level/ServerExplosion.java
-index 37c32860af0efab2e272ee1ca6e67d6b9b885cbf..59e38ee6ac0699350a7021f1d074fdfee4a5ba41 100644
+index b07c2eb8cc3cc54e8ab72c5ed3d6d7623416e7fb..59e38ee6ac0699350a7021f1d074fdfee4a5ba41 100644
 --- a/src/main/java/net/minecraft/world/level/ServerExplosion.java
 +++ b/src/main/java/net/minecraft/world/level/ServerExplosion.java
 @@ -52,9 +52,9 @@ public class ServerExplosion implements Explosion {
@@ -589,7 +589,19 @@ index 37c32860af0efab2e272ee1ca6e67d6b9b885cbf..59e38ee6ac0699350a7021f1d074fdfe
          // Paper start - collision optimisations
          final ObjectArrayList<BlockPos> ret = new ObjectArrayList<>();
  
-@@ -685,7 +717,7 @@ public class ServerExplosion implements Explosion {
+@@ -670,7 +702,10 @@ public class ServerExplosion implements Explosion {
+                             Player entityhuman = (Player) entity;
+ 
+                             if (!entityhuman.isSpectator() && (!entityhuman.isCreative() || !entityhuman.getAbilities().flying) && !level.paperConfig().environment.disableExplosionKnockback) { // Paper - Option to disable explosion knockback
+-                                this.hitPlayers.put(entityhuman, vec3d);
++                                // Sakura start - specialised explosions; tally player velocity
++                                final Vec3 explosionImpact = vec3d;
++                                this.hitPlayers.compute(entityhuman, (p, v) -> v != null ? v.add(explosionImpact) : explosionImpact);
++                                // Sakura end - specialised explosions; tally player velocity
+                             }
+                         }
+ 
+@@ -682,7 +717,7 @@ public class ServerExplosion implements Explosion {
  
      }
  
@@ -598,7 +610,7 @@ index 37c32860af0efab2e272ee1ca6e67d6b9b885cbf..59e38ee6ac0699350a7021f1d074fdfe
          List<ServerExplosion.StackCollector> list1 = new ArrayList();
  
          Util.shuffle(positions, this.level.random);
-@@ -790,14 +822,7 @@ public class ServerExplosion implements Explosion {
+@@ -787,14 +822,7 @@ public class ServerExplosion implements Explosion {
              return;
          }
          // CraftBukkit end
@@ -614,7 +626,7 @@ index 37c32860af0efab2e272ee1ca6e67d6b9b885cbf..59e38ee6ac0699350a7021f1d074fdfe
          this.level.gameEvent(this.source, (Holder) GameEvent.EXPLODE, this.center);
          List<BlockPos> list = this.calculateExplodedPositions();
  
-@@ -813,13 +838,7 @@ public class ServerExplosion implements Explosion {
+@@ -810,13 +838,7 @@ public class ServerExplosion implements Explosion {
          if (this.fire) {
              this.createFire(list);
          }
@@ -629,7 +641,7 @@ index 37c32860af0efab2e272ee1ca6e67d6b9b885cbf..59e38ee6ac0699350a7021f1d074fdfe
  
      }
  
-@@ -840,7 +859,7 @@ public class ServerExplosion implements Explosion {
+@@ -837,7 +859,7 @@ public class ServerExplosion implements Explosion {
  
      }
  
@@ -638,7 +650,7 @@ index 37c32860af0efab2e272ee1ca6e67d6b9b885cbf..59e38ee6ac0699350a7021f1d074fdfe
          return this.blockInteraction != Explosion.BlockInteraction.KEEP;
      }
  
-@@ -907,7 +926,7 @@ public class ServerExplosion implements Explosion {
+@@ -904,7 +926,7 @@ public class ServerExplosion implements Explosion {
      }
  
      // Paper start - Optimize explosions

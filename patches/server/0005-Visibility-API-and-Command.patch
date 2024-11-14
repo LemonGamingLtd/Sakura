@@ -559,22 +559,6 @@ index de87483600e55d88176fe25db621bbd3e464729f..5bd189fad703ac99d57258fa448dbcc1
      }
  
      public PrimedTnt(Level world, double x, double y, double z, @Nullable LivingEntity igniter) {
-diff --git a/src/main/java/net/minecraft/world/level/ServerExplosion.java b/src/main/java/net/minecraft/world/level/ServerExplosion.java
-index bbbd451ff184be8fa13bd93d53c89a9502f9951a..7280806cd37a1aed53e304de0a03d68c18b86b09 100644
---- a/src/main/java/net/minecraft/world/level/ServerExplosion.java
-+++ b/src/main/java/net/minecraft/world/level/ServerExplosion.java
-@@ -559,7 +559,10 @@ public class ServerExplosion implements Explosion {
-                             Player entityhuman = (Player) entity;
- 
-                             if (!entityhuman.isSpectator() && (!entityhuman.isCreative() || !entityhuman.getAbilities().flying) && !level.paperConfig().environment.disableExplosionKnockback) { // Paper - Option to disable explosion knockback
--                                this.hitPlayers.put(entityhuman, vec3d);
-+                                // Sakura start - specialised explosions; tally player velocity
-+                                final Vec3 explosionImpact = vec3d;
-+                                this.hitPlayers.compute(entityhuman, (p, v) -> v != null ? v.add(explosionImpact) : explosionImpact);
-+                                // Sakura end - specialised explosions; tally player velocity
-                             }
-                         }
- 
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 index 2c7ec674f55b3178b9dcba7f2bc1ff5efccb50ea..7976eb7496d57d5d1fe29c902e167d79a86bac32 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
