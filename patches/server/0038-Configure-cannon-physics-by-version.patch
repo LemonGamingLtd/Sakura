@@ -67,10 +67,10 @@ index ea6e252053b8910141aacd5bb82108d6abf3fb96..aa23d2665d5804e31b7c1b7021377010
          if (xSmaller && z != 0.0) {
              z = performAABBCollisionsZ(axisalignedbb, z, aabbs);
 diff --git a/src/main/java/me/samsuik/sakura/explosion/special/SpecialisedExplosion.java b/src/main/java/me/samsuik/sakura/explosion/special/SpecialisedExplosion.java
-index 86a4b9502df49b1614fc76920b164e1148244643..8db362721860fe8d5eb497a766e6d1b7879cb455 100644
+index 99388d6e1d536f195d7602341313e73d6797d9db..289e935a2e6dfa5d45b9c913b8ed320e1a170f93 100644
 --- a/src/main/java/me/samsuik/sakura/explosion/special/SpecialisedExplosion.java
 +++ b/src/main/java/me/samsuik/sakura/explosion/special/SpecialisedExplosion.java
-@@ -180,9 +180,15 @@ public abstract class SpecialisedExplosion<T extends Entity> extends Explosion {
+@@ -181,9 +181,15 @@ public abstract class SpecialisedExplosion<T extends Entity> extends Explosion {
  
          if (distanceFromBottom <= 1.0) {
              double x = entity.getX() - pos.x;
@@ -475,7 +475,7 @@ index 4d0cfa1f96a04713cb1d51c7aaaf91374a0d6c17..96c43df6834e20a9e04eb095f36a644e
      // Paper end - Option to prevent TNT from moving in water
  }
 diff --git a/src/main/java/net/minecraft/world/level/Explosion.java b/src/main/java/net/minecraft/world/level/Explosion.java
-index fa142719b1c4f6434466141128c475ef945edbb7..cfeacded13f5ebbc3ef66163387c7a40622d7b74 100644
+index bf39d7aa21c3f0dc9cf1b31224cce3a114e8ea86..016ab8ff4be6a8f7e96bce34452180cefa43c44a 100644
 --- a/src/main/java/net/minecraft/world/level/Explosion.java
 +++ b/src/main/java/net/minecraft/world/level/Explosion.java
 @@ -78,6 +78,7 @@ public class Explosion {
@@ -540,7 +540,7 @@ index fa142719b1c4f6434466141128c475ef945edbb7..cfeacded13f5ebbc3ef66163387c7a40
  
                      if (d11 != 0.0D) {
                          d8 /= d11;
-@@ -1015,7 +1035,7 @@ public class Explosion {
+@@ -1018,7 +1038,7 @@ public class Explosion {
          // Sakura start - replace density cache
          float blockDensity = this.level.densityCache.getDensity(vec3d, entity);
          if (blockDensity == me.samsuik.sakura.explosion.density.BlockDensityCache.UNKNOWN_DENSITY) {
@@ -549,7 +549,7 @@ index fa142719b1c4f6434466141128c475ef945edbb7..cfeacded13f5ebbc3ef66163387c7a40
              this.level.densityCache.putDensity(vec3d, entity, blockDensity);
              // Sakura end - replace density cache
          }
-@@ -1023,6 +1043,17 @@ public class Explosion {
+@@ -1026,6 +1046,17 @@ public class Explosion {
          return blockDensity;
      }
  

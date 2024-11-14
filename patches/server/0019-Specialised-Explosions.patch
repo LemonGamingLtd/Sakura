@@ -23,10 +23,10 @@ index c21e00812f1aaa1279834a0562d360d6b89e146c..1e1329adde1457898a3002279b53b1bb
          if (index >= 0) {
 diff --git a/src/main/java/me/samsuik/sakura/explosion/special/SpecialisedExplosion.java b/src/main/java/me/samsuik/sakura/explosion/special/SpecialisedExplosion.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..86a4b9502df49b1614fc76920b164e1148244643
+index 0000000000000000000000000000000000000000..99388d6e1d536f195d7602341313e73d6797d9db
 --- /dev/null
 +++ b/src/main/java/me/samsuik/sakura/explosion/special/SpecialisedExplosion.java
-@@ -0,0 +1,222 @@
+@@ -0,0 +1,223 @@
 +package me.samsuik.sakura.explosion.special;
 +
 +import ca.spottedleaf.moonrise.common.util.WorldUtil;
@@ -118,6 +118,7 @@ index 0000000000000000000000000000000000000000..86a4b9502df49b1614fc76920b164e11
 +
 +        if (!this.wasCanceled) {
 +            this.level.notifyPlayersOfExplosion(this.x, this.y, this.z, this.radius(), this);
++            this.getHitPlayers().clear();
 +        }
 +
 +        this.getToBlow().clear();
@@ -463,7 +464,7 @@ index 0000000000000000000000000000000000000000..a5d13c6b0d8765e4a65b43f5835fd907
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index 0a29ad6409226ece40c03c6eba699592c7f0aa11..9e059ca44d19da96ff5fbe84a716e747036025d3 100644
+index c245760718be113128739101b8038471b7144272..d03c700fffb7b854b3aae08d50419ae406c2ea70 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
 @@ -1798,6 +1798,12 @@ public class ServerLevel extends Level implements WorldGenLevel, ca.spottedleaf.
@@ -479,7 +480,7 @@ index 0a29ad6409226ece40c03c6eba699592c7f0aa11..9e059ca44d19da96ff5fbe84a716e747
          Iterator iterator = this.players.iterator();
  
          while (iterator.hasNext()) {
-@@ -1808,7 +1814,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ca.spottedleaf.
+@@ -1820,7 +1826,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ca.spottedleaf.
              }
          }
  
@@ -515,7 +516,7 @@ index a8e540c8a27135336fb2d6e37aec13d598b2000e..e64c85bf8fbd3ad0d7e8a6e4a34aed81
      // Sakura end - merge cannon entities
  
 diff --git a/src/main/java/net/minecraft/world/level/Explosion.java b/src/main/java/net/minecraft/world/level/Explosion.java
-index 220d97947df493d1ab825e6637ca648e0b186d18..5cac17def6b49316ae8fb994d4f3d80154074fe0 100644
+index 220d97947df493d1ab825e6637ca648e0b186d18..ceedd8ab94f2f3e2f61b3caf84121dfef4e73bbe 100644
 --- a/src/main/java/net/minecraft/world/level/Explosion.java
 +++ b/src/main/java/net/minecraft/world/level/Explosion.java
 @@ -57,9 +57,11 @@ public class Explosion {
@@ -602,7 +603,19 @@ index 220d97947df493d1ab825e6637ca648e0b186d18..5cac17def6b49316ae8fb994d4f3d801
          // use initial cache value that is most likely to be used: the source position
          final ca.spottedleaf.moonrise.patches.collisions.ExplosionBlockCache initialCache;
          {
-@@ -964,7 +979,7 @@ public class Explosion {
+@@ -724,7 +739,10 @@ public class Explosion {
+                             Player entityhuman = (Player) entity;
+ 
+                             if (!entityhuman.isSpectator() && (!entityhuman.isCreative() || !entityhuman.getAbilities().flying) && !level.paperConfig().environment.disableExplosionKnockback) { // Paper - Option to disable explosion knockback
+-                                this.hitPlayers.put(entityhuman, vec3d1);
++                                // Sakura start - specialised explosions; tally player velocity
++                                final Vec3 explosionImpact = vec3d1;
++                                this.hitPlayers.compute(entityhuman, (p, v) -> v != null ? v.add(explosionImpact) : explosionImpact);
++                                // Sakura end - specialised explosions; tally player velocity
+                             }
+                         }
+ 
+@@ -964,7 +982,7 @@ public class Explosion {
          private BlockInteraction() {}
      }
      // Paper start - Optimize explosions

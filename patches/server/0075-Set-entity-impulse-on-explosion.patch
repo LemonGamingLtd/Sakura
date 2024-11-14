@@ -5,10 +5,10 @@ Subject: [PATCH] Set entity impulse on explosion
 
 
 diff --git a/src/main/java/me/samsuik/sakura/explosion/special/SpecialisedExplosion.java b/src/main/java/me/samsuik/sakura/explosion/special/SpecialisedExplosion.java
-index 8db362721860fe8d5eb497a766e6d1b7879cb455..911d1d8bef53b549f5f77ca1ed1e5b2e5102ba54 100644
+index 289e935a2e6dfa5d45b9c913b8ed320e1a170f93..5920491a3857f3e75d02a33a1c3eae8907dc5241 100644
 --- a/src/main/java/me/samsuik/sakura/explosion/special/SpecialisedExplosion.java
 +++ b/src/main/java/me/samsuik/sakura/explosion/special/SpecialisedExplosion.java
-@@ -223,6 +223,7 @@ public abstract class SpecialisedExplosion<T extends Entity> extends Explosion {
+@@ -224,6 +224,7 @@ public abstract class SpecialisedExplosion<T extends Entity> extends Explosion {
              moveZ += z;
          }
  
@@ -17,7 +17,7 @@ index 8db362721860fe8d5eb497a766e6d1b7879cb455..911d1d8bef53b549f5f77ca1ed1e5b2e
      }
  }
 diff --git a/src/main/java/net/minecraft/world/level/Explosion.java b/src/main/java/net/minecraft/world/level/Explosion.java
-index d7278a4f2a186532a9b4a57af8dad47b86660068..60267afc1d0ca0ed2daeff27c804e544f7704700 100644
+index f248d8a3e63bb6f33001518e3481c7e7c75cac1b..10260736ac47e15cb55f43c4dd720cbbe7fe4e15 100644
 --- a/src/main/java/net/minecraft/world/level/Explosion.java
 +++ b/src/main/java/net/minecraft/world/level/Explosion.java
 @@ -786,6 +786,7 @@ public class Explosion {
