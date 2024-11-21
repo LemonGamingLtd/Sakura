@@ -5,7 +5,7 @@ Subject: [PATCH] Configurable left shooting and adjusting limits
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index 0868f3d8d93e4c360a0a53df741950789f3c6a1c..1dbad44adfb735d8ff4aa55f0b45353404386fef 100644
+index ee8816ec238a38667cdf0f0f749c02b78a6477bd..9adc5164580a291585789948091ec192aff6d968 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
 @@ -694,6 +694,46 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess

@@ -5,7 +5,7 @@ Subject: [PATCH] Allow explosions to destroy lava
 
 
 diff --git a/src/main/java/net/minecraft/world/level/ServerExplosion.java b/src/main/java/net/minecraft/world/level/ServerExplosion.java
-index 97debcf36d4aa3f8a6c83d35c53ba95342966fbf..0789f37ae89b22f9e3500b25cbe27ef853950b85 100644
+index bdc3ff8cbe4e5eaa9d9a34f38fdd150f7368e33b..e857fd02a5e341a1a701da71874dbd850e3c5a5d 100644
 --- a/src/main/java/net/minecraft/world/level/ServerExplosion.java
 +++ b/src/main/java/net/minecraft/world/level/ServerExplosion.java
 @@ -407,6 +407,11 @@ public class ServerExplosion implements Explosion {
