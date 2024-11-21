@@ -227,7 +227,7 @@ index 0000000000000000000000000000000000000000..5b3e2cca7ee16bc6ecfa0f29438fa658
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 9a741b30f1f8e3b151d54e36184e7e867163a6b4..24aa17ae5f15f330b128a752dee4f79fa619b75d 100644
+index b771196ac2aa905312d7e106cae710d68e4733d3..281a821c6a53013f8fe798781755ab7be2a359bd 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -1886,6 +1886,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -239,7 +239,7 @@ index 9a741b30f1f8e3b151d54e36184e7e867163a6b4..24aa17ae5f15f330b128a752dee4f79f
          this.isIteratingOverLevels = false; // Paper - Throw exception on world create while being ticked
  
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index d95292d388efa4c504440347f1e5dfc2b87b8afe..b5ce268d1b9d8e57a3927c8e0b91746361fb6778 100644
+index bcaeaf99919be2dba2ba6e5fac76b25766b446d1..932e64a75d6a2d0e6c82fd8917d3faa054c2512f 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
 @@ -178,6 +178,12 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
@@ -256,10 +256,10 @@ index d95292d388efa4c504440347f1e5dfc2b87b8afe..b5ce268d1b9d8e57a3927c8e0b917463
      public final com.destroystokyo.paper.antixray.ChunkPacketBlockController chunkPacketBlockController; // Paper - Anti-Xray
      public static BlockPos lastPhysicsProblem; // Spigot
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index d41c81158c00931e6b11093cce141f6a3085ba05..6809c9fbc67b40c24d913d28c8dc54f8cc0c9989 100644
+index 8f234b46c24a0ae08aa5f8190c5b27e1f62dfbab..06079cbb86a4080c439a047ef97a5899af43791d 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-@@ -295,6 +295,13 @@ public class CraftWorld extends CraftRegionAccessor implements World {
+@@ -287,6 +287,13 @@ public class CraftWorld extends CraftRegionAccessor implements World {
      }
      // Paper end
  

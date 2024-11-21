@@ -5,7 +5,7 @@ Subject: [PATCH] Configure Entity Knockback
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-index a2724a075fc2f8c8127ed87cfa35d7ae72c347e8..9c21000c7e5202504ca08e5d87bb32bc674aa76c 100644
+index e6b6987b46294a96f10d3aa56e8bdc4e25a4c9bf..daf37223c47f30f6da23a996c8b0473e473cbba2 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
 @@ -1604,7 +1604,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
@@ -26,7 +26,7 @@ index a2724a075fc2f8c8127ed87cfa35d7ae72c347e8..9c21000c7e5202504ca08e5d87bb32bc
      }
  
      private boolean checkTotemDeathProtection(DamageSource source) {
-@@ -2018,7 +2018,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
+@@ -2024,7 +2024,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
      }
  
      public void knockback(double d0, double d1, double d2, @Nullable Entity attacker, io.papermc.paper.event.entity.EntityKnockbackEvent.Cause cause) { // Paper - knockback events
@@ -35,7 +35,7 @@ index a2724a075fc2f8c8127ed87cfa35d7ae72c347e8..9c21000c7e5202504ca08e5d87bb32bc
          if (true || d0 > 0.0D) { // CraftBukkit - Call event even when force is 0
              //this.hasImpulse = true; // CraftBukkit - Move down
  
-@@ -2029,9 +2029,21 @@ public abstract class LivingEntity extends Entity implements Attackable {
+@@ -2035,9 +2035,21 @@ public abstract class LivingEntity extends Entity implements Attackable {
              }
  
              Vec3 vec3d1 = (new Vec3(d1, 0.0D, d2)).normalize().scale(d0);

@@ -5,10 +5,10 @@ Subject: [PATCH] Load Chunks on Movement
 
 
 diff --git a/src/main/java/ca/spottedleaf/moonrise/patches/collisions/CollisionUtil.java b/src/main/java/ca/spottedleaf/moonrise/patches/collisions/CollisionUtil.java
-index 3abd4ad6379c383c3a31931255292b42d9435694..149e461fcb23b2ed7ae8dcc09837de501ba9eafb 100644
+index aec503ca1551ce4b15b8975832cd664ebd670722..f6be260f942c6b9c65e8c3ed625639db75086267 100644
 --- a/src/main/java/ca/spottedleaf/moonrise/patches/collisions/CollisionUtil.java
 +++ b/src/main/java/ca/spottedleaf/moonrise/patches/collisions/CollisionUtil.java
-@@ -1910,6 +1910,7 @@ public final class CollisionUtil {
+@@ -1912,6 +1912,7 @@ public final class CollisionUtil {
      public static final int COLLISION_FLAG_COLLIDE_WITH_UNLOADED_CHUNKS = 1 << 1;
      public static final int COLLISION_FLAG_CHECK_BORDER = 1 << 2;
      public static final int COLLISION_FLAG_CHECK_ONLY = 1 << 3;
@@ -16,7 +16,7 @@ index 3abd4ad6379c383c3a31931255292b42d9435694..149e461fcb23b2ed7ae8dcc09837de50
  
      public static boolean getCollisionsForBlocksOrWorldBorder(final Level world, final Entity entity, final AABB aabb,
                                                                final List<VoxelShape> intoVoxel, final List<AABB> intoAABB,
-@@ -1960,6 +1961,7 @@ public final class CollisionUtil {
+@@ -1963,6 +1964,7 @@ public final class CollisionUtil {
          final int maxChunkZ = maxBlockZ >> 4;
  
          final boolean loadChunks = (collisionFlags & COLLISION_FLAG_LOAD_CHUNKS) != 0;
@@ -24,7 +24,7 @@ index 3abd4ad6379c383c3a31931255292b42d9435694..149e461fcb23b2ed7ae8dcc09837de50
          final ChunkSource chunkSource = world.getChunkSource();
  
          for (int currChunkZ = minChunkZ; currChunkZ <= maxChunkZ; ++currChunkZ) {
-@@ -1978,6 +1980,13 @@ public final class CollisionUtil {
+@@ -1981,6 +1983,13 @@ public final class CollisionUtil {
                      continue;
                  }
  
@@ -51,7 +51,7 @@ index e701f57ac8b0efdf739389f9be7a255220bb3e21..35a437f3acfd2659341abd8ab6a3b21c
      public static <T> TicketType<T> create(String name, Comparator<T> argumentComparator) {
          return new TicketType<>(name, argumentComparator, 0L);
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index 35da89072cea86c1b1bc54784908bfb7bd449f4a..eb0026368463aaac46dbbf1800032809041f7874 100644
+index cc9afce726f5b269cd2afb21ffe81173e618781d..281c1d501ed40acd709a541d656d542ce595ac2a 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
 @@ -615,6 +615,20 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess

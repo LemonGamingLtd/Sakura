@@ -145,7 +145,7 @@ index 0000000000000000000000000000000000000000..b4ab8f172d713204bb9c1ebf575dcc28
 +    private LegacyDamageMapping() {}
 +}
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-index 57d5a4a1c819f2e06df8cb958783f99990a27557..bf323c5941d348c0c72bdda2a04a20a6653ad70a 100644
+index dc57d8d4448f60478693b6c3e81ae11074d4f22b..365ab6a0c564911bc58d3fb90e3abe82dbbdc642 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
 @@ -310,6 +310,43 @@ public abstract class LivingEntity extends Entity implements Attackable {
@@ -192,7 +192,7 @@ index 57d5a4a1c819f2e06df8cb958783f99990a27557..bf323c5941d348c0c72bdda2a04a20a6
  
      protected LivingEntity(EntityType<? extends LivingEntity> type, Level world) {
          super(type, world);
-@@ -2285,7 +2322,16 @@ public abstract class LivingEntity extends Entity implements Attackable {
+@@ -2291,7 +2328,16 @@ public abstract class LivingEntity extends Entity implements Attackable {
      protected float getDamageAfterArmorAbsorb(DamageSource source, float amount) {
          if (!source.is(DamageTypeTags.BYPASSES_ARMOR)) {
              // this.hurtArmor(damagesource, f); // CraftBukkit - actuallyHurt(DamageSource, float, EntityDamageEvent) for handle damage
@@ -209,7 +209,7 @@ index 57d5a4a1c819f2e06df8cb958783f99990a27557..bf323c5941d348c0c72bdda2a04a20a6
          }
  
          return amount;
-@@ -3459,6 +3505,11 @@ public abstract class LivingEntity extends Entity implements Attackable {
+@@ -3481,6 +3527,11 @@ public abstract class LivingEntity extends Entity implements Attackable {
  
                          EnchantmentHelper.runLocationChangedEffects(worldserver, itemstack, this, enumitemslot1);
                      }

@@ -5,10 +5,10 @@ Subject: [PATCH] Add instant mob death animation
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-index d302b53d1d6052b4982fedb496b4d100f75bbe33..c477eb3ea41e7d7caa04179248f116f617317cbd 100644
+index acfb7762f53636a5df1e8de8f1cbcf8d150debc7..dc57d8d4448f60478693b6c3e81ae11074d4f22b 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-@@ -1852,6 +1852,12 @@ public abstract class LivingEntity extends Entity implements Attackable {
+@@ -1858,6 +1858,12 @@ public abstract class LivingEntity extends Entity implements Attackable {
  
              // Paper start
              if (this.dead) { // Paper

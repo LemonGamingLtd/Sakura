@@ -1194,10 +1194,10 @@ index 17a158ff6ce6520b69a5a0032ba4c05449dd0cf8..282a0f91e41a0dcdeb48111a64a83b48
          this.setPvpAllowed(dedicatedserverproperties.pvp);
          this.setFlightAllowed(dedicatedserverproperties.allowFlight);
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index 5964d601c05176f48167cc92057a59e52a4da92b..32742470eea2ec86c0fff02aa157bfcc89530ad3 100644
+index 957cae6ddeba9efe3b55588567ae51e8b86b6a42..2a622f2d796ecb42598d230319804d06f0a30808 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
-@@ -590,7 +590,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -597,7 +597,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
  
      // Add env and gen to constructor, IWorldDataServer -> WorldDataServer
      public ServerLevel(MinecraftServer minecraftserver, Executor executor, LevelStorageSource.LevelStorageAccess convertable_conversionsession, PrimaryLevelData iworlddataserver, ResourceKey<Level> resourcekey, LevelStem worlddimension, ChunkProgressListener worldloadlistener, boolean flag, long i, List<CustomSpawner> list, boolean flag1, @Nullable RandomSequences randomsequences, org.bukkit.World.Environment env, org.bukkit.generator.ChunkGenerator gen, org.bukkit.generator.BiomeProvider biomeProvider) {
@@ -1207,7 +1207,7 @@ index 5964d601c05176f48167cc92057a59e52a4da92b..32742470eea2ec86c0fff02aa157bfcc
          this.convertable = convertable_conversionsession;
          this.uuid = WorldUUID.getUUID(convertable_conversionsession.levelDirectory.path().toFile());
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index 022de445bbbb869c38be4972c98dcf1c665539ec..d95292d388efa4c504440347f1e5dfc2b87b8afe 100644
+index 2cc264f577fdd81d02783e0d6146bea9728789c7..bcaeaf99919be2dba2ba6e5fac76b25766b446d1 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
 @@ -172,6 +172,12 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
@@ -1241,7 +1241,7 @@ index 022de445bbbb869c38be4972c98dcf1c665539ec..d95292d388efa4c504440347f1e5dfc2
          this.world = new CraftWorld((ServerLevel) this, gen, biomeProvider, env);
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index e80439a0d17adaab7b782626fd2ee9ce1669058c..53d013a3c82f77cd388aadef1fe27f531db7bd89 100644
+index 806e56cb60235a99f468d36a059fdbd54c2d46e3..90d9f1c87f9731ca78ba4eb1fd4522ab2273a036 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -1074,6 +1074,7 @@ public final class CraftServer implements Server {
@@ -1261,7 +1261,7 @@ index e80439a0d17adaab7b782626fd2ee9ce1669058c..53d013a3c82f77cd388aadef1fe27f53
          this.overrideAllCommandBlockCommands = this.commandsConfiguration.getStringList("command-block-overrides").contains("*");
          this.ignoreVanillaPermissions = this.commandsConfiguration.getBoolean("ignore-vanilla-permissions");
 diff --git a/src/main/java/org/bukkit/craftbukkit/Main.java b/src/main/java/org/bukkit/craftbukkit/Main.java
-index a7524d3853d5b67b6385d2b74832b9267503dfe6..cab99463b969b6414d506c73c71e7e81f39c5541 100644
+index be0d38544395a9b3befb898bb961f34e32fe9509..97c1db323971ca1a44c164bb90ae384ea21f5c8f 100644
 --- a/src/main/java/org/bukkit/craftbukkit/Main.java
 +++ b/src/main/java/org/bukkit/craftbukkit/Main.java
 @@ -176,6 +176,14 @@ public class Main {

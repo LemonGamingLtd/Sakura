@@ -442,10 +442,10 @@ index 9f34a0c6f4f8157d77ed3cb36a546ec8c1b9b1bd..a4a692c46b7c223c7ade46252e5f01c0
                          gameprofilerfiller.popPush("nextTickWait");
                          this.mayHaveDelayedTasks = true;
 diff --git a/src/main/java/net/minecraft/server/level/ServerChunkCache.java b/src/main/java/net/minecraft/server/level/ServerChunkCache.java
-index 3c711e1df57ac5b0f8795ebb12299d275792b1d4..837cbd35b52c861956eef1eea0ae782a311273ba 100644
+index 61a73a234d9bdd22958ae261b7d0359179f7a57b..59f6dfeee3db8f08b566dc7db14e9a461f70a317 100644
 --- a/src/main/java/net/minecraft/server/level/ServerChunkCache.java
 +++ b/src/main/java/net/minecraft/server/level/ServerChunkCache.java
-@@ -193,6 +193,11 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
+@@ -196,6 +196,11 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
          this.clearCache();
      }
  
@@ -458,7 +458,7 @@ index 3c711e1df57ac5b0f8795ebb12299d275792b1d4..837cbd35b52c861956eef1eea0ae782a
      public boolean isChunkLoaded(int chunkX, int chunkZ) {
          ChunkHolder chunk = this.chunkMap.getUpdatingChunkIfPresent(ChunkPos.asLong(chunkX, chunkZ));
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index 8042d55095ea16cd370ead0f5de2fa2f65510b6c..689ce5e9ee53c47721b93d77c3b8b7f24680bc81 100644
+index 4ac8c7b3878b3df7b9cb812f99a47e2f9fc7f408..0966857107117c59725e69352cd34f6c2228ae4b 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
 @@ -200,7 +200,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe

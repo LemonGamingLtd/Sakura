@@ -5,10 +5,10 @@ Subject: [PATCH] Configure cannon physics by version
 
 
 diff --git a/src/main/java/ca/spottedleaf/moonrise/patches/collisions/CollisionUtil.java b/src/main/java/ca/spottedleaf/moonrise/patches/collisions/CollisionUtil.java
-index 149e461fcb23b2ed7ae8dcc09837de501ba9eafb..613d2d90571546a482ba493fae5cbc7c69dd8f08 100644
+index f6be260f942c6b9c65e8c3ed625639db75086267..27b7be52f7617a6ecd1ff7e967604424f40027bc 100644
 --- a/src/main/java/ca/spottedleaf/moonrise/patches/collisions/CollisionUtil.java
 +++ b/src/main/java/ca/spottedleaf/moonrise/patches/collisions/CollisionUtil.java
-@@ -1799,6 +1799,13 @@ public final class CollisionUtil {
+@@ -1801,6 +1801,13 @@ public final class CollisionUtil {
      }
  
      public static Vec3 performAABBCollisions(final Vec3 moveVector, AABB axisalignedbb, final List<AABB> potentialCollisions) {
@@ -22,7 +22,7 @@ index 149e461fcb23b2ed7ae8dcc09837de501ba9eafb..613d2d90571546a482ba493fae5cbc7c
          double x = moveVector.x;
          double y = moveVector.y;
          double z = moveVector.z;
-@@ -1810,7 +1817,10 @@ public final class CollisionUtil {
+@@ -1812,7 +1819,10 @@ public final class CollisionUtil {
              }
          }
  
@@ -34,7 +34,7 @@ index 149e461fcb23b2ed7ae8dcc09837de501ba9eafb..613d2d90571546a482ba493fae5cbc7c
  
          if (xSmaller && z != 0.0) {
              z = performAABBCollisionsZ(axisalignedbb, z, potentialCollisions);
-@@ -1836,9 +1846,18 @@ public final class CollisionUtil {
+@@ -1838,9 +1848,18 @@ public final class CollisionUtil {
      public static Vec3 performCollisions(final Vec3 moveVector, AABB axisalignedbb,
                                           final List<VoxelShape> voxels,
                                           final List<AABB> aabbs) {
@@ -54,7 +54,7 @@ index 149e461fcb23b2ed7ae8dcc09837de501ba9eafb..613d2d90571546a482ba493fae5cbc7c
          }
  
          double x = moveVector.x;
-@@ -1853,7 +1872,10 @@ public final class CollisionUtil {
+@@ -1855,7 +1874,10 @@ public final class CollisionUtil {
              }
          }
  
@@ -106,7 +106,7 @@ index ebe5f0c8c2f09920b5f5ef734e63f5e7cd8bd3a1..320cdb1f4e655a2d093890e88476df90
      protected int getExplosionCount() {
          if (this.cause.getMergeEntityData().getMergeLevel() == MergeLevel.NONE) {
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index b6fe11f2e0cd92bc903445edd7f997baec4c3e75..fce41d825a35700deaa0475aef85fa6e6b431790 100644
+index dc56dd43a0c3171f16310959a642bccacddb3bcc..18417d8b899edd8970291da4d5e1756d87d67531 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
 @@ -385,7 +385,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
@@ -456,7 +456,7 @@ index 3e4935f4a07fa14152d1f55f069c49fdd2f3bc02..1231d99374ffa5d988e5b240be2da95f
      // Paper end - Option to prevent TNT from moving in water
  }
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index 0ae2d83055252146e346b06cc8360eef56d39f5c..8c41282eafc1201bf1c0d001fb4fe791f3173f87 100644
+index a1396dc2f85f9ab547dd12445090037fc5462b96..b8d59ca87e908ce2bdd978007e3a97e297a10278 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
 @@ -841,6 +841,170 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
@@ -890,10 +890,10 @@ index a2d023ff011f71f80032f02430a53d6a08a23623..9e0f4517069ee3fd16a60ccc214da68d
                      if (org.bukkit.craftbukkit.event.CraftEventFactory.handleBlockFormEvent(world, pos, block.defaultBlockState())) {
                          this.fizz(world, pos);
 diff --git a/src/main/java/net/minecraft/world/level/block/RedStoneWireBlock.java b/src/main/java/net/minecraft/world/level/block/RedStoneWireBlock.java
-index 6561e24087dc2b9975f2ee7a3737d453354e4fcc..c949d46dc74aa934a47c75962bbdf112b936d0f7 100644
+index 21f2c61023fadcce30452a02f067cd5d87e5d8dc..5d847016f6ee2d6340d8b2234ed35c3b9228632b 100644
 --- a/src/main/java/net/minecraft/world/level/block/RedStoneWireBlock.java
 +++ b/src/main/java/net/minecraft/world/level/block/RedStoneWireBlock.java
-@@ -500,6 +500,10 @@ public class RedStoneWireBlock extends Block {
+@@ -571,6 +571,10 @@ public class RedStoneWireBlock extends Block {
      protected InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult hit) {
          if (!player.getAbilities().mayBuild) {
              return InteractionResult.PASS;

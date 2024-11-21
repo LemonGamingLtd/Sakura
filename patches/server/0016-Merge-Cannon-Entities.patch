@@ -410,10 +410,10 @@ index a4a692c46b7c223c7ade46252e5f01c0b72eee7e..efc1a8bb3d91369fc47b7553a144cd25
          this.isIteratingOverLevels = false; // Paper - Throw exception on world create while being ticked
  
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index 689ce5e9ee53c47721b93d77c3b8b7f24680bc81..ea5f858a3ac3e20fe2b00f7ba5bd58e1f7c17425 100644
+index 0966857107117c59725e69352cd34f6c2228ae4b..4c02453b6663f369377940ece30e8a2a4cc4c7d5 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
-@@ -799,6 +799,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -806,6 +806,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
              }
  
              org.spigotmc.ActivationRange.activateEntities(this); // Spigot
@@ -421,7 +421,7 @@ index 689ce5e9ee53c47721b93d77c3b8b7f24680bc81..ea5f858a3ac3e20fe2b00f7ba5bd58e1
              this.entityTickList.forEach((entity) -> {
                  if (!entity.isRemoved()) {
                      if (!tickratemanager.isEntityFrozen(entity)) {
-@@ -816,6 +817,15 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -823,6 +824,15 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
                                  entity.stopRiding();
                              }
  
@@ -438,7 +438,7 @@ index 689ce5e9ee53c47721b93d77c3b8b7f24680bc81..ea5f858a3ac3e20fe2b00f7ba5bd58e1
                              this.guardEntityTick(this::tickNonPassenger, entity);
                              gameprofilerfiller.pop();
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index 1fbe29291e2c8318427525f126842b9ce9f5b946..e369034397cabd79b67714402cf6431b94594285 100644
+index d9e236f8ec8735512d3bf02f07472b9be702bc9d..0b1eeefc0ff36665ffbba536e9944d74da0d94b0 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
 @@ -648,6 +648,23 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
@@ -678,7 +678,7 @@ index 25a25b5c6497c9823a41e6bd8fd22f0841377c62..6b739e820af6333c1ff3a4b87154d4c0
          if (nbt.contains("explosion_power", 99)) {
              this.explosionPower = Mth.clamp(nbt.getFloat("explosion_power"), 0.0F, 128.0F);
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index 4696506402ab92439033cf01007fd78a543b5b37..d036cdcc17b8429c986946a020cb34cd6ced322e 100644
+index 49b01f78529f067eee65b14e7906b9f1de768f06..41a6c621dc26fe4bcb254d0465588c9227832758 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
 @@ -841,6 +841,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl

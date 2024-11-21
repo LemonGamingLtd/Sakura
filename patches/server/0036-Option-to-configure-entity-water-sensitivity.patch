@@ -5,10 +5,10 @@ Subject: [PATCH] Option to configure entity water sensitivity
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-index e75af7a79406092d8c04e8bc49d97b877208b974..e76e1a45f522a212c7ffcac9ff21451e679f7d0b 100644
+index daf37223c47f30f6da23a996c8b0473e473cbba2..acfb7762f53636a5df1e8de8f1cbcf8d150debc7 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-@@ -3697,7 +3697,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
+@@ -3719,7 +3719,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
          // Paper end - Add EntityMoveEvent
          world = this.level();
          if (world instanceof ServerLevel worldserver) {
