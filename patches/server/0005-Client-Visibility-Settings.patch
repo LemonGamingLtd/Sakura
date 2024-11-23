@@ -106,7 +106,7 @@ index 0000000000000000000000000000000000000000..cd9ebbb7bbb90c87faf75fcc4b487e93
 +    }
 +}
 diff --git a/src/main/java/me/samsuik/sakura/configuration/GlobalConfiguration.java b/src/main/java/me/samsuik/sakura/configuration/GlobalConfiguration.java
-index 1b49023726fc80231ba952c555923228130a2bdb..d1cfd66e8eea7a181d23d931af2402ce88ff1641 100644
+index 4f7208b6a1e2ac0e812019d4b42bde7fa5909b28..75e8aeb094834bc79e8850fa0ea23770379f86f1 100644
 --- a/src/main/java/me/samsuik/sakura/configuration/GlobalConfiguration.java
 +++ b/src/main/java/me/samsuik/sakura/configuration/GlobalConfiguration.java
 @@ -9,6 +9,8 @@ import org.slf4j.Logger;
@@ -118,7 +118,7 @@ index 1b49023726fc80231ba952c555923228130a2bdb..d1cfd66e8eea7a181d23d931af2402ce
  @SuppressWarnings({"CanBeFinal", "FieldCanBeLocal", "FieldMayBeFinal", "NotNullFieldNotInitialized", "InnerClassMayBeStatic", "RedundantSuppression"})
  public final class GlobalConfiguration extends ConfigurationPart {
  
-@@ -35,7 +37,7 @@ public final class GlobalConfiguration extends ConfigurationPart {
+@@ -36,7 +38,7 @@ public final class GlobalConfiguration extends ConfigurationPart {
  
      public Fps fps;
      public class Fps extends ConfigurationPart {
