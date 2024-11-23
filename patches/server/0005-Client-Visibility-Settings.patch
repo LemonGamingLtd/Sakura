@@ -650,10 +650,10 @@ index 1a37654aff9a9c86c9f7af10a1cf721371f0c5ec..82644b34a77dc5e5af38260b7b07b3ec
      public ClientboundSectionBlocksUpdatePacket(SectionPos sectionPos, ShortSet positions, LevelChunkSection section) {
          this.sectionPos = sectionPos;
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 281a821c6a53013f8fe798781755ab7be2a359bd..9f34a0c6f4f8157d77ed3cb36a546ec8c1b9b1bd 100644
+index 28a7bcb1199f33e15945dbb5fc8ff796f38bc495..f8a9ef307dbe7fd70577b3ef4fa2e4fc99fb1fb1 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -1887,6 +1887,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1889,6 +1889,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              gameprofilerfiller.pop();
              worldserver.explosionDensityCache.clear(); // Paper - Optimize explosions
              worldserver.localConfig().expire(currentTick); // Sakura - add local config

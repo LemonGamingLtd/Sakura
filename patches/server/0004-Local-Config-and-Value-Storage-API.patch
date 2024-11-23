@@ -227,10 +227,10 @@ index 0000000000000000000000000000000000000000..5b3e2cca7ee16bc6ecfa0f29438fa658
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index b771196ac2aa905312d7e106cae710d68e4733d3..281a821c6a53013f8fe798781755ab7be2a359bd 100644
+index 07ea2e6013318f97bfebd0d912dfe01d259a7c0b..28a7bcb1199f33e15945dbb5fc8ff796f38bc495 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -1886,6 +1886,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1888,6 +1888,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              gameprofilerfiller.pop();
              gameprofilerfiller.pop();
              worldserver.explosionDensityCache.clear(); // Paper - Optimize explosions

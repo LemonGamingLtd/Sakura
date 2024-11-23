@@ -574,10 +574,10 @@ index 0000000000000000000000000000000000000000..27b6b071ad38589d37e35ea7fdf1d459
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 9f34a0c6f4f8157d77ed3cb36a546ec8c1b9b1bd..567293a46e28e49096ddc1823473a6f7ada1c355 100644
+index f8a9ef307dbe7fd70577b3ef4fa2e4fc99fb1fb1..decea6322f5ea42ff476fbd00d11f0f7230eb711 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -425,6 +425,17 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -426,6 +426,17 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          }
      }
      // Paper end - rewrite chunk system
@@ -595,7 +595,7 @@ index 9f34a0c6f4f8157d77ed3cb36a546ec8c1b9b1bd..567293a46e28e49096ddc1823473a6f7
  
      public MinecraftServer(OptionSet options, WorldLoader.DataLoadContext worldLoader, Thread thread, LevelStorageSource.LevelStorageAccess convertable_conversionsession, PackRepository resourcepackrepository, WorldStem worldstem, Proxy proxy, DataFixer datafixer, Services services, ChunkProgressListenerFactory worldloadlistenerfactory) {
          super("Server");
-@@ -1298,6 +1309,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1299,6 +1310,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
                  if (++MinecraftServer.currentTick % MinecraftServer.SAMPLE_INTERVAL == 0) {
                      final long diff = currentTime - tickSection;
                      final java.math.BigDecimal currentTps = TPS_BASE.divide(new java.math.BigDecimal(diff), 30, java.math.RoundingMode.HALF_UP);
@@ -603,7 +603,7 @@ index 9f34a0c6f4f8157d77ed3cb36a546ec8c1b9b1bd..567293a46e28e49096ddc1823473a6f7
                      tps1.add(currentTps, diff);
                      tps5.add(currentTps, diff);
                      tps15.add(currentTps, diff);
-@@ -1340,6 +1352,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1341,6 +1353,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
                              throw new RuntimeException("Chunk system crash propagated to tick()", crash);
                          }
                          // Paper end - rewrite chunk system
