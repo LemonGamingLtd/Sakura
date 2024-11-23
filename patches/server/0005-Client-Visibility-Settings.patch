@@ -105,28 +105,6 @@ index 0000000000000000000000000000000000000000..cd9ebbb7bbb90c87faf75fcc4b487e93
 +        );
 +    }
 +}
-diff --git a/src/main/java/me/samsuik/sakura/configuration/GlobalConfiguration.java b/src/main/java/me/samsuik/sakura/configuration/GlobalConfiguration.java
-index 4f7208b6a1e2ac0e812019d4b42bde7fa5909b28..75e8aeb094834bc79e8850fa0ea23770379f86f1 100644
---- a/src/main/java/me/samsuik/sakura/configuration/GlobalConfiguration.java
-+++ b/src/main/java/me/samsuik/sakura/configuration/GlobalConfiguration.java
-@@ -9,6 +9,8 @@ import org.slf4j.Logger;
- import org.spongepowered.configurate.objectmapping.meta.Comment;
- import org.spongepowered.configurate.objectmapping.meta.Setting;
- 
-+import java.util.Locale;
-+
- @SuppressWarnings({"CanBeFinal", "FieldCanBeLocal", "FieldMayBeFinal", "NotNullFieldNotInitialized", "InnerClassMayBeStatic", "RedundantSuppression"})
- public final class GlobalConfiguration extends ConfigurationPart {
- 
-@@ -36,7 +38,7 @@ public final class GlobalConfiguration extends ConfigurationPart {
- 
-     public Fps fps;
-     public class Fps extends ConfigurationPart {
--        public Material material = Material.PINK_STAINED_GLASS_PANE;
-+        public String guiColour = "pink";
-     }
- 
-     public Players players;
 diff --git a/src/main/java/me/samsuik/sakura/player/gui/FeatureGui.java b/src/main/java/me/samsuik/sakura/player/gui/FeatureGui.java
 new file mode 100644
 index 0000000000000000000000000000000000000000..49f53c01d61cbe551aa68a91f53782e8f01d9c67
@@ -497,10 +475,10 @@ index 0000000000000000000000000000000000000000..bf765e17032d8d1d203e07350dcfed91
 +}
 diff --git a/src/main/java/me/samsuik/sakura/player/visibility/VisibilityGui.java b/src/main/java/me/samsuik/sakura/player/visibility/VisibilityGui.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..3777b8077794c2e780aa31dc86cded539a375750
+index 0000000000000000000000000000000000000000..67b821b7a614704cb736afe286e967e1c955a289
 --- /dev/null
 +++ b/src/main/java/me/samsuik/sakura/player/visibility/VisibilityGui.java
-@@ -0,0 +1,106 @@
+@@ -0,0 +1,96 @@
 +package me.samsuik.sakura.player.visibility;
 +
 +import it.unimi.dsi.fastutil.ints.IntArrayFIFOQueue;
@@ -516,16 +494,12 @@ index 0000000000000000000000000000000000000000..3777b8077794c2e780aa31dc86cded53
 +import org.bukkit.inventory.Inventory;
 +import org.jspecify.annotations.NullMarked;
 +
-+import java.util.Locale;
-+import java.util.Objects;
-+
 +import static me.samsuik.sakura.player.gui.ItemStackUtil.itemWithBlankName;
 +
 +@NullMarked
 +public final class VisibilityGui extends FeatureGui {
 +    private static final NamespacedKey TOGGLE_BUTTON_KEY = new NamespacedKey("sakura", "toggle_button");
 +    private static final NamespacedKey MENU_ITEMS_KEY = new NamespacedKey("sakura", "menu_items");
-+    private static final Material FALLBACK_MATERIAL = Material.PINK_STAINED_GLASS_PANE;
 +
 +    public VisibilityGui() {
 +        super(45, Component.text("FPS Settings"));
@@ -542,7 +516,7 @@ index 0000000000000000000000000000000000000000..3777b8077794c2e780aa31dc86cded53
 +            int ry = y - 2;
 +            double d = Math.sqrt(rx * rx + ry * ry);
 +            if (d <= 3.25) {
-+                inventory.setItem(slot, itemWithBlankName(getColouredGlassPane()));
++                inventory.setItem(slot, itemWithBlankName(GlobalConfiguration.get().fps.material));
 +            } else if (x % 8 == 0) {
 +                inventory.setItem(slot, itemWithBlankName(Material.BLACK_STAINED_GLASS_PANE));
 +            } else {
@@ -599,12 +573,6 @@ index 0000000000000000000000000000000000000000..3777b8077794c2e780aa31dc86cded53
 +            }
 +        }
 +        return slots;
-+    }
-+
-+    private static Material getColouredGlassPane() {
-+        String upperCase = GlobalConfiguration.get().fps.guiColour.toUpperCase(Locale.ENGLISH);
-+        Material foundMaterial = Material.matchMaterial(upperCase + "_STAINED_GLASS_PANE");
-+        return Objects.requireNonNullElse(foundMaterial, FALLBACK_MATERIAL);
 +    }
 +}
 diff --git a/src/main/java/me/samsuik/sakura/player/visibility/VisibilityGuiItems.java b/src/main/java/me/samsuik/sakura/player/visibility/VisibilityGuiItems.java
