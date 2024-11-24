@@ -5,10 +5,10 @@ Subject: [PATCH] Entity pushed by fluid API
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index b3eea40ba5315e1dd4ea7b2a5a61c53b63e909dc..de6a81d222cd5fef81be87c188b5a726710202f7 100644
+index e963e972ae1006f977a68c69b7529c1da2f7bdf5..fd8c05a58473633a2debea52f610912d314f7eb2 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
-@@ -665,6 +665,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -666,6 +666,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          }
      }
      // Sakura end - merge cannon entities
@@ -16,7 +16,7 @@ index b3eea40ba5315e1dd4ea7b2a5a61c53b63e909dc..de6a81d222cd5fef81be87c188b5a726
  
      public Entity(EntityType<?> type, Level world) {
          this.id = Entity.ENTITY_COUNTER.incrementAndGet();
-@@ -4482,7 +4483,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4490,7 +4491,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
      }
  
      public boolean isPushedByFluid() {
@@ -26,7 +26,7 @@ index b3eea40ba5315e1dd4ea7b2a5a61c53b63e909dc..de6a81d222cd5fef81be87c188b5a726
  
      public static double getViewScale() {
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
-index 179886dcbda29c5cdb7dbd43e44951ae38d9df96..d0da1b34fe10be266f5b711e5755f07521e0bf08 100644
+index ddabaed899c755925ad8618b78c33dacaf2126ac..83de2011a8b448b463bcd96e4a8ee8933590de58 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
 @@ -204,6 +204,18 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {

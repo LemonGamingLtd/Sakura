@@ -5,10 +5,10 @@ Subject: [PATCH] Optimise TNT fluid state
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index de6a81d222cd5fef81be87c188b5a726710202f7..b6fe11f2e0cd92bc903445edd7f997baec4c3e75 100644
+index fd8c05a58473633a2debea52f610912d314f7eb2..babe513754ab4e211b9741ba94bc45670120c83e 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
-@@ -2269,7 +2269,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -2277,7 +2277,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          return this.isInWater() || flag;
      }
  

@@ -5,10 +5,10 @@ Subject: [PATCH] Sakura Configuration Files
 
 
 diff --git a/src/main/java/io/papermc/paper/configuration/Configurations.java b/src/main/java/io/papermc/paper/configuration/Configurations.java
-index 87e5f614ba988547a827486740db217e28585773..0375c9eb296ba7e8ed64e8d00dbc13a581dd4f90 100644
+index 8cf720f08514e8e4f62f4ad196f1277bd761c6b2..3e4a639f8ac00fee9b334b88da036c329a1a61d7 100644
 --- a/src/main/java/io/papermc/paper/configuration/Configurations.java
 +++ b/src/main/java/io/papermc/paper/configuration/Configurations.java
-@@ -96,7 +96,7 @@ public abstract class Configurations<G, W> {
+@@ -94,7 +94,7 @@ public abstract class Configurations<G, W> {
          };
      }
  
@@ -17,7 +17,7 @@ index 87e5f614ba988547a827486740db217e28585773..0375c9eb296ba7e8ed64e8d00dbc13a5
          return node -> {
              ObjectMapper.Factory factory = (ObjectMapper.Factory) Objects.requireNonNull(node.options().serializers().get(type));
              ObjectMapper.Mutable<T> mutable = (ObjectMapper.Mutable<T>) factory.get(type);
-@@ -231,7 +231,7 @@ public abstract class Configurations<G, W> {
+@@ -229,7 +229,7 @@ public abstract class Configurations<G, W> {
              .path(worldConfigFile)
              .build();
          final ConfigurationNode worldNode = worldLoader.load();
@@ -27,10 +27,10 @@ index 87e5f614ba988547a827486740db217e28585773..0375c9eb296ba7e8ed64e8d00dbc13a5
          } else {
              this.verifyWorldConfigVersion(contextMap, worldNode);
 diff --git a/src/main/java/io/papermc/paper/configuration/PaperConfigurations.java b/src/main/java/io/papermc/paper/configuration/PaperConfigurations.java
-index 1029b6de6f36b08bf634b4056ef5701383f6f258..4b4087c316460c8ae262b62746430f521a9cc1a2 100644
+index c5644d8d64f12073e39bc6ed79c8714f4560ff89..9dd822d20f8f3cfe65162a62e1407626831beabf 100644
 --- a/src/main/java/io/papermc/paper/configuration/PaperConfigurations.java
 +++ b/src/main/java/io/papermc/paper/configuration/PaperConfigurations.java
-@@ -165,7 +165,7 @@ public class PaperConfigurations extends Configurations<GlobalConfiguration, Wor
+@@ -167,7 +167,7 @@ public class PaperConfigurations extends Configurations<GlobalConfiguration, Wor
              .defaultOptions(PaperConfigurations::defaultOptions);
      }
  
@@ -39,7 +39,7 @@ index 1029b6de6f36b08bf634b4056ef5701383f6f258..4b4087c316460c8ae262b62746430f52
          return options.serializers(builder -> builder
              .register(MapSerializer.TYPE, new MapSerializer(false))
              .register(new EnumValueSerializer())
-@@ -459,7 +459,7 @@ public class PaperConfigurations extends Configurations<GlobalConfiguration, Wor
+@@ -462,7 +462,7 @@ public class PaperConfigurations extends Configurations<GlobalConfiguration, Wor
      }
  
      // Symlinks are not correctly checked in createDirectories

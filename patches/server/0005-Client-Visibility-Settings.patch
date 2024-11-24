@@ -858,10 +858,10 @@ index b5d5dbc50a7b8c40739a15f164ffd08fdc534f9c..5cfcc7a1e9461fd7dfd6d7100bdc9789
                          if (this.player.containerMenu != oldContainer) {
                              return;
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index 8be1b051543cda2b2e9e3d337834757e53f442de..cc9afce726f5b269cd2afb21ffe81173e618781d 100644
+index ed5b00620527c1776722d25b1b45f1544802a341..4896f3334546b55385e93262dc1a16ef8bda7c45 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
-@@ -611,6 +611,10 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -612,6 +612,10 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          }
      }
      // Paper end - optimise entity tracker
