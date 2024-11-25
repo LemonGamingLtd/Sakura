@@ -403,10 +403,10 @@ index 0000000000000000000000000000000000000000..243f1cbabf7054d7d5092f21e923e4de
 +}
 diff --git a/src/main/java/me/samsuik/sakura/player/visibility/PlayerVisibilitySettings.java b/src/main/java/me/samsuik/sakura/player/visibility/PlayerVisibilitySettings.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..bf765e17032d8d1d203e07350dcfed91791bc9bb
+index 0000000000000000000000000000000000000000..938fe2143d0db2a0760022433c951155b5e088c3
 --- /dev/null
 +++ b/src/main/java/me/samsuik/sakura/player/visibility/PlayerVisibilitySettings.java
-@@ -0,0 +1,66 @@
+@@ -0,0 +1,65 @@
 +package me.samsuik.sakura.player.visibility;
 +
 +import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
@@ -462,7 +462,6 @@ index 0000000000000000000000000000000000000000..bf765e17032d8d1d203e07350dcfed91
 +            if (settingsTag.contains(type.key(), CompoundTag.TAG_STRING)) {
 +                VisibilityState state = VisibilityState.valueOf(settingsTag.getString(type.key()));
 +                this.visibilityStates.put(type, state);
-+                break;
 +            }
 +        }
 +    }
