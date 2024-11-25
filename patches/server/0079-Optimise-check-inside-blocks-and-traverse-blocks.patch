@@ -6,7 +6,7 @@ Subject: [PATCH] Optimise check inside blocks and traverse blocks
 
 diff --git a/src/main/java/me/samsuik/sakura/utils/BlockPosIterator.java b/src/main/java/me/samsuik/sakura/utils/BlockPosIterator.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..05e532f0aa3b1a5ab6570432662a8142d0e9cd38
+index 0000000000000000000000000000000000000000..e00c07c614e007c007076e3dbe8bd8ccf6c6572d
 --- /dev/null
 +++ b/src/main/java/me/samsuik/sakura/utils/BlockPosIterator.java
 @@ -0,0 +1,60 @@
@@ -38,9 +38,9 @@ index 0000000000000000000000000000000000000000..05e532f0aa3b1a5ab6570432662a8142
 +        this.startX = Mth.floor(bb.minX);
 +        this.startY = Mth.floor(bb.minY);
 +        this.startZ = Mth.floor(bb.minZ);
-+        this.endX = Mth.ceil(bb.maxX);
-+        this.endY = Mth.ceil(bb.maxX);
-+        this.endZ = Mth.ceil(bb.maxX);
++        this.endX = Mth.floor(bb.maxX);
++        this.endY = Mth.floor(bb.maxY);
++        this.endZ = Mth.floor(bb.maxZ);
 +    }
 +
 +    @Override
@@ -108,7 +108,7 @@ index 5067db32a3e024a27c1da8f76a0abade6f20096d..3e6733b3195019f0090ae67136bbcf84
                      if (!iblockdata.isAir() && longset.add(blockposition.asLong())) {
                          try {
 diff --git a/src/main/java/net/minecraft/world/level/BlockGetter.java b/src/main/java/net/minecraft/world/level/BlockGetter.java
-index 93738c7dea1ea3d19013a47380391274612a719b..5a7127fa0937c0a485e067e1bc3710cff006d93c 100644
+index 93738c7dea1ea3d19013a47380391274612a719b..bbf79df2636ea96a288cd614e5b90968e5754937 100644
 --- a/src/main/java/net/minecraft/world/level/BlockGetter.java
 +++ b/src/main/java/net/minecraft/world/level/BlockGetter.java
 @@ -215,11 +215,18 @@ public interface BlockGetter extends LevelHeightAccessor {
@@ -139,10 +139,10 @@ index 93738c7dea1ea3d19013a47380391274612a719b..5a7127fa0937c0a485e067e1bc3710cf
  
 +    // Sakura start - optimise check inside blocks
 +    private static Iterable<BlockPos> traverseAreaFast(Vec3 vec, AABB boundingBox) {
-+        double toTravel = Math.min(vec.length(), 16.0);
-+        Vec3 movement = vec.scale(-toTravel);
-+        AABB origin = boundingBox.move(-movement.x, -movement.y, -movement.z);
-+        AABB searchArea = origin.expandTowards(movement);
++        double toTravel = Math.min(16.0 / vec.length(), 1.0);
++        Vec3 movement = vec.scale(toTravel);
++        AABB fromBB = boundingBox.move(-vec.x, -vec.y, -vec.z);
++        AABB searchArea = fromBB.expandTowards(movement);
 +        return me.samsuik.sakura.utils.BlockPosIterator.iterable(searchArea);
 +    }
 +    // Sakura end - optimise check inside blocks
