@@ -28,10 +28,10 @@ index cbb2e57f9ab3b48a6e5f792711c4c6fd2d34d445..8e93fc5d7e1bc200f79b0e54edb62dc4
      public static void registerCommands(MinecraftServer server) {
 diff --git a/src/main/java/me/samsuik/sakura/command/subcommands/TPSCommand.java b/src/main/java/me/samsuik/sakura/command/subcommands/TPSCommand.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..cc92b23f1ba95d673f496f0f08dc315f674dd09e
+index 0000000000000000000000000000000000000000..db6d03c1ed1c1d0390826dd3f96e774e2bea8a1a
 --- /dev/null
 +++ b/src/main/java/me/samsuik/sakura/command/subcommands/TPSCommand.java
-@@ -0,0 +1,89 @@
+@@ -0,0 +1,92 @@
 +package me.samsuik.sakura.command.subcommands;
 +
 +import com.google.common.base.Strings;
@@ -66,14 +66,17 @@ index 0000000000000000000000000000000000000000..cc92b23f1ba95d673f496f0f08dc315f
 +    public void execute(CommandSender sender, String[] args) {
 +        ServerTickInformation tickInformation = MinecraftServer.getServer().latestTickInformation();
 +        long identifier = this.parseLong(args, 1).orElse(tickInformation.identifier());
-+        double scale = this.parseDouble(args, 0).orElse(this.dynamicScale(identifier));
++        double scale = this.parseDouble(args, 0).orElse(-1.0);
++        if (scale < 0.0) {
++            scale = this.dynamicScale(identifier);
++        }
 +
 +        ImmutableList<ServerTickInformation> tickHistory = MinecraftServer.getServer().tickHistory(identifier - GRAPH_WIDTH, identifier);
 +        DetailedTPSGraph graph = new DetailedTPSGraph(GRAPH_WIDTH, GRAPH_HEIGHT, scale, tickHistory);
 +        BuiltComponentCanvas canvas = graph.plot();
 +        canvas.appendLeft(Component.text(":", NamedTextColor.BLACK));
 +        canvas.appendRight(Component.text(":", NamedTextColor.BLACK));
-+        canvas.header(this.createHeaderComponent(tickInformation, scale, identifier));
++        canvas.header(this.createHeaderComponent(tickInformation, identifier));
 +        canvas.footer(Component.text("*", NamedTextColor.DARK_GRAY)
 +            .append(Component.text(Strings.repeat(" ", GRAPH_WIDTH - 1), GRAY_WITH_STRIKETHROUGH))
 +            .append(Component.text("*")));
@@ -92,13 +95,13 @@ index 0000000000000000000000000000000000000000..cc92b23f1ba95d673f496f0f08dc315f
 +        return 20 / averageTps;
 +    }
 +
-+    private Component createHeaderComponent(ServerTickInformation tickInformation, double level, long identifier) {
++    private Component createHeaderComponent(ServerTickInformation tickInformation, long identifier) {
 +        int scrollAmount = GRAPH_WIDTH / 3 * 2;
 +        double memoryUsage = memoryUsage();
 +        TextComponent.Builder builder = Component.text();
 +        builder.color(NamedTextColor.DARK_GRAY);
 +        builder.append(Component.text("< ")
-+            .clickEvent(ClickEvent.runCommand("/tps " + level + " " + (identifier + scrollAmount))));
++            .clickEvent(ClickEvent.runCommand("/tps -1 " + (identifier + scrollAmount))));
 +        builder.append(Component.text(Strings.repeat(" ", 19), GRAY_WITH_STRIKETHROUGH));
 +        builder.append(Component.text(" ( "));
 +        builder.append(Component.text("Now: ", NamedTextColor.WHITE)
@@ -109,7 +112,7 @@ index 0000000000000000000000000000000000000000..cc92b23f1ba95d673f496f0f08dc315f
 +        builder.append(Component.text("% ) "));
 +        builder.append(Component.text(Strings.repeat(" ", 18), GRAY_WITH_STRIKETHROUGH));
 +        builder.append(Component.text(" >")
-+            .clickEvent(ClickEvent.runCommand("/tps " + level + " " + (identifier - scrollAmount))));
++            .clickEvent(ClickEvent.runCommand("/tps -1 " + (identifier - scrollAmount))));
 +        return builder.build();
 +    }
 +
@@ -123,10 +126,10 @@ index 0000000000000000000000000000000000000000..cc92b23f1ba95d673f496f0f08dc315f
 +}
 diff --git a/src/main/java/me/samsuik/sakura/tps/ServerTickInformation.java b/src/main/java/me/samsuik/sakura/tps/ServerTickInformation.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..59370d80ac4a6b1a10f04891930e74d74f275252
+index 0000000000000000000000000000000000000000..9a65a3dac75834a2fe10d2c6d6ae594ceb208fef
 --- /dev/null
 +++ b/src/main/java/me/samsuik/sakura/tps/ServerTickInformation.java
-@@ -0,0 +1,38 @@
+@@ -0,0 +1,37 @@
 +package me.samsuik.sakura.tps;
 +
 +import me.samsuik.sakura.configuration.GlobalConfiguration;
@@ -138,12 +141,11 @@ index 0000000000000000000000000000000000000000..59370d80ac4a6b1a10f04891930e74d7
 +import org.jspecify.annotations.NullMarked;
 +
 +@NullMarked
-+public record ServerTickInformation(long identifier, double tps, double averageTick, long longestTick, int chunks, int entities) {
-+    public static final ServerTickInformation FILLER = new ServerTickInformation(0, 0.0, 0.0, 0, 0, 0);
++public record ServerTickInformation(long identifier, double tps, double averageTick, long longestTick, float targetTickRate, int chunks, int entities) {
++    public static final ServerTickInformation FILLER = new ServerTickInformation(0, 0.0, 0.0, 0, 0.0f, 0, 0);
 +
 +    public TextColor colour() {
-+        float targetTickRate = MinecraftServer.getServer().tickRateManager().tickrate();
-+        float lag = (float) this.tps / targetTickRate;
++        float lag = (float) this.tps / this.targetTickRate;
 +        return GraphComponents.colour(lag);
 +    }
 +
@@ -167,15 +169,16 @@ index 0000000000000000000000000000000000000000..59370d80ac4a6b1a10f04891930e74d7
 +}
 diff --git a/src/main/java/me/samsuik/sakura/tps/TickInformationCollector.java b/src/main/java/me/samsuik/sakura/tps/TickInformationCollector.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..c1666dbd2ee1495c2ccb8977e77da76b03302c27
+index 0000000000000000000000000000000000000000..5f88e17db0cf8eca161d98cc8cdac8383903e694
 --- /dev/null
 +++ b/src/main/java/me/samsuik/sakura/tps/TickInformationCollector.java
-@@ -0,0 +1,69 @@
+@@ -0,0 +1,71 @@
 +package me.samsuik.sakura.tps;
 +
 +import com.google.common.collect.ImmutableList;
 +import it.unimi.dsi.fastutil.longs.LongArrayList;
 +import it.unimi.dsi.fastutil.objects.ObjectArrayList;
++import net.minecraft.server.MinecraftServer;
 +import net.minecraft.server.level.ServerLevel;
 +import org.jspecify.annotations.NullMarked;
 +
@@ -207,9 +210,10 @@ index 0000000000000000000000000000000000000000..c1666dbd2ee1495c2ccb8977e77da76b
 +        long longestTick = this.tickSamples.longStream()
 +            .max()
 +            .orElse(0);
++        float targetTickRate = MinecraftServer.getServer().tickRateManager().tickrate();
 +
 +        ServerTickInformation tickInformation = new ServerTickInformation(
-+            this.identifier++, tps, averageTick, longestTick, chunks, entities
++            this.identifier++, tps, averageTick, longestTick, targetTickRate, chunks, entities
 +        );
 +
 +        this.collectedInformation.add(tickInformation);
@@ -574,7 +578,7 @@ index 0000000000000000000000000000000000000000..27b6b071ad38589d37e35ea7fdf1d459
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index f8a9ef307dbe7fd70577b3ef4fa2e4fc99fb1fb1..decea6322f5ea42ff476fbd00d11f0f7230eb711 100644
+index 02009fe5365022bd365a572c5a4f000c374db23e..2501054d84ecff8835a1b89b0d04ba6e934c12ed 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -426,6 +426,17 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -612,7 +616,7 @@ index f8a9ef307dbe7fd70577b3ef4fa2e4fc99fb1fb1..decea6322f5ea42ff476fbd00d11f0f7
                          gameprofilerfiller.popPush("nextTickWait");
                          this.mayHaveDelayedTasks = true;
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index 4ac8c7b3878b3df7b9cb812f99a47e2f9fc7f408..0966857107117c59725e69352cd34f6c2228ae4b 100644
+index 7a64aaeecafe067e832a82a77113495164467599..28064b97b01cb1509232658f13a5f03f7b9a7443 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
 @@ -200,7 +200,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
