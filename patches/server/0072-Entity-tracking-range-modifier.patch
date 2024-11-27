@@ -5,7 +5,7 @@ Subject: [PATCH] Entity tracking range modifier
 
 
 diff --git a/src/main/java/net/minecraft/server/level/ChunkMap.java b/src/main/java/net/minecraft/server/level/ChunkMap.java
-index fa77e44a33dd2da678f8ad711f26ce60d3d7d7aa..ccb8684e3f3e70a9ccb1033acd5938a96b415705 100644
+index 606a2626fe0b693049c69924e479a6d875f22480..b2aca1d458d2ea40952b047f991e356aa35b02fb 100644
 --- a/src/main/java/net/minecraft/server/level/ChunkMap.java
 +++ b/src/main/java/net/minecraft/server/level/ChunkMap.java
 @@ -1332,7 +1332,10 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
@@ -21,7 +21,7 @@ index fa77e44a33dd2da678f8ad711f26ce60d3d7d7aa..ccb8684e3f3e70a9ccb1033acd5938a9
                  double d2 = d0 * d0;
                  // Paper start - Configurable entity tracking range by Y
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index d4dd9c45bc9603ceccc8ebb0eef47c50b48dcf98..90399fdc414929b33de29286f8a27097830c5d4c 100644
+index ac8308be5b200237aa61a21404e558f245356546..c9c39cbdf7e0ff715630fc98712db0f202362eb5 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
 @@ -360,6 +360,7 @@ public class ServerPlayer extends net.minecraft.world.entity.player.Player imple
@@ -33,10 +33,10 @@ index d4dd9c45bc9603ceccc8ebb0eef47c50b48dcf98..90399fdc414929b33de29286f8a27097
      public ServerPlayer(MinecraftServer server, ServerLevel world, GameProfile profile, ClientInformation clientOptions) {
          super(world, world.getSharedSpawnPos(), world.getSharedSpawnAngle(), profile);
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 1e3bd95d75210926c2739514eecbda7a21550ba4..00745aaf57ca588fde4b9e88608955f7e86a992d 100644
+index 329e1e93df4f369031d045129b1eb4020b0cc579..b391b5384a455b44f2c857d11fadb9197ab31dc8 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -3037,6 +3037,18 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -3039,6 +3039,18 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          return (this.getHandle().requestedViewDistance() == 0) ? Bukkit.getViewDistance() : this.getHandle().requestedViewDistance();
      }
  

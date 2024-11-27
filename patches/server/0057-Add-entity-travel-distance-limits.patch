@@ -5,7 +5,7 @@ Subject: [PATCH] Add entity travel distance limits
 
 
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index e39f4e4716b8794e506d3ffcbc35ae88d0fbc23a..a3c8ed82e46056be1a3ca002664e6fe6fa46bc2e 100644
+index 423d26d6b833e9aa39a84333b9627ad709711378..2ed9565e44435239d8a375ca9dc94e839b2e757f 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
 @@ -1328,6 +1328,11 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
@@ -21,10 +21,10 @@ index e39f4e4716b8794e506d3ffcbc35ae88d0fbc23a..a3c8ed82e46056be1a3ca002664e6fe6
          } else { entity.inactiveTick(); } // Paper - EAR 2
          gameprofilerfiller.pop();
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index 7a07be8dfabde5ab99c354bc7aef29fcf551c9e1..344c2bac7fc694e84532cd384be32e7d259e8130 100644
+index 247759b7e225bbd14951e7876d1fff6ded62cef0..a48d871f851c9cafdb05fef3e33ec1de81b7d0bd 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
-@@ -682,6 +682,19 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -638,6 +638,19 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          return this.physics;
      }
      // Sakura end - physics version api
@@ -44,7 +44,7 @@ index 7a07be8dfabde5ab99c354bc7aef29fcf551c9e1..344c2bac7fc694e84532cd384be32e7d
  
      public Entity(EntityType<?> type, Level world) {
          this.id = Entity.ENTITY_COUNTER.incrementAndGet();
-@@ -735,6 +748,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -691,6 +704,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          this.entityData = datawatcher_a.build();
          this.setPos(0.0D, 0.0D, 0.0D);
          this.eyeHeight = this.dimensions.eyeHeight();

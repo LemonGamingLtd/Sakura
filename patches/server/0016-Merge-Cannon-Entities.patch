@@ -408,7 +408,7 @@ index 0000000000000000000000000000000000000000..fc68bccf135bdcc7b3db7976e452ccae
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index decea6322f5ea42ff476fbd00d11f0f7230eb711..70d2ca47db058ff02e0d779dd38fbae74cf6c24e 100644
+index 2501054d84ecff8835a1b89b0d04ba6e934c12ed..70529b088f6d0056abc6d04fc6609647b4525021 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -1903,6 +1903,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -420,7 +420,7 @@ index decea6322f5ea42ff476fbd00d11f0f7230eb711..70d2ca47db058ff02e0d779dd38fbae7
          this.isIteratingOverLevels = false; // Paper - Throw exception on world create while being ticked
  
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index 28064b97b01cb1509232658f13a5f03f7b9a7443..c7ea2da01935b6f13025ea81c4abacc5466da1bb 100644
+index 8aa894cb85b08d41eb84d6c013f21585065226e7..d1268f21dc87b7d8755ff2cf95a09a780e466576 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
 @@ -806,6 +806,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
@@ -448,10 +448,10 @@ index 28064b97b01cb1509232658f13a5f03f7b9a7443..c7ea2da01935b6f13025ea81c4abacc5
                              this.guardEntityTick(this::tickNonPassenger, entity);
                              gameprofilerfiller.pop();
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index df2deeeaf473f84268288be5eb60a9a7068a8d46..21670e77ccaa442b289fa7bb5911716e24afcd4d 100644
+index b460ce03626f8995e029ad7dbd932cc2c8f0bf20..e7f59ead5223858e20722e52b8e31961fe29dccf 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
-@@ -649,6 +649,23 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -605,6 +605,23 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          return to.entityState() != null && to.entityState().comparePositionAndMotion(this);
      }
      // Sakura end - store entity data/state
@@ -475,7 +475,7 @@ index df2deeeaf473f84268288be5eb60a9a7068a8d46..21670e77ccaa442b289fa7bb5911716e
  
      public Entity(EntityType<?> type, Level world) {
          this.id = Entity.ENTITY_COUNTER.incrementAndGet();
-@@ -5247,6 +5264,11 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -5203,6 +5220,11 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          if (this.removalReason != Entity.RemovalReason.UNLOADED_TO_CHUNK) { this.getPassengers().forEach(Entity::stopRiding); } // Paper - rewrite chunk system
          this.levelCallback.onRemove(entity_removalreason);
          this.onRemoval(entity_removalreason);
@@ -688,7 +688,7 @@ index 25a25b5c6497c9823a41e6bd8fd22f0841377c62..6b739e820af6333c1ff3a4b87154d4c0
          if (nbt.contains("explosion_power", 99)) {
              this.explosionPower = Mth.clamp(nbt.getFloat("explosion_power"), 0.0F, 128.0F);
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index 49b01f78529f067eee65b14e7906b9f1de768f06..41a6c621dc26fe4bcb254d0465588c9227832758 100644
+index b40db35a8162efcaa1fa88aa760a4d6f59ec1718..d73073ae752d9983785b9402088ae6cf7188a8bf 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
 @@ -841,6 +841,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl

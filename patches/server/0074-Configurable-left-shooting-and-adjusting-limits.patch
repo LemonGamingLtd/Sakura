@@ -5,10 +5,10 @@ Subject: [PATCH] Configurable left shooting and adjusting limits
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index 344c2bac7fc694e84532cd384be32e7d259e8130..5067db32a3e024a27c1da8f76a0abade6f20096d 100644
+index a48d871f851c9cafdb05fef3e33ec1de81b7d0bd..dcf2c3f9236a96618608887b269164b23127d6ff 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
-@@ -695,6 +695,46 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -651,6 +651,46 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          return Math.max(x, z) >= this.travelDistanceLimit;
      }
      // Sakura end - entity travel distance limits
@@ -55,7 +55,7 @@ index 344c2bac7fc694e84532cd384be32e7d259e8130..5067db32a3e024a27c1da8f76a0abade
  
      public Entity(EntityType<?> type, Level world) {
          this.id = Entity.ENTITY_COUNTER.incrementAndGet();
-@@ -1773,6 +1813,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1729,6 +1769,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          }
  
          if (xSmaller && z != 0.0) {
@@ -63,7 +63,7 @@ index 344c2bac7fc694e84532cd384be32e7d259e8130..5067db32a3e024a27c1da8f76a0abade
              z = this.scanZ(currBoundingBox, z, voxelList, bbList);
              if (z != 0.0) {
                  currBoundingBox = ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.offsetZ(currBoundingBox, z);
-@@ -1780,6 +1821,11 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1736,6 +1777,11 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          }
  
          if (x != 0.0) {

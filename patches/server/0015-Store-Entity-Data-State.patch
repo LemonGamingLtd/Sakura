@@ -52,10 +52,10 @@ index 0000000000000000000000000000000000000000..aeb5f128b369753cb20b7310fa382ddf
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index 124916e1ee9d32a530cbce90ed22fc1383cf49d1..df2deeeaf473f84268288be5eb60a9a7068a8d46 100644
+index 42e72e0406c3e429fc7a6d15cbfa0217e309db5f..b460ce03626f8995e029ad7dbd932cc2c8f0bf20 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
-@@ -630,6 +630,25 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -586,6 +586,25 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          return flags;
      }
      // Sakura end - load chunks on movement
@@ -82,7 +82,7 @@ index 124916e1ee9d32a530cbce90ed22fc1383cf49d1..df2deeeaf473f84268288be5eb60a9a7
      public Entity(EntityType<?> type, Level world) {
          this.id = Entity.ENTITY_COUNTER.incrementAndGet();
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index 932e64a75d6a2d0e6c82fd8917d3faa054c2512f..49b01f78529f067eee65b14e7906b9f1de768f06 100644
+index 10107e6c4b448ce76650eb334bba740d11fd5874..b40db35a8162efcaa1fa88aa760a4d6f59ec1718 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
 @@ -1499,6 +1499,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
