@@ -227,10 +227,10 @@ index 0000000000000000000000000000000000000000..5b3e2cca7ee16bc6ecfa0f29438fa658
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 07ea2e6013318f97bfebd0d912dfe01d259a7c0b..28a7bcb1199f33e15945dbb5fc8ff796f38bc495 100644
+index 5dd56951b3046cf70b1536a6003918dfb8654ec6..e78798ddbc07fc63a16633b7d78d2deff31861ce 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -1888,6 +1888,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1889,6 +1889,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              gameprofilerfiller.pop();
              gameprofilerfiller.pop();
              worldserver.explosionDensityCache.clear(); // Paper - Optimize explosions
@@ -239,7 +239,7 @@ index 07ea2e6013318f97bfebd0d912dfe01d259a7c0b..28a7bcb1199f33e15945dbb5fc8ff796
          this.isIteratingOverLevels = false; // Paper - Throw exception on world create while being ticked
  
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index bcaeaf99919be2dba2ba6e5fac76b25766b446d1..932e64a75d6a2d0e6c82fd8917d3faa054c2512f 100644
+index b4e2d5b6f4cb569a91c1ac4a961be9eb89d10b5c..10107e6c4b448ce76650eb334bba740d11fd5874 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
 @@ -178,6 +178,12 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl

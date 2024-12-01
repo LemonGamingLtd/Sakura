@@ -126,10 +126,10 @@ index 0000000000000000000000000000000000000000..d7e24638f07f243502004970ab4ce646
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 70d2ca47db058ff02e0d779dd38fbae74cf6c24e..9712571293547da2edb613065a8b105728dcb4ee 100644
+index ffd78b7622593a757a61e01561d3ef2b37bf1812..7da3a92b9c81cc903d10b50ea0efd0151626a8e5 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -1904,6 +1904,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1905,6 +1905,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              worldserver.localConfig().expire(currentTick); // Sakura - add local config
              worldserver.explosionPositions.clear(); // Sakura - client visibility settings
              worldserver.mergeHandler.expire(currentTick); // Sakura - merge cannon entities
@@ -138,7 +138,7 @@ index 70d2ca47db058ff02e0d779dd38fbae74cf6c24e..9712571293547da2edb613065a8b1057
          this.isIteratingOverLevels = false; // Paper - Throw exception on world create while being ticked
  
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index 41a6c621dc26fe4bcb254d0465588c9227832758..7f8e6001f3d5a23ac73746fe151c6a25a7bb4975 100644
+index d73073ae752d9983785b9402088ae6cf7188a8bf..5957601b3bdc416cb7851897546d2348c5f74721 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
 @@ -842,6 +842,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl

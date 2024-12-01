@@ -578,7 +578,7 @@ index 0000000000000000000000000000000000000000..27b6b071ad38589d37e35ea7fdf1d459
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 02009fe5365022bd365a572c5a4f000c374db23e..2501054d84ecff8835a1b89b0d04ba6e934c12ed 100644
+index 2af0b56d2c83a42f9e6324ce8dd763512d079c17..64ffd589525d659ff1ea50ba628a70d8da642d22 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -426,6 +426,17 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -599,7 +599,7 @@ index 02009fe5365022bd365a572c5a4f000c374db23e..2501054d84ecff8835a1b89b0d04ba6e
  
      public MinecraftServer(OptionSet options, WorldLoader.DataLoadContext worldLoader, Thread thread, LevelStorageSource.LevelStorageAccess convertable_conversionsession, PackRepository resourcepackrepository, WorldStem worldstem, Proxy proxy, DataFixer datafixer, Services services, ChunkProgressListenerFactory worldloadlistenerfactory) {
          super("Server");
-@@ -1299,6 +1310,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1300,6 +1311,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
                  if (++MinecraftServer.currentTick % MinecraftServer.SAMPLE_INTERVAL == 0) {
                      final long diff = currentTime - tickSection;
                      final java.math.BigDecimal currentTps = TPS_BASE.divide(new java.math.BigDecimal(diff), 30, java.math.RoundingMode.HALF_UP);
@@ -607,7 +607,7 @@ index 02009fe5365022bd365a572c5a4f000c374db23e..2501054d84ecff8835a1b89b0d04ba6e
                      tps1.add(currentTps, diff);
                      tps5.add(currentTps, diff);
                      tps15.add(currentTps, diff);
-@@ -1341,6 +1353,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1342,6 +1354,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
                              throw new RuntimeException("Chunk system crash propagated to tick()", crash);
                          }
                          // Paper end - rewrite chunk system
@@ -616,7 +616,7 @@ index 02009fe5365022bd365a572c5a4f000c374db23e..2501054d84ecff8835a1b89b0d04ba6e
                          gameprofilerfiller.popPush("nextTickWait");
                          this.mayHaveDelayedTasks = true;
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index 7a64aaeecafe067e832a82a77113495164467599..28064b97b01cb1509232658f13a5f03f7b9a7443 100644
+index fcf9b28cf5eabd4d94f5f3dd42b8367c1765df41..8aa894cb85b08d41eb84d6c013f21585065226e7 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
 @@ -200,7 +200,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe

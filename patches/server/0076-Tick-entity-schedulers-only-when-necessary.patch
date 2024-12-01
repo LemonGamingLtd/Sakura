@@ -83,10 +83,10 @@ index c03608fec96b51e1867f43d8f42e5aefb1520e46..32ac34e6ca4a7443e894369fee349911
          return true;
      }
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 9712571293547da2edb613065a8b105728dcb4ee..f55fdb9ef64648871a5908412c3ae32a4eebdc17 100644
+index 7da3a92b9c81cc903d10b50ea0efd0151626a8e5..49bcdf00bcbabb0d775fc0ce284a04d60a203c8e 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -1822,7 +1822,17 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1823,7 +1823,17 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          // Paper start - Folia scheduler API
          ((io.papermc.paper.threadedregions.scheduler.FoliaGlobalRegionScheduler) Bukkit.getGlobalRegionScheduler()).tick();
          getAllLevels().forEach(level -> {
