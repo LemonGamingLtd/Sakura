@@ -256,10 +256,10 @@ index b4e2d5b6f4cb569a91c1ac4a961be9eb89d10b5c..10107e6c4b448ce76650eb334bba740d
      public final com.destroystokyo.paper.antixray.ChunkPacketBlockController chunkPacketBlockController; // Paper - Anti-Xray
      public static BlockPos lastPhysicsProblem; // Spigot
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index 8f234b46c24a0ae08aa5f8190c5b27e1f62dfbab..06079cbb86a4080c439a047ef97a5899af43791d 100644
+index 57da11c0da7322e74810e7108e9c8000b0c36520..26aaa0cc04b3c7547a36c2b688fd4402147f0839 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-@@ -287,6 +287,13 @@ public class CraftWorld extends CraftRegionAccessor implements World {
+@@ -288,6 +288,13 @@ public class CraftWorld extends CraftRegionAccessor implements World {
      }
      // Paper end
  
