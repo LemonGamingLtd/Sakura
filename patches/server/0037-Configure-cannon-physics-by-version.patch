@@ -5,7 +5,7 @@ Subject: [PATCH] Configure cannon physics by version
 
 
 diff --git a/src/main/java/ca/spottedleaf/moonrise/patches/collisions/CollisionUtil.java b/src/main/java/ca/spottedleaf/moonrise/patches/collisions/CollisionUtil.java
-index f6be260f942c6b9c65e8c3ed625639db75086267..27b7be52f7617a6ecd1ff7e967604424f40027bc 100644
+index a8abdfe0f9e7f8e1b1b92b03dec53906c553bf67..b85f739b21cab2f72237fcbc04386af77250527b 100644
 --- a/src/main/java/ca/spottedleaf/moonrise/patches/collisions/CollisionUtil.java
 +++ b/src/main/java/ca/spottedleaf/moonrise/patches/collisions/CollisionUtil.java
 @@ -1801,6 +1801,13 @@ public final class CollisionUtil {
@@ -106,7 +106,7 @@ index ebe5f0c8c2f09920b5f5ef734e63f5e7cd8bd3a1..320cdb1f4e655a2d093890e88476df90
      protected int getExplosionCount() {
          if (this.cause.getMergeEntityData().getMergeLevel() == MergeLevel.NONE) {
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index 687eb620c0ee3fc19472f830b6296862a7dcf01c..dd93bff521e8bfc72416cebed20cb3a5bce094b8 100644
+index a56517cb6628939e6eed4b26e5e7f8bf6fc1c7af..57d9003a79c2d3a0c756b4e4738c33f7a206e62a 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
 @@ -341,7 +341,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
@@ -132,7 +132,7 @@ index 687eb620c0ee3fc19472f830b6296862a7dcf01c..dd93bff521e8bfc72416cebed20cb3a5
  
      public Entity(EntityType<?> type, Level world) {
          this.id = Entity.ENTITY_COUNTER.incrementAndGet();
-@@ -1161,7 +1168,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1169,7 +1176,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
      }
  
      protected void checkSupportingBlock(boolean onGround, @Nullable Vec3 movement) {
@@ -141,7 +141,7 @@ index 687eb620c0ee3fc19472f830b6296862a7dcf01c..dd93bff521e8bfc72416cebed20cb3a5
              AABB axisalignedbb = this.getBoundingBox();
              AABB axisalignedbb1 = new AABB(axisalignedbb.minX, axisalignedbb.minY - 1.0E-6D, axisalignedbb.minZ, axisalignedbb.maxX, axisalignedbb.minY, axisalignedbb.maxZ);
              Optional<BlockPos> optional = this.level.findSupportingBlock(this, axisalignedbb1);
-@@ -1221,7 +1228,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1229,7 +1236,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          if (this.noPhysics) {
              this.setPos(this.getX() + movement.x, this.getY() + movement.y, this.getZ() + movement.z);
          } else {
@@ -150,7 +150,7 @@ index 687eb620c0ee3fc19472f830b6296862a7dcf01c..dd93bff521e8bfc72416cebed20cb3a5
                  movement = this.limitPistonMovement(movement);
                  if (movement.equals(Vec3.ZERO)) {
                      return;
-@@ -1239,8 +1246,8 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1247,8 +1254,8 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
              Vec3 vec3d1 = this.sakura_collide(movement);
              double d0 = vec3d1.lengthSqr();
  
@@ -161,7 +161,7 @@ index 687eb620c0ee3fc19472f830b6296862a7dcf01c..dd93bff521e8bfc72416cebed20cb3a5
                      BlockHitResult clipResult = this.level().clip(new ClipContext(this.position(), this.position().add(vec3d1), ClipContext.Block.FALLDAMAGE_RESETTING, ClipContext.Fluid.WATER, this));
                      if (clipResult.getType() != HitResult.Type.MISS) {
                          this.resetFallDistance();
-@@ -1269,6 +1276,11 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1277,6 +1284,11 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
              } else {
                  if (this.horizontalCollision) {
                      Vec3 vec3d2 = this.getDeltaMovement();
@@ -173,7 +173,7 @@ index 687eb620c0ee3fc19472f830b6296862a7dcf01c..dd93bff521e8bfc72416cebed20cb3a5
                      this.setDeltaMovement(movedX ? 0.0D : vec3d2.x, vec3d2.y, movedZ ? 0.0D : vec3d2.z);
                  }
  
-@@ -1674,7 +1686,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1687,7 +1699,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
              bb = currBoundingBox.expandTowards(movement.x, movement.y, movement.z);
          }
          this.collectCollisions(bb, voxelList, bbList);
@@ -182,7 +182,7 @@ index 687eb620c0ee3fc19472f830b6296862a7dcf01c..dd93bff521e8bfc72416cebed20cb3a5
      }
  
      private Vec3 collideAxisScan(Vec3 movement, AABB currBoundingBox, List<VoxelShape> voxelList, List<AABB> bbList) {
-@@ -1682,7 +1694,10 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1695,7 +1707,10 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          double y = movement.y;
          double z = movement.z;
  
@@ -194,7 +194,7 @@ index 687eb620c0ee3fc19472f830b6296862a7dcf01c..dd93bff521e8bfc72416cebed20cb3a5
  
          if (y != 0.0) {
              y = this.scanY(currBoundingBox, y, voxelList, bbList);
-@@ -1780,7 +1795,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1793,7 +1808,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
              ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.COLLISION_FLAG_CHECK_BORDER  | this.getExtraCollisionFlags(), null // Sakura - load chunks on movement
          );
          potentialCollisionsBB.addAll(entityAABBs);
@@ -203,24 +203,15 @@ index 687eb620c0ee3fc19472f830b6296862a7dcf01c..dd93bff521e8bfc72416cebed20cb3a5
  
          final boolean collidedX = collided.x != movement.x;
          final boolean collidedY = collided.y != movement.y;
-@@ -1947,7 +1962,10 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
- 
-     private void checkInsideBlocks(List<Entity.Movement> queuedCollisionChecks, Set<BlockState> collidedBlocks) {
-         if (this.isAffectedByBlocks()) {
--            AABB axisalignedbb = this.getBoundingBox().deflate(9.999999747378752E-6D);
-+            // Sakura start - physics version api
-+            double offset = this.physics.afterOrEqual(1_21_2) ? 1.0E-5f : this.physics.afterOrEqual(1_19_3) ? 1.0E-7D : 0.001D;
-+            AABB axisalignedbb = this.getBoundingBox().deflate(offset);
-+            // Sakura end - physics version api
-             LongSet longset = this.visitedBlocks;
-             Iterator iterator = queuedCollisionChecks.iterator();
- 
-@@ -1955,7 +1973,15 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1967,8 +1982,17 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
                  Entity.Movement entity_b = (Entity.Movement) iterator.next();
                  Vec3 vec3d = entity_b.from();
                  Vec3 vec3d1 = entity_b.to();
+-                AABB axisalignedbb = this.makeBoundingBox(vec3d1).deflate(9.999999747378752E-6D);
 -                Iterator iterator1 = BlockGetter.boxTraverseBlocks(vec3d, vec3d1, axisalignedbb).iterator();
 +                // Sakura start - physics version api
++                double offset = this.physics.afterOrEqual(1_21_2) ? 1.0E-5f : this.physics.afterOrEqual(1_19_3) ? 1.0E-7D : 0.001D;
++                AABB axisalignedbb = this.makeBoundingBox(vec3d1).deflate(offset);
 +                final Iterable<BlockPos> positions;
 +                if (this.physics.afterOrEqual(1_21_2)) {
 +                    positions = BlockGetter.boxTraverseBlocks(vec3d, vec3d1, axisalignedbb);
@@ -233,7 +224,7 @@ index 687eb620c0ee3fc19472f830b6296862a7dcf01c..dd93bff521e8bfc72416cebed20cb3a5
                  while (iterator1.hasNext()) {
                      BlockPos blockposition = (BlockPos) iterator1.next();
 diff --git a/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java b/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
-index 890f1d6f8ad740afb0b30208f7cd42594e4c9d20..7ec7cfde4ce47a7f4a64e83fa49ed7287684d6a0 100644
+index 446b168babf732df9322826e3124fee08f22a015..e271bf7a5efea424dc4facdeba3e6ccb061853dc 100644
 --- a/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
 @@ -147,6 +147,8 @@ public class FallingBlockEntity extends Entity implements me.samsuik.sakura.enti
@@ -365,7 +356,7 @@ index 890f1d6f8ad740afb0b30208f7cd42594e4c9d20..7ec7cfde4ce47a7f4a64e83fa49ed728
      }
  
 diff --git a/src/main/java/net/minecraft/world/entity/item/PrimedTnt.java b/src/main/java/net/minecraft/world/entity/item/PrimedTnt.java
-index 3e4935f4a07fa14152d1f55f069c49fdd2f3bc02..1231d99374ffa5d988e5b240be2da95f0002947c 100644
+index 80a512033689171196c20f07a5b99fbd30c167c6..0ed14efbfca22e9f319f23ad8920fd656930a7c6 100644
 --- a/src/main/java/net/minecraft/world/entity/item/PrimedTnt.java
 +++ b/src/main/java/net/minecraft/world/entity/item/PrimedTnt.java
 @@ -108,6 +108,13 @@ public class PrimedTnt extends Entity implements TraceableEntity, me.samsuik.sak
@@ -456,10 +447,10 @@ index 3e4935f4a07fa14152d1f55f069c49fdd2f3bc02..1231d99374ffa5d988e5b240be2da95f
      // Paper end - Option to prevent TNT from moving in water
  }
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index 452a9fef94d093b637245c82d36dacbb1e1d86c5..b67c4bcc7afb074134344b5f239370290416934e 100644
+index 9fb78a9bd08521dff83b1f28be2421aa37af5898..f99497c7b10716c1804d29e1e51e608c3a542127 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
-@@ -841,6 +841,170 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+@@ -842,6 +842,170 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
          return chunk != null ? chunk.getNoiseBiome(x, y, z) : this.getUncachedNoiseBiome(x, y, z);
      }
      // Paper end - optimise random ticking
@@ -631,7 +622,7 @@ index 452a9fef94d093b637245c82d36dacbb1e1d86c5..b67c4bcc7afb074134344b5f23937029
      public final me.samsuik.sakura.explosion.density.BlockDensityCache densityCache = new me.samsuik.sakura.explosion.density.BlockDensityCache(); // Sakura - explosion density cache
      public final me.samsuik.sakura.explosion.durable.DurableBlockManager durabilityManager = new me.samsuik.sakura.explosion.durable.DurableBlockManager(); // Sakura - explosion durable blocks
 diff --git a/src/main/java/net/minecraft/world/level/ServerExplosion.java b/src/main/java/net/minecraft/world/level/ServerExplosion.java
-index 85c84333614a4e0739e39cb72d8e4015ed78e7b7..bdc3ff8cbe4e5eaa9d9a34f38fdd150f7368e33b 100644
+index fe77344a266b5f9cbb5b0394abfdc5878662160c..977c73dc9faa9114705f329f6b00a0c69c1cca37 100644
 --- a/src/main/java/net/minecraft/world/level/ServerExplosion.java
 +++ b/src/main/java/net/minecraft/world/level/ServerExplosion.java
 @@ -413,6 +413,7 @@ public class ServerExplosion implements Explosion {
@@ -692,7 +683,7 @@ index 85c84333614a4e0739e39cb72d8e4015ed78e7b7..bdc3ff8cbe4e5eaa9d9a34f38fdd150f
  
                      if (d4 != 0.0D) {
                          d1 /= d4;
-@@ -961,7 +981,7 @@ public class ServerExplosion implements Explosion {
+@@ -965,7 +985,7 @@ public class ServerExplosion implements Explosion {
          // Sakura start - replace density cache
          float blockDensity = this.level.densityCache.getDensity(vec3d, entity);
          if (blockDensity == me.samsuik.sakura.explosion.density.BlockDensityCache.UNKNOWN_DENSITY) {
@@ -701,7 +692,7 @@ index 85c84333614a4e0739e39cb72d8e4015ed78e7b7..bdc3ff8cbe4e5eaa9d9a34f38fdd150f
              this.level.densityCache.putDensity(vec3d, entity, blockDensity);
              // Sakura end - replace density cache
          }
-@@ -969,6 +989,16 @@ public class ServerExplosion implements Explosion {
+@@ -973,6 +993,16 @@ public class ServerExplosion implements Explosion {
          return blockDensity;
      }
  
@@ -936,10 +927,10 @@ index 72320c6099a4b26235bab68570e7b7efad84740f..737d4c96e9078504e1dd7c4ffd7812a3
      }
  
 diff --git a/src/main/java/net/minecraft/world/level/block/piston/MovingPistonBlock.java b/src/main/java/net/minecraft/world/level/block/piston/MovingPistonBlock.java
-index b696597540d998c52ec3207ffd8bf658fde59215..485929a4e6e5600b799943fff19ab591dbe9ddc6 100644
+index 9cb3d1bfc4d524d272819c2ce27d005595b319ab..6adff1edd134526b77595406f4ca2c06a34ef656 100644
 --- a/src/main/java/net/minecraft/world/level/block/piston/MovingPistonBlock.java
 +++ b/src/main/java/net/minecraft/world/level/block/piston/MovingPistonBlock.java
-@@ -109,6 +109,17 @@ public class MovingPistonBlock extends BaseEntityBlock {
+@@ -110,6 +110,17 @@ public class MovingPistonBlock extends BaseEntityBlock {
      @Override
      protected VoxelShape getCollisionShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
          PistonMovingBlockEntity pistonMovingBlockEntity = this.getBlockEntity(world, pos);
@@ -974,7 +965,7 @@ index 4b51472502d08ea357da437afeb4b581979e9cff..6146c786730b2cd5e5883acbe19d1eec
          }
  
 diff --git a/src/main/java/net/minecraft/world/level/block/piston/PistonHeadBlock.java b/src/main/java/net/minecraft/world/level/block/piston/PistonHeadBlock.java
-index c5c297b1081c9ddbb3bd0a0947401041aa8fec7d..d37c3ef71b1034ce2422c6078aa0abe79430cfac 100644
+index d35bf8367b0ec573dd3a3eebadcdf401ff5633d2..a61c0c6d9649bd7e643db591b8504fc61c44dd3a 100644
 --- a/src/main/java/net/minecraft/world/level/block/piston/PistonHeadBlock.java
 +++ b/src/main/java/net/minecraft/world/level/block/piston/PistonHeadBlock.java
 @@ -151,6 +151,11 @@ public class PistonHeadBlock extends DirectionalBlock {

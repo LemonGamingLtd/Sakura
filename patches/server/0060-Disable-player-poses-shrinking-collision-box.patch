@@ -5,10 +5,10 @@ Subject: [PATCH] Disable player poses shrinking collision box
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/player/Player.java b/src/main/java/net/minecraft/world/entity/player/Player.java
-index 1a1203a93550cae95f2a82062e16fb21a779ee94..16f6834b88bf0b2f2157e25240e6bc51db501dce 100644
+index b439c196db1af082d5ebcd6df59c436396dc144e..f14759c18f760165dfad670049c880c01adb96d4 100644
 --- a/src/main/java/net/minecraft/world/entity/player/Player.java
 +++ b/src/main/java/net/minecraft/world/entity/player/Player.java
-@@ -2246,7 +2246,13 @@ public abstract class Player extends LivingEntity {
+@@ -2249,7 +2249,13 @@ public abstract class Player extends LivingEntity {
  
      @Override
      public EntityDimensions getDefaultDimensions(Pose pose) {

@@ -649,10 +649,10 @@ index 1a37654aff9a9c86c9f7af10a1cf721371f0c5ec..82644b34a77dc5e5af38260b7b07b3ec
      public ClientboundSectionBlocksUpdatePacket(SectionPos sectionPos, ShortSet positions, LevelChunkSection section) {
          this.sectionPos = sectionPos;
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index e78798ddbc07fc63a16633b7d78d2deff31861ce..2af0b56d2c83a42f9e6324ce8dd763512d079c17 100644
+index 0bdefa7ad46887fe3eb9045b63195541d3b792e1..1d0462b970304f543ff949f7aa32c67a1860ba4f 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -1890,6 +1890,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1891,6 +1891,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              gameprofilerfiller.pop();
              worldserver.explosionDensityCache.clear(); // Paper - Optimize explosions
              worldserver.localConfig().expire(currentTick); // Sakura - add local config
@@ -661,7 +661,7 @@ index e78798ddbc07fc63a16633b7d78d2deff31861ce..2af0b56d2c83a42f9e6324ce8dd76351
          this.isIteratingOverLevels = false; // Paper - Throw exception on world create while being ticked
  
 diff --git a/src/main/java/net/minecraft/server/level/ChunkMap.java b/src/main/java/net/minecraft/server/level/ChunkMap.java
-index 52a6a4badace15a983f0acb431036bd704d9cebd..31383a3282b34265ab799c12652d7473d03214ee 100644
+index cfeeddf2cb4ff50dbc29c6913e78ca1dee076790..d6c3f39cc9359f5d0fc5082949a7c860c38881cc 100644
 --- a/src/main/java/net/minecraft/server/level/ChunkMap.java
 +++ b/src/main/java/net/minecraft/server/level/ChunkMap.java
 @@ -179,6 +179,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
@@ -734,10 +734,10 @@ index 52a6a4badace15a983f0acb431036bd704d9cebd..31383a3282b34265ab799c12652d7473
                  // CraftBukkit start - respect vanish API
                  if (flag && !player.getBukkitEntity().canSee(this.entity.getBukkitEntity())) { // Paper - only consider hits
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index 1cce0f401f456370be2edb3a1184c9cc383b2053..fcf9b28cf5eabd4d94f5f3dd42b8367c1765df41 100644
+index e587c16e03f6b3a3ed5a051115583fd288b94bab..0c1587b8ccf05e7a0a5df5a64c483cee434e1c0f 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
-@@ -594,6 +594,21 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -595,6 +595,21 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
          this.lagCompensationTick = (System.nanoTime() - net.minecraft.server.MinecraftServer.SERVER_INIT) / (java.util.concurrent.TimeUnit.MILLISECONDS.toNanos(50L));
      }
      // Paper end - lag compensation
@@ -759,7 +759,7 @@ index 1cce0f401f456370be2edb3a1184c9cc383b2053..fcf9b28cf5eabd4d94f5f3dd42b8367c
  
      // Add env and gen to constructor, IWorldDataServer -> WorldDataServer
      public ServerLevel(MinecraftServer minecraftserver, Executor executor, LevelStorageSource.LevelStorageAccess convertable_conversionsession, PrimaryLevelData iworlddataserver, ResourceKey<Level> resourcekey, LevelStem worlddimension, ChunkProgressListener worldloadlistener, boolean flag, long i, List<CustomSpawner> list, boolean flag1, @Nullable RandomSequences randomsequences, org.bukkit.World.Environment env, org.bukkit.generator.ChunkGenerator gen, org.bukkit.generator.BiomeProvider biomeProvider) {
-@@ -1905,7 +1920,18 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1906,7 +1921,18 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
              if (entityplayer.distanceToSqr(vec3d) < 4096.0D) {
                  Optional<Vec3> optional = Optional.ofNullable((Vec3) serverexplosion.getHitPlayers().get(entityplayer));
  
@@ -780,10 +780,10 @@ index 1cce0f401f456370be2edb3a1184c9cc383b2053..fcf9b28cf5eabd4d94f5f3dd42b8367c
          }
  
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index 5a8f396d47577f087abb415c972fd4f51e50faba..ac8308be5b200237aa61a21404e558f245356546 100644
+index 8aff5b7dd14b835788348b22b1fec4d381df816f..5266e37ade8851a8b73a4ae12ecd67a8d0c6e09d 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-@@ -359,6 +359,7 @@ public class ServerPlayer extends net.minecraft.world.entity.player.Player imple
+@@ -357,6 +357,7 @@ public class ServerPlayer extends net.minecraft.world.entity.player.Player imple
          return this.viewDistanceHolder;
      }
      // Paper end - rewrite chunk system
@@ -845,10 +845,10 @@ index b0bc66dc7248aae691dcab68b925b52a1695e63f..2f9413b9442cc7f95e1974a772812fe3
              throw new ReportedException(crashreport);
          }
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index cd1b6b539a62fa5237d6dab2d1c09a2e631d9941..b4e7e6ccc25a373f571c32f0328b90e04111e00b 100644
+index 2fbe3d8722eeacc3b27ce38145aeffa610f9daab..e22f478c527e27b915cea68505316c6d22b899c0 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -3247,6 +3247,7 @@ public class ServerGamePacketListenerImpl extends ServerCommonPacketListenerImpl
+@@ -3313,6 +3313,7 @@ public class ServerGamePacketListenerImpl extends ServerCommonPacketListenerImpl
  
                          event.setCancelled(cancelled);
                          AbstractContainerMenu oldContainer = this.player.containerMenu; // SPIGOT-1224
@@ -857,7 +857,7 @@ index cd1b6b539a62fa5237d6dab2d1c09a2e631d9941..b4e7e6ccc25a373f571c32f0328b90e0
                          if (this.player.containerMenu != oldContainer) {
                              return;
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index a15546e433ebba6c0de01bdaaef201a3d99a87b5..2aaf7ce81bff0c03da2211f145489d304ac669d2 100644
+index 27618d07d718cb2a5783536e11d56f712303487b..20dac48cce9596217d1ebd1703e5ac2c0ede56e1 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
 @@ -568,6 +568,10 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
@@ -872,7 +872,7 @@ index a15546e433ebba6c0de01bdaaef201a3d99a87b5..2aaf7ce81bff0c03da2211f145489d30
      public Entity(EntityType<?> type, Level world) {
          this.id = Entity.ENTITY_COUNTER.incrementAndGet();
 diff --git a/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java b/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
-index 06d9a519e64d4b8b8764b3ad7691ad93b5cee065..4a50ef9b25b9162815b879c60c294ed4be2edd5c 100644
+index 410c4e4a42640ebe8a9c233eb2064aad76e45a27..e270eaec13afb16ed80e7c3fd8ea35ee58291263 100644
 --- a/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
 @@ -78,6 +78,7 @@ public class FallingBlockEntity extends Entity {
@@ -884,7 +884,7 @@ index 06d9a519e64d4b8b8764b3ad7691ad93b5cee065..4a50ef9b25b9162815b879c60c294ed4
  
      public FallingBlockEntity(Level world, double x, double y, double z, BlockState block) {
 diff --git a/src/main/java/net/minecraft/world/entity/item/PrimedTnt.java b/src/main/java/net/minecraft/world/entity/item/PrimedTnt.java
-index de87483600e55d88176fe25db621bbd3e464729f..5bd189fad703ac99d57258fa448dbcc103077297 100644
+index 809f5e847e2f5bb594c130cebd2cb897ea768d82..eebd53ac889da265cb259ba3cb8c1ce4ef34d931 100644
 --- a/src/main/java/net/minecraft/world/entity/item/PrimedTnt.java
 +++ b/src/main/java/net/minecraft/world/entity/item/PrimedTnt.java
 @@ -63,6 +63,7 @@ public class PrimedTnt extends Entity implements TraceableEntity {
@@ -896,7 +896,7 @@ index de87483600e55d88176fe25db621bbd3e464729f..5bd189fad703ac99d57258fa448dbcc1
  
      public PrimedTnt(Level world, double x, double y, double z, @Nullable LivingEntity igniter) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 554714e449d1d2439b05d7e15f72afccd17d4df5..ab38f0913b7adf3593c5d0b5a65441afefeeffbc 100644
+index 84c494ca81b8f58604b372ac7236147776817a4f..d00fcfd5219a532204533f159d68524b2d33ccc7 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -2394,6 +2394,13 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
@@ -925,7 +925,7 @@ index 554714e449d1d2439b05d7e15f72afccd17d4df5..ab38f0913b7adf3593c5d0b5a65441af
      }
  
      @Override
-@@ -3097,6 +3109,13 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -3082,6 +3094,13 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          return this.getHandle().allowsListing();
      }
  

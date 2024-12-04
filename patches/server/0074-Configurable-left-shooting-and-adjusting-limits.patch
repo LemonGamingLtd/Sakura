@@ -5,7 +5,7 @@ Subject: [PATCH] Configurable left shooting and adjusting limits
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index a48d871f851c9cafdb05fef3e33ec1de81b7d0bd..dcf2c3f9236a96618608887b269164b23127d6ff 100644
+index a2b0fe7122c11da561ab6ceb91bc37385df16c0d..95f4854ca21a6b34ad1ab95a1cb38f7d2dfd24c3 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
 @@ -651,6 +651,46 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
@@ -55,7 +55,7 @@ index a48d871f851c9cafdb05fef3e33ec1de81b7d0bd..dcf2c3f9236a96618608887b269164b2
  
      public Entity(EntityType<?> type, Level world) {
          this.id = Entity.ENTITY_COUNTER.incrementAndGet();
-@@ -1729,6 +1769,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1742,6 +1782,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          }
  
          if (xSmaller && z != 0.0) {
@@ -63,7 +63,7 @@ index a48d871f851c9cafdb05fef3e33ec1de81b7d0bd..dcf2c3f9236a96618608887b269164b2
              z = this.scanZ(currBoundingBox, z, voxelList, bbList);
              if (z != 0.0) {
                  currBoundingBox = ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.offsetZ(currBoundingBox, z);
-@@ -1736,6 +1777,11 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1749,6 +1790,11 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          }
  
          if (x != 0.0) {
@@ -76,7 +76,7 @@ index a48d871f851c9cafdb05fef3e33ec1de81b7d0bd..dcf2c3f9236a96618608887b269164b2
              if (x != 0.0) {
                  currBoundingBox = ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.offsetX(currBoundingBox, x);
 diff --git a/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java b/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
-index 2d9e42465d4a8adf2095d3d23b29df29af3df00d..20c67c47d90b5a41d6db783fda460636873638c4 100644
+index 6a3d0d407dc25715c1408818cd7aba1d962ed382..1a90e7bb8209e20c288afd8c78e681c1fab317cb 100644
 --- a/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
 @@ -270,6 +270,7 @@ public class FallingBlockEntity extends Entity implements me.samsuik.sakura.enti

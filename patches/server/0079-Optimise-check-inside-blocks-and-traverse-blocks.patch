@@ -71,10 +71,10 @@ index 0000000000000000000000000000000000000000..e00c07c614e007c007076e3dbe8bd8cc
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index dcf2c3f9236a96618608887b269164b23127d6ff..2c31c508409780334cd925368a1623192f8428a6 100644
+index 95f4854ca21a6b34ad1ab95a1cb38f7d2dfd24c3..7d35952cdf48150f43b103b765358b7760411c9d 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
-@@ -2050,6 +2050,11 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -2061,6 +2061,11 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
                  }
                  final Iterator iterator1 = positions.iterator();
                  // Sakura end - physics version api
@@ -86,7 +86,7 @@ index dcf2c3f9236a96618608887b269164b23127d6ff..2c31c508409780334cd925368a162319
  
                  while (iterator1.hasNext()) {
                      BlockPos blockposition = (BlockPos) iterator1.next();
-@@ -2058,7 +2063,19 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -2069,7 +2074,19 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
                          return;
                      }
  
@@ -108,7 +108,7 @@ index dcf2c3f9236a96618608887b269164b23127d6ff..2c31c508409780334cd925368a162319
                      if (!iblockdata.isAir() && longset.add(blockposition.asLong())) {
                          try {
 diff --git a/src/main/java/net/minecraft/world/level/BlockGetter.java b/src/main/java/net/minecraft/world/level/BlockGetter.java
-index 93738c7dea1ea3d19013a47380391274612a719b..bbf79df2636ea96a288cd614e5b90968e5754937 100644
+index 62719778c62d6632a8eb6f2bc670956c15a247de..ecdb8769c1a388827bf5c4565c82f8e32672c5d7 100644
 --- a/src/main/java/net/minecraft/world/level/BlockGetter.java
 +++ b/src/main/java/net/minecraft/world/level/BlockGetter.java
 @@ -215,11 +215,18 @@ public interface BlockGetter extends LevelHeightAccessor {
@@ -131,9 +131,9 @@ index 93738c7dea1ea3d19013a47380391274612a719b..bbf79df2636ea96a288cd614e5b90968
 +            Iterable<BlockPos> iterable = BlockPos.betweenClosed(boundingBox);
 +            // Sakura end - optimise check inside blocks
              Set<BlockPos> set = new ObjectLinkedOpenHashSet();
-             Vec3 vec3d3 = vec3d2.normalize().scale(1.0E-7D);
-             Vec3 vec3d4 = boundingBox.getMinPosition().add(vec3d3);
-@@ -238,6 +245,16 @@ public interface BlockGetter extends LevelHeightAccessor {
+             Vec3 vec3d3 = boundingBox.getMinPosition();
+             Vec3 vec3d4 = vec3d3.subtract(vec3d2);
+@@ -237,6 +244,16 @@ public interface BlockGetter extends LevelHeightAccessor {
          }
      }
  

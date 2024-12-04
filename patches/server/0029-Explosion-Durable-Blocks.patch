@@ -54,7 +54,7 @@ index 0000000000000000000000000000000000000000..e52cae27c2bbf4fa02d49d1c69d8e124
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/world/item/BlockItem.java b/src/main/java/net/minecraft/world/item/BlockItem.java
-index c816c935ecc74a811ffdffbe6ded73c06e92324a..4da4efe7114d4fcea5e79bcab292dc4b3c782de9 100644
+index 4377fa2400c4320e0023ece230090a2a3b4b2ab6..9b66ac859619d3e79d5ab33939006b178699d474 100644
 --- a/src/main/java/net/minecraft/world/item/BlockItem.java
 +++ b/src/main/java/net/minecraft/world/item/BlockItem.java
 @@ -47,8 +47,32 @@ public class BlockItem extends Item {
@@ -91,10 +91,10 @@ index c816c935ecc74a811ffdffbe6ded73c06e92324a..4da4efe7114d4fcea5e79bcab292dc4b
  
          return !enuminteractionresult.consumesAction() && context.getItemInHand().has(DataComponents.CONSUMABLE) ? super.use(context.getLevel(), context.getPlayer(), context.getHand()) : enuminteractionresult;
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index 2d5783a6ff7a9ce6dcb6f2895ff80928e62f0cd2..0ae2d83055252146e346b06cc8360eef56d39f5c 100644
+index 0301e304bb67d3a52de551442e425b83152fbabf..9fb78a9bd08521dff83b1f28be2421aa37af5898 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
-@@ -843,6 +843,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+@@ -844,6 +844,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
      // Paper end - optimise random ticking
      public final me.samsuik.sakura.entity.merge.EntityMergeHandler mergeHandler = new me.samsuik.sakura.entity.merge.EntityMergeHandler(); // Sakura - merge cannon entities
      public final me.samsuik.sakura.explosion.density.BlockDensityCache densityCache = new me.samsuik.sakura.explosion.density.BlockDensityCache(); // Sakura - explosion density cache
@@ -103,7 +103,7 @@ index 2d5783a6ff7a9ce6dcb6f2895ff80928e62f0cd2..0ae2d83055252146e346b06cc8360eef
      protected Level(WritableLevelData worlddatamutable, ResourceKey<Level> resourcekey, RegistryAccess iregistrycustom, Holder<DimensionType> holder, boolean flag, boolean flag1, long i, int j, org.bukkit.generator.ChunkGenerator gen, org.bukkit.generator.BiomeProvider biomeProvider, org.bukkit.World.Environment env, java.util.function.Function<org.spigotmc.SpigotWorldConfig, io.papermc.paper.configuration.WorldConfiguration> paperWorldConfigCreator, java.util.function.Supplier<me.samsuik.sakura.configuration.WorldConfiguration> sakuraWorldConfigCreator, java.util.concurrent.Executor executor) { // Sakura - sakura configuration files // Paper - create paper world config & Anti-Xray
          // Paper start - getblock optimisations - cache world height/sections
 diff --git a/src/main/java/net/minecraft/world/level/ServerExplosion.java b/src/main/java/net/minecraft/world/level/ServerExplosion.java
-index 59e38ee6ac0699350a7021f1d074fdfee4a5ba41..ccca5d7d51cd7e4a77d87293eb66c9732fce4381 100644
+index 74abe5fe92b3f1fe0139f4879fe5efa10d0623e0..278ca240491096514f4c48be56bcfe2d2356520e 100644
 --- a/src/main/java/net/minecraft/world/level/ServerExplosion.java
 +++ b/src/main/java/net/minecraft/world/level/ServerExplosion.java
 @@ -134,7 +134,7 @@ public class ServerExplosion implements Explosion {

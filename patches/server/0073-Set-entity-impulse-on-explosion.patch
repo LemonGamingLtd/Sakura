@@ -17,14 +17,20 @@ index c916d3037bd5920ec06213a9162223a124428d6b..fd98f36ca2fd7e0b5961fd89aa976dbf
      }
  }
 diff --git a/src/main/java/net/minecraft/world/level/ServerExplosion.java b/src/main/java/net/minecraft/world/level/ServerExplosion.java
-index a9a63fa9d2c45298ebd4146e0dfeea54b6431797..f4ab7d377171bf5b9ead7ffd0e6151884bcd2968 100644
+index 8ddcbb5f5ea867d3bce207ba25f93a940f78a93b..06cbe3ac6adf0d91a185e365a056b29ee54380e6 100644
 --- a/src/main/java/net/minecraft/world/level/ServerExplosion.java
 +++ b/src/main/java/net/minecraft/world/level/ServerExplosion.java
-@@ -748,6 +748,7 @@ public class ServerExplosion implements Explosion {
+@@ -748,7 +748,12 @@ public class ServerExplosion implements Explosion {
                             // Paper end - knockback events
                          }
                          // CraftBukkit end
-+                        entity.hasImpulse = true; // Sakura - set entity impulse on explosion
-                         entity.setDeltaMovement(entity.getDeltaMovement().add(vec3d));
+-                        entity.push(vec3d);
++                        // Sakura start - set entity impulse on explosion
++                        // Wait for upstream to change the push method to be more sane.
++                        // entity.push(vec3d);
++                        entity.hasImpulse = true;
++                        entity.setDeltaMovement(entity.getDeltaMovement().add(vec3d));
++                        // Sakura end - set entity impulse on explosion
                          if (entity instanceof Player) {
                              Player entityhuman = (Player) entity;
+ 

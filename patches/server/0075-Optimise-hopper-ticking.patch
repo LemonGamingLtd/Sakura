@@ -42,10 +42,10 @@ index 5db5ba026462ca642dcee718af732f80fadabef5..51e26395b53628b34b1f7f68935a9ba4
  
      boolean isEmpty();
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index b8d59ca87e908ce2bdd978007e3a97e297a10278..cdd56fedb0e0703e820fe807789e0fad78d4b409 100644
+index f99497c7b10716c1804d29e1e51e608c3a542127..290f3fc3c05892c4de8015fe38cec0c5e5d9fb61 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
-@@ -1648,7 +1648,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+@@ -1649,7 +1649,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
                  tilesThisCycle--;
                  toRemove.add(tickingblockentity); // Paper - Fix MC-117075; use removeAll
                  // Spigot end
@@ -55,7 +55,7 @@ index b8d59ca87e908ce2bdd978007e3a97e297a10278..cdd56fedb0e0703e820fe807789e0fad
                  // Paper start - rewrite chunk system
                  if ((++tickedEntities & 7) == 0) {
 diff --git a/src/main/java/net/minecraft/world/level/block/HopperBlock.java b/src/main/java/net/minecraft/world/level/block/HopperBlock.java
-index 005a2a66a6e8a492acfa7ba91117884cda08562d..00a2eeeedaadb9e7486e6b366bef6c15e48d23cd 100644
+index 8ba23af2fa6c5174aa3ec34e78f9c21ce786c4fc..45070d4506b79890f3cd806789a2fa7ab9d37d27 100644
 --- a/src/main/java/net/minecraft/world/level/block/HopperBlock.java
 +++ b/src/main/java/net/minecraft/world/level/block/HopperBlock.java
 @@ -140,6 +140,12 @@ public class HopperBlock extends BaseEntityBlock {
@@ -72,10 +72,10 @@ index 005a2a66a6e8a492acfa7ba91117884cda08562d..00a2eeeedaadb9e7486e6b366bef6c15
          }
      }
 diff --git a/src/main/java/net/minecraft/world/level/block/entity/BlockEntity.java b/src/main/java/net/minecraft/world/level/block/entity/BlockEntity.java
-index 1f929b467a0ece3143af58a657cf5983c07a8d51..dafdaf4d34af9c0a3d7915957c9de243d03b06f7 100644
+index 1f664c10138a6e19bdc0051fa80575516d5602e7..1d3b7bf7b06b340f15671db4b910ca8d830f268d 100644
 --- a/src/main/java/net/minecraft/world/level/block/entity/BlockEntity.java
 +++ b/src/main/java/net/minecraft/world/level/block/entity/BlockEntity.java
-@@ -49,6 +49,55 @@ public abstract class BlockEntity {
+@@ -48,6 +48,55 @@ public abstract class BlockEntity {
      private BlockState blockState;
      private DataComponentMap components;
  
@@ -131,7 +131,7 @@ index 1f929b467a0ece3143af58a657cf5983c07a8d51..dafdaf4d34af9c0a3d7915957c9de243
      public BlockEntity(BlockEntityType<?> type, BlockPos pos, BlockState state) {
          this.components = DataComponentMap.EMPTY;
          this.type = type;
-@@ -227,12 +276,23 @@ public abstract class BlockEntity {
+@@ -217,12 +266,23 @@ public abstract class BlockEntity {
      public void setChanged() {
          if (this.level != null) {
              if (ignoreTileUpdates) return; // Paper - Perf: Optimize Hoppers
@@ -156,7 +156,7 @@ index 1f929b467a0ece3143af58a657cf5983c07a8d51..dafdaf4d34af9c0a3d7915957c9de243
          world.blockEntityChanged(pos);
          if (!state.isAir()) {
              world.updateNeighbourForOutputSignal(pos, state.getBlock());
-@@ -263,6 +323,7 @@ public abstract class BlockEntity {
+@@ -253,6 +313,7 @@ public abstract class BlockEntity {
  
      public void setRemoved() {
          this.remove = true;
@@ -283,10 +283,10 @@ index 28e3b73507b988f7234cbf29c4024c88180d0aef..a0d247aa883553708c4b921582324255
 +    // Sakura end - optimise hopper ticking
  }
 diff --git a/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java b/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
-index 4640baec5bed6c2d53cc0f8ca1d273cc115abe9b..aec495138c9724590be9bd5775189f0643b12a09 100644
+index 97937e3bd211997f0a0a3e9e671a1c59712d0003..ce92f8f2d2f96ec77ae7128b741689ec2b77aad9 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
 +++ b/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
-@@ -1035,6 +1035,13 @@ public class LevelChunk extends ChunkAccess implements ca.spottedleaf.moonrise.p
+@@ -1040,6 +1040,13 @@ public class LevelChunk extends ChunkAccess implements ca.spottedleaf.moonrise.p
              return this.ticker.getType();
          }
  
@@ -300,7 +300,7 @@ index 4640baec5bed6c2d53cc0f8ca1d273cc115abe9b..aec495138c9724590be9bd5775189f06
          public String toString() {
              return String.valueOf(this.ticker) + " <wrapped>";
          }
-@@ -1107,6 +1114,13 @@ public class LevelChunk extends ChunkAccess implements ca.spottedleaf.moonrise.p
+@@ -1112,6 +1119,13 @@ public class LevelChunk extends ChunkAccess implements ca.spottedleaf.moonrise.p
              return BlockEntityType.getKey(this.blockEntity.getType()).toString();
          }
  

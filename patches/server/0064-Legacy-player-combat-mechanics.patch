@@ -145,10 +145,10 @@ index 0000000000000000000000000000000000000000..b4ab8f172d713204bb9c1ebf575dcc28
 +    private LegacyDamageMapping() {}
 +}
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-index dc57d8d4448f60478693b6c3e81ae11074d4f22b..365ab6a0c564911bc58d3fb90e3abe82dbbdc642 100644
+index 1bd9f31da1ec66259dc6391448e2b8ce69ddb817..16e6bd46e54cba9e0ef39a488cefcc5e49476403 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-@@ -310,6 +310,43 @@ public abstract class LivingEntity extends Entity implements Attackable {
+@@ -308,6 +308,43 @@ public abstract class LivingEntity extends Entity implements Attackable {
          ++this.noActionTime; // Above all the floats
      }
      // Spigot end
@@ -192,7 +192,7 @@ index dc57d8d4448f60478693b6c3e81ae11074d4f22b..365ab6a0c564911bc58d3fb90e3abe82
  
      protected LivingEntity(EntityType<? extends LivingEntity> type, Level world) {
          super(type, world);
-@@ -2291,7 +2328,16 @@ public abstract class LivingEntity extends Entity implements Attackable {
+@@ -2302,7 +2339,16 @@ public abstract class LivingEntity extends Entity implements Attackable {
      protected float getDamageAfterArmorAbsorb(DamageSource source, float amount) {
          if (!source.is(DamageTypeTags.BYPASSES_ARMOR)) {
              // this.hurtArmor(damagesource, f); // CraftBukkit - actuallyHurt(DamageSource, float, EntityDamageEvent) for handle damage
@@ -209,7 +209,7 @@ index dc57d8d4448f60478693b6c3e81ae11074d4f22b..365ab6a0c564911bc58d3fb90e3abe82
          }
  
          return amount;
-@@ -3481,6 +3527,11 @@ public abstract class LivingEntity extends Entity implements Attackable {
+@@ -3492,6 +3538,11 @@ public abstract class LivingEntity extends Entity implements Attackable {
  
                          EnchantmentHelper.runLocationChangedEffects(worldserver, itemstack, this, enumitemslot1);
                      }
@@ -222,10 +222,10 @@ index dc57d8d4448f60478693b6c3e81ae11074d4f22b..365ab6a0c564911bc58d3fb90e3abe82
              }
          }
 diff --git a/src/main/java/net/minecraft/world/entity/player/Player.java b/src/main/java/net/minecraft/world/entity/player/Player.java
-index 16f6834b88bf0b2f2157e25240e6bc51db501dce..8c8cf4b640439ca10bc030fa3194f3ff61d10e6b 100644
+index f14759c18f760165dfad670049c880c01adb96d4..c6e728aec98c1abb55abc7bb31ae3604bd187374 100644
 --- a/src/main/java/net/minecraft/world/entity/player/Player.java
 +++ b/src/main/java/net/minecraft/world/entity/player/Player.java
-@@ -1240,14 +1240,20 @@ public abstract class Player extends LivingEntity {
+@@ -1243,14 +1243,20 @@ public abstract class Player extends LivingEntity {
          if (playerAttackEntityEvent.callEvent() && willAttack) { // Logic moved to willAttack local variable.
              {
          // Paper end - PlayerAttackEntityEvent
@@ -247,7 +247,7 @@ index 16f6834b88bf0b2f2157e25240e6bc51db501dce..8c8cf4b640439ca10bc030fa3194f3ff
                  // this.resetAttackStrengthTicker(); // CraftBukkit - Moved to EntityLiving to reset the cooldown after the damage is dealt
                  if (target.getType().is(EntityTypeTags.REDIRECTABLE_PROJECTILE) && target instanceof Projectile) {
                      Projectile iprojectile = (Projectile) target;
-@@ -1275,7 +1281,7 @@ public abstract class Player extends LivingEntity {
+@@ -1278,7 +1284,7 @@ public abstract class Player extends LivingEntity {
                      }
  
                      f += itemstack.getItem().getAttackDamageBonus(target, f, damagesource);

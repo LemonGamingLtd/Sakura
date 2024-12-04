@@ -5,10 +5,10 @@ Subject: [PATCH] Option to disable explosions hurting players
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/player/Player.java b/src/main/java/net/minecraft/world/entity/player/Player.java
-index e50b64ba18fe8a4536b6f8aadca93064cd9f47f7..1a1203a93550cae95f2a82062e16fb21a779ee94 100644
+index d11f67157c1bf8c14776c56748de3588273c7d45..b439c196db1af082d5ebcd6df59c436396dc144e 100644
 --- a/src/main/java/net/minecraft/world/entity/player/Player.java
 +++ b/src/main/java/net/minecraft/world/entity/player/Player.java
-@@ -925,6 +925,11 @@ public abstract class Player extends LivingEntity {
+@@ -928,6 +928,11 @@ public abstract class Player extends LivingEntity {
  
      @Override
      public boolean isInvulnerableTo(ServerLevel world, DamageSource source) {

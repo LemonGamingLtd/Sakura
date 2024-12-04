@@ -5,10 +5,10 @@ Subject: [PATCH] Allow disabling sweep attacks
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/player/Player.java b/src/main/java/net/minecraft/world/entity/player/Player.java
-index 8c8cf4b640439ca10bc030fa3194f3ff61d10e6b..a99903df673f7cde190a880b681d44be0b747c90 100644
+index c6e728aec98c1abb55abc7bb31ae3604bd187374..23c66dc1bba4f4242c848121f70879bb94f0fb4b 100644
 --- a/src/main/java/net/minecraft/world/entity/player/Player.java
 +++ b/src/main/java/net/minecraft/world/entity/player/Player.java
-@@ -1348,7 +1348,7 @@ public abstract class Player extends LivingEntity {
+@@ -1351,7 +1351,7 @@ public abstract class Player extends LivingEntity {
  
                          LivingEntity entityliving2;
  

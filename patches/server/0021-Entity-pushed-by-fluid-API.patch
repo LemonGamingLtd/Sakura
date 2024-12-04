@@ -5,7 +5,7 @@ Subject: [PATCH] Entity pushed by fluid API
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index 12ab6b6ff6444da963f3e1160bf779f7fdb72c48..cc31ee0d9ab13fd08dc33b6757173682883a2ac5 100644
+index 953aa1b3d292dd8e8ed29926c269e6d6e79a83c0..b1ae26d08f12aadea37e44221c44db6430a3a99c 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
 @@ -622,6 +622,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
@@ -16,7 +16,7 @@ index 12ab6b6ff6444da963f3e1160bf779f7fdb72c48..cc31ee0d9ab13fd08dc33b6757173682
  
      public Entity(EntityType<?> type, Level world) {
          this.id = Entity.ENTITY_COUNTER.incrementAndGet();
-@@ -4446,7 +4447,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4480,7 +4481,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
      }
  
      public boolean isPushedByFluid() {
@@ -26,7 +26,7 @@ index 12ab6b6ff6444da963f3e1160bf779f7fdb72c48..cc31ee0d9ab13fd08dc33b6757173682
  
      public static double getViewScale() {
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
-index ddabaed899c755925ad8618b78c33dacaf2126ac..83de2011a8b448b463bcd96e4a8ee8933590de58 100644
+index b25b10c24a379097233e61bcc10add841b6a7115..4f4c708361160461bb472dcc79751fa29c5274b9 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
 @@ -204,6 +204,18 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {

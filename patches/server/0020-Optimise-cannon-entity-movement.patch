@@ -5,10 +5,10 @@ Subject: [PATCH] Optimise cannon entity movement
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index e7f59ead5223858e20722e52b8e31961fe29dccf..12ab6b6ff6444da963f3e1160bf779f7fdb72c48 100644
+index fd1d02604a1e46545c7f2c8ad89968279e2fe1bf..953aa1b3d292dd8e8ed29926c269e6d6e79a83c0 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
-@@ -1214,6 +1214,75 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1222,6 +1222,75 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          return this.moveStartZ;
      }
      // Paper end - detailed watchdog information
@@ -84,7 +84,7 @@ index e7f59ead5223858e20722e52b8e31961fe29dccf..12ab6b6ff6444da963f3e1160bf779f7
  
      public void move(MoverType type, Vec3 movement) {
          final Vec3 originalMovement = movement; // Paper - Expose pre-collision velocity
-@@ -1575,6 +1644,107 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1588,6 +1657,107 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          return offsetFactor;
      }
  
@@ -193,7 +193,7 @@ index e7f59ead5223858e20722e52b8e31961fe29dccf..12ab6b6ff6444da963f3e1160bf779f7
          // Paper start - optimise collisions
          final boolean xZero = movement.x == 0.0;
 diff --git a/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java b/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
-index f0617e9d71fa47dfc0566f31d85b8a05ba3b16fc..32811e9d925911864e0c0fa5a2e25031098f423e 100644
+index 7dc5e5d91bb91c86ddca52a462903e8452396090..a2683e26fc252f0ce933e3ea71fde9c84bcee0fd 100644
 --- a/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
 @@ -213,7 +213,7 @@ public class FallingBlockEntity extends Entity implements me.samsuik.sakura.enti
@@ -206,7 +206,7 @@ index f0617e9d71fa47dfc0566f31d85b8a05ba3b16fc..32811e9d925911864e0c0fa5a2e25031
              // Paper start - Configurable falling blocks height nerf
              if (this.level().paperConfig().fixes.fallingBlockHeightNerf.test(v -> this.getY() > v)) {
 diff --git a/src/main/java/net/minecraft/world/entity/item/PrimedTnt.java b/src/main/java/net/minecraft/world/entity/item/PrimedTnt.java
-index 0a9e62dd90c6aba4ff97391d69f9a92d9555cae6..7bb55565208b99db095c5842a7e21fd21700173e 100644
+index 187cb36e139ce66497e4e20ce75c0a5c4309632e..d60d25c0d731738c647fee6e618d3e4942949dc7 100644
 --- a/src/main/java/net/minecraft/world/entity/item/PrimedTnt.java
 +++ b/src/main/java/net/minecraft/world/entity/item/PrimedTnt.java
 @@ -130,7 +130,7 @@ public class PrimedTnt extends Entity implements TraceableEntity, me.samsuik.sak

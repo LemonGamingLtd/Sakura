@@ -52,7 +52,7 @@ index 0000000000000000000000000000000000000000..aeb5f128b369753cb20b7310fa382ddf
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index 42e72e0406c3e429fc7a6d15cbfa0217e309db5f..b460ce03626f8995e029ad7dbd932cc2c8f0bf20 100644
+index 384b64cfbc2fef49fa22baf1f640ea8f440093cd..316ab62995a7804cf85a2cb986b22e15cd22b01c 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
 @@ -586,6 +586,25 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
@@ -82,10 +82,10 @@ index 42e72e0406c3e429fc7a6d15cbfa0217e309db5f..b460ce03626f8995e029ad7dbd932cc2
      public Entity(EntityType<?> type, Level world) {
          this.id = Entity.ENTITY_COUNTER.incrementAndGet();
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index 10107e6c4b448ce76650eb334bba740d11fd5874..b40db35a8162efcaa1fa88aa760a4d6f59ec1718 100644
+index 13e8ac95daa115720a2b1f52ad33d124351cbd6d..c69c04451c61bcc32e539baae160f05e3418841f 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
-@@ -1499,6 +1499,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+@@ -1500,6 +1500,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
  
      public <T extends Entity> void guardEntityTick(Consumer<T> tickConsumer, T entity) {
          try {

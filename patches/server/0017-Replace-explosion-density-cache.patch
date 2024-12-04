@@ -126,10 +126,10 @@ index 0000000000000000000000000000000000000000..d7e24638f07f243502004970ab4ce646
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index ffd78b7622593a757a61e01561d3ef2b37bf1812..7da3a92b9c81cc903d10b50ea0efd0151626a8e5 100644
+index c73aa5fd7da18219d1da63a0973f397316ba4210..56357e253247d19c108a7f753058fa3eba0302ee 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -1905,6 +1905,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1906,6 +1906,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              worldserver.localConfig().expire(currentTick); // Sakura - add local config
              worldserver.explosionPositions.clear(); // Sakura - client visibility settings
              worldserver.mergeHandler.expire(currentTick); // Sakura - merge cannon entities
@@ -138,10 +138,10 @@ index ffd78b7622593a757a61e01561d3ef2b37bf1812..7da3a92b9c81cc903d10b50ea0efd015
          this.isIteratingOverLevels = false; // Paper - Throw exception on world create while being ticked
  
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index d73073ae752d9983785b9402088ae6cf7188a8bf..5957601b3bdc416cb7851897546d2348c5f74721 100644
+index 8f4a0912a5b5f17c22d2b4c0ef39e1c5566fa5f7..addab159f6fb73fe063f8a057c281d0594a99122 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
-@@ -842,6 +842,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+@@ -843,6 +843,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
      }
      // Paper end - optimise random ticking
      public final me.samsuik.sakura.entity.merge.EntityMergeHandler mergeHandler = new me.samsuik.sakura.entity.merge.EntityMergeHandler(); // Sakura - merge cannon entities
@@ -150,7 +150,7 @@ index d73073ae752d9983785b9402088ae6cf7188a8bf..5957601b3bdc416cb7851897546d2348
      protected Level(WritableLevelData worlddatamutable, ResourceKey<Level> resourcekey, RegistryAccess iregistrycustom, Holder<DimensionType> holder, boolean flag, boolean flag1, long i, int j, org.bukkit.generator.ChunkGenerator gen, org.bukkit.generator.BiomeProvider biomeProvider, org.bukkit.World.Environment env, java.util.function.Function<org.spigotmc.SpigotWorldConfig, io.papermc.paper.configuration.WorldConfiguration> paperWorldConfigCreator, java.util.function.Supplier<me.samsuik.sakura.configuration.WorldConfiguration> sakuraWorldConfigCreator, java.util.concurrent.Executor executor) { // Sakura - sakura configuration files // Paper - create paper world config & Anti-Xray
          // Paper start - getblock optimisations - cache world height/sections
 diff --git a/src/main/java/net/minecraft/world/level/ServerExplosion.java b/src/main/java/net/minecraft/world/level/ServerExplosion.java
-index a92be80081178cc302a7f0b646bad7daa28f7c66..10432b31acd047ac2aa8581f2ee863254ec8d1eb 100644
+index 076ef180360c54517b9acb3ef9e803be41b66f9d..4f9401f654630b5c219681efdda935006629eca7 100644
 --- a/src/main/java/net/minecraft/world/level/ServerExplosion.java
 +++ b/src/main/java/net/minecraft/world/level/ServerExplosion.java
 @@ -297,7 +297,12 @@ public class ServerExplosion implements Explosion {
@@ -198,7 +198,7 @@ index a92be80081178cc302a7f0b646bad7daa28f7c66..10432b31acd047ac2aa8581f2ee86325
          Iterator iterator = positions.iterator();
  
          while (iterator.hasNext()) {
-@@ -864,14 +884,12 @@ public class ServerExplosion implements Explosion {
+@@ -868,14 +888,12 @@ public class ServerExplosion implements Explosion {
  
      // Paper start - Optimize explosions
      private float getBlockDensity(Vec3 vec3d, Entity entity) {

@@ -227,10 +227,10 @@ index 0000000000000000000000000000000000000000..5b3e2cca7ee16bc6ecfa0f29438fa658
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 5dd56951b3046cf70b1536a6003918dfb8654ec6..e78798ddbc07fc63a16633b7d78d2deff31861ce 100644
+index 686322e99b33fd3334302d3ccafd881b609b6d96..0bdefa7ad46887fe3eb9045b63195541d3b792e1 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -1889,6 +1889,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1890,6 +1890,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              gameprofilerfiller.pop();
              gameprofilerfiller.pop();
              worldserver.explosionDensityCache.clear(); // Paper - Optimize explosions
@@ -239,10 +239,10 @@ index 5dd56951b3046cf70b1536a6003918dfb8654ec6..e78798ddbc07fc63a16633b7d78d2def
          this.isIteratingOverLevels = false; // Paper - Throw exception on world create while being ticked
  
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index b4e2d5b6f4cb569a91c1ac4a961be9eb89d10b5c..10107e6c4b448ce76650eb334bba740d11fd5874 100644
+index 34e7ae8b36e375280f9515c1580c55c0832fc194..13e8ac95daa115720a2b1f52ad33d124351cbd6d 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
-@@ -178,6 +178,12 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+@@ -179,6 +179,12 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
          return this.sakuraConfig;
      }
      // Sakura end - sakura configuration files
@@ -256,7 +256,7 @@ index b4e2d5b6f4cb569a91c1ac4a961be9eb89d10b5c..10107e6c4b448ce76650eb334bba740d
      public final com.destroystokyo.paper.antixray.ChunkPacketBlockController chunkPacketBlockController; // Paper - Anti-Xray
      public static BlockPos lastPhysicsProblem; // Spigot
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index 57da11c0da7322e74810e7108e9c8000b0c36520..26aaa0cc04b3c7547a36c2b688fd4402147f0839 100644
+index a9f7ac8d1f5e184687d53ab3e8b348bb7f4f2ba0..7272e15eef99cee8c038219d3b5b49e33f9e432f 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 @@ -288,6 +288,13 @@ public class CraftWorld extends CraftRegionAccessor implements World {

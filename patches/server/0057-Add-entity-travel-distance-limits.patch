@@ -5,10 +5,10 @@ Subject: [PATCH] Add entity travel distance limits
 
 
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index 423d26d6b833e9aa39a84333b9627ad709711378..2ed9565e44435239d8a375ca9dc94e839b2e757f 100644
+index 1973da88ac7c3a36cc2db48aeb7d4eab788be500..88432d15be0167450afe5e5c130b8be233c78437 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
-@@ -1328,6 +1328,11 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1329,6 +1329,11 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
          final boolean isActive = org.spigotmc.ActivationRange.checkIfActive(entity); // Paper - EAR 2
          if (isActive) { // Paper - EAR 2
          entity.tick();
@@ -21,7 +21,7 @@ index 423d26d6b833e9aa39a84333b9627ad709711378..2ed9565e44435239d8a375ca9dc94e83
          } else { entity.inactiveTick(); } // Paper - EAR 2
          gameprofilerfiller.pop();
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index 247759b7e225bbd14951e7876d1fff6ded62cef0..a48d871f851c9cafdb05fef3e33ec1de81b7d0bd 100644
+index 1aa5803061861016a1bb790ac19b769170a76a79..a2b0fe7122c11da561ab6ceb91bc37385df16c0d 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
 @@ -638,6 +638,19 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess

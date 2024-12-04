@@ -5,10 +5,10 @@ Subject: [PATCH] Optimise TNT fluid state
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index cc31ee0d9ab13fd08dc33b6757173682883a2ac5..687eb620c0ee3fc19472f830b6296862a7dcf01c 100644
+index b1ae26d08f12aadea37e44221c44db6430a3a99c..a56517cb6628939e6eed4b26e5e7f8bf6fc1c7af 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
-@@ -2233,7 +2233,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -2256,7 +2256,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          return this.isInWater() || flag;
      }
  
@@ -18,7 +18,7 @@ index cc31ee0d9ab13fd08dc33b6757173682883a2ac5..687eb620c0ee3fc19472f830b6296862
  
          if (entity instanceof AbstractBoat abstractboat) {
 diff --git a/src/main/java/net/minecraft/world/entity/item/PrimedTnt.java b/src/main/java/net/minecraft/world/entity/item/PrimedTnt.java
-index 93cf290b25d569820dd1bf9b4b5fb255abdbd8cd..f2206e57c04d29ed470ae2083b25ab502144ccb1 100644
+index 712ac847cf5fbb01133da2630f942afc69c79672..00801a9396e3c128730fe75c287d7b29ad0a00df 100644
 --- a/src/main/java/net/minecraft/world/entity/item/PrimedTnt.java
 +++ b/src/main/java/net/minecraft/world/entity/item/PrimedTnt.java
 @@ -126,6 +126,21 @@ public class PrimedTnt extends Entity implements TraceableEntity, me.samsuik.sak

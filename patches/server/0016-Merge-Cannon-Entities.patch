@@ -408,10 +408,10 @@ index 0000000000000000000000000000000000000000..fc68bccf135bdcc7b3db7976e452ccae
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 64ffd589525d659ff1ea50ba628a70d8da642d22..ffd78b7622593a757a61e01561d3ef2b37bf1812 100644
+index 733541e91b0064d50de6c5c0985e9c472685c20c..c73aa5fd7da18219d1da63a0973f397316ba4210 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -1904,6 +1904,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1905,6 +1905,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              worldserver.explosionDensityCache.clear(); // Paper - Optimize explosions
              worldserver.localConfig().expire(currentTick); // Sakura - add local config
              worldserver.explosionPositions.clear(); // Sakura - client visibility settings
@@ -420,10 +420,10 @@ index 64ffd589525d659ff1ea50ba628a70d8da642d22..ffd78b7622593a757a61e01561d3ef2b
          this.isIteratingOverLevels = false; // Paper - Throw exception on world create while being ticked
  
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index 8aa894cb85b08d41eb84d6c013f21585065226e7..d1268f21dc87b7d8755ff2cf95a09a780e466576 100644
+index e1f0da0b20ec310470160718338920bbd5b088de..1e940c5b9ce60dd1dd7ec03e83766e26d1112d73 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
-@@ -806,6 +806,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -807,6 +807,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
              }
  
              org.spigotmc.ActivationRange.activateEntities(this); // Spigot
@@ -431,7 +431,7 @@ index 8aa894cb85b08d41eb84d6c013f21585065226e7..d1268f21dc87b7d8755ff2cf95a09a78
              this.entityTickList.forEach((entity) -> {
                  if (!entity.isRemoved()) {
                      if (!tickratemanager.isEntityFrozen(entity)) {
-@@ -823,6 +824,15 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -824,6 +825,15 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
                                  entity.stopRiding();
                              }
  
@@ -448,7 +448,7 @@ index 8aa894cb85b08d41eb84d6c013f21585065226e7..d1268f21dc87b7d8755ff2cf95a09a78
                              this.guardEntityTick(this::tickNonPassenger, entity);
                              gameprofilerfiller.pop();
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index b460ce03626f8995e029ad7dbd932cc2c8f0bf20..e7f59ead5223858e20722e52b8e31961fe29dccf 100644
+index 316ab62995a7804cf85a2cb986b22e15cd22b01c..fd1d02604a1e46545c7f2c8ad89968279e2fe1bf 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
 @@ -605,6 +605,23 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
@@ -475,7 +475,7 @@ index b460ce03626f8995e029ad7dbd932cc2c8f0bf20..e7f59ead5223858e20722e52b8e31961
  
      public Entity(EntityType<?> type, Level world) {
          this.id = Entity.ENTITY_COUNTER.incrementAndGet();
-@@ -5203,6 +5220,11 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -5233,6 +5250,11 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          if (this.removalReason != Entity.RemovalReason.UNLOADED_TO_CHUNK) { this.getPassengers().forEach(Entity::stopRiding); } // Paper - rewrite chunk system
          this.levelCallback.onRemove(entity_removalreason);
          this.onRemoval(entity_removalreason);
@@ -488,7 +488,7 @@ index b460ce03626f8995e029ad7dbd932cc2c8f0bf20..e7f59ead5223858e20722e52b8e31961
          if (!(this instanceof ServerPlayer) && entity_removalreason != RemovalReason.CHANGED_DIMENSION && !alreadyRemoved) {
              // Players need to be special cased, because they are regularly removed from the world
 diff --git a/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java b/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
-index 35d8422ea3bcdc52db6a7f6702fd593346b30c2c..f0617e9d71fa47dfc0566f31d85b8a05ba3b16fc 100644
+index 81d02da6afd4b77c0ca60e9c8c5100ce6988753c..7dc5e5d91bb91c86ddca52a462903e8452396090 100644
 --- a/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
 @@ -57,7 +57,7 @@ import org.bukkit.craftbukkit.event.CraftEventFactory;
@@ -596,7 +596,7 @@ index 35d8422ea3bcdc52db6a7f6702fd593346b30c2c..f0617e9d71fa47dfc0566f31d85b8a05
  
      public void setHurtsEntities(float fallHurtAmount, int fallHurtMax) {
 diff --git a/src/main/java/net/minecraft/world/entity/item/PrimedTnt.java b/src/main/java/net/minecraft/world/entity/item/PrimedTnt.java
-index 25a25b5c6497c9823a41e6bd8fd22f0841377c62..6b739e820af6333c1ff3a4b87154d4c00c9a5559 100644
+index 46b729ecf0c58bdbe7a4717e73b098dcffd910f1..f7d8e2ba0ee9b8dd27f20a3e75992b107d07fbf0 100644
 --- a/src/main/java/net/minecraft/world/entity/item/PrimedTnt.java
 +++ b/src/main/java/net/minecraft/world/entity/item/PrimedTnt.java
 @@ -33,7 +33,7 @@ import org.bukkit.event.entity.EntityRemoveEvent;
@@ -688,10 +688,10 @@ index 25a25b5c6497c9823a41e6bd8fd22f0841377c62..6b739e820af6333c1ff3a4b87154d4c0
          if (nbt.contains("explosion_power", 99)) {
              this.explosionPower = Mth.clamp(nbt.getFloat("explosion_power"), 0.0F, 128.0F);
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index b40db35a8162efcaa1fa88aa760a4d6f59ec1718..d73073ae752d9983785b9402088ae6cf7188a8bf 100644
+index c69c04451c61bcc32e539baae160f05e3418841f..8f4a0912a5b5f17c22d2b4c0ef39e1c5566fa5f7 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
-@@ -841,6 +841,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+@@ -842,6 +842,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
          return chunk != null ? chunk.getNoiseBiome(x, y, z) : this.getUncachedNoiseBiome(x, y, z);
      }
      // Paper end - optimise random ticking

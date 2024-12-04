@@ -5,46 +5,40 @@ Subject: [PATCH] Add maxSearch to getEntities
 
 
 diff --git a/src/main/java/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java b/src/main/java/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java
-index 88b1a9b4b3da23b8e500ec343915e66e9b4f19b6..932d26a8c01414144aa56cdf9f6f63d07aff52d5 100644
+index 39148fe540d616cdd4d63c4d1a02b422cab0f6eb..50a551d5bcac9b2b6644d7b43e625185090657a6 100644
 --- a/src/main/java/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java
 +++ b/src/main/java/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java
-@@ -315,10 +315,16 @@ public final class ChunkEntitySlices {
-         this.allEntities.getEntities(except, box, into, predicate);
-     }
- 
-+    // Sakura start - add maxSearch to getEntities
-+    public boolean getEntities(final Entity except, final AABB box, final List<Entity> into, final Predicate<? super Entity> predicate,
-+                               final int maxCount) {
-+        return this.getEntities(except, box, into, predicate, maxCount, Integer.MAX_VALUE);
-+    }
+@@ -314,7 +314,14 @@ public final class ChunkEntitySlices {
  
      public boolean getEntities(final Entity except, final AABB box, final List<Entity> into, final Predicate<? super Entity> predicate,
--                            final int maxCount) {
--        return this.allEntities.getEntitiesWithEnderDragonPartsLimited(except, box, into, predicate, maxCount);
-+                            final int maxCount, final int maxSearch) {
-+        return this.allEntities.getEntitiesWithEnderDragonPartsLimited(except, box, into, predicate, maxCount, maxSearch);
+                                final int maxCount) {
+-        return this.allEntities.getEntitiesLimited(except, box, into, predicate, maxCount);
++        // Sakura start - add maxSearch to getEntities
++        return this.getEntities(except, box, into, predicate, maxCount, Integer.MAX_VALUE);
++    }
++
++    public boolean getEntities(final Entity except, final AABB box, final List<Entity> into, final Predicate<? super Entity> predicate,
++                               final int maxCount, final int maxSearch) {
++        return this.allEntities.getEntitiesLimited(except, box, into, predicate, maxCount, maxSearch);
 +        // Sakura end - add maxSearch to getEntities
      }
  
-     public boolean getEntitiesWithoutDragonParts(final Entity except, final AABB box, final List<Entity> into, final Predicate<? super Entity> predicate,
-@@ -672,8 +678,16 @@ public final class ChunkEntitySlices {
-             }
-         }
+     public <T extends Entity> void getEntities(final EntityType<?> type, final AABB box, final List<? super T> into,
+@@ -570,6 +577,13 @@ public final class ChunkEntitySlices {
  
-+        // Sakura start - add maxSearch to getEntities
-         public boolean getEntitiesWithEnderDragonPartsLimited(final Entity except, final AABB box, final List<Entity> into,
-                                                               final Predicate<? super Entity> predicate, final int maxCount) {
-+            return this.getEntitiesWithEnderDragonPartsLimited(except, box, into, predicate, maxCount, Integer.MAX_VALUE);
+         public boolean getEntitiesLimited(final Entity except, final AABB box, final List<Entity> into, final Predicate<? super Entity> predicate,
+                                           final int maxCount) {
++            // Sakura start - add maxSearch to getEntities
++            return this.getEntitiesLimited(except, box, into, predicate, maxCount, Integer.MAX_VALUE);
 +        }
 +
-+        public boolean getEntitiesWithEnderDragonPartsLimited(final Entity except, final AABB box, final List<Entity> into,
-+                                                              final Predicate<? super Entity> predicate, final int maxCount,
-+                                                              final int maxSearch) {
++        public boolean getEntitiesLimited(final Entity except, final AABB box, final List<Entity> into, final Predicate<? super Entity> predicate,
++                                          final int maxCount, final int maxSearch) {
 +            // Sakura end - add maxSearch to getEntities
              if (this.count == 0) {
                  return false;
              }
-@@ -695,8 +709,14 @@ public final class ChunkEntitySlices {
+@@ -591,8 +605,14 @@ public final class ChunkEntitySlices {
  
                  final Entity[] storage = list.storage;
  
@@ -62,16 +56,14 @@ index 88b1a9b4b3da23b8e500ec343915e66e9b4f19b6..932d26a8c01414144aa56cdf9f6f63d0
                      if (entity == null || entity == except || !entity.getBoundingBox().intersects(box)) {
                          continue;
 diff --git a/src/main/java/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/EntityLookup.java b/src/main/java/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/EntityLookup.java
-index 93335de8cf514dc8417e4b9b2d495663deda2904..774df86ba47ff6a7fa9fa38438824c64b569f665 100644
+index 7554c109c35397bc1a43dd80e87764fd78645bbf..d60f30f7afb15cc90c1bd4b816136d00b23a53e4 100644
 --- a/src/main/java/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/EntityLookup.java
 +++ b/src/main/java/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/EntityLookup.java
-@@ -801,8 +801,15 @@ public abstract class EntityLookup implements LevelEntityGetter<Entity> {
-         }
-     }
+@@ -722,6 +722,13 @@ public abstract class EntityLookup implements LevelEntityGetter<Entity> {
  
-+    // Sakura start - add maxSearch to getEntities
      public void getEntities(final Entity except, final AABB box, final List<Entity> into, final Predicate<? super Entity> predicate,
                              final int maxCount) {
++        // Sakura start - add maxSearch to getEntities
 +        this.getEntities(except, box, into, predicate, maxCount, Integer.MAX_VALUE);
 +    }
 +
@@ -81,7 +73,7 @@ index 93335de8cf514dc8417e4b9b2d495663deda2904..774df86ba47ff6a7fa9fa38438824c64
          final int minChunkX = (Mth.floor(box.minX) - 2) >> 4;
          final int minChunkZ = (Mth.floor(box.minZ) - 2) >> 4;
          final int maxChunkX = (Mth.floor(box.maxX) + 2) >> 4;
-@@ -834,7 +841,7 @@ public abstract class EntityLookup implements LevelEntityGetter<Entity> {
+@@ -753,7 +760,7 @@ public abstract class EntityLookup implements LevelEntityGetter<Entity> {
                              continue;
                          }
  
@@ -91,10 +83,10 @@ index 93335de8cf514dc8417e4b9b2d495663deda2904..774df86ba47ff6a7fa9fa38438824c64
                          }
                      }
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index b45ad0125cd5c116126e8ffb893585970ea3b960..2d5783a6ff7a9ce6dcb6f2895ff80928e62f0cd2 100644
+index addab159f6fb73fe063f8a057c281d0594a99122..0301e304bb67d3a52de551442e425b83152fbabf 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
-@@ -1692,10 +1692,18 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+@@ -1693,10 +1693,18 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
          this.getEntities(filter, box, predicate, result, Integer.MAX_VALUE);
      }
  
@@ -114,7 +106,7 @@ index b45ad0125cd5c116126e8ffb893585970ea3b960..2d5783a6ff7a9ce6dcb6f2895ff80928
          Profiler.get().incrementCounter("getEntities");
  
          if (entityTypeTest instanceof net.minecraft.world.entity.EntityType<T> byType) {
-@@ -1712,7 +1720,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+@@ -1713,7 +1721,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
  
          if (entityTypeTest == null) {
              if (maxCount != Integer.MAX_VALUE) {

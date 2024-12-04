@@ -5,7 +5,7 @@ Subject: [PATCH] Entity tracking range modifier
 
 
 diff --git a/src/main/java/net/minecraft/server/level/ChunkMap.java b/src/main/java/net/minecraft/server/level/ChunkMap.java
-index 54bfe3dfda0e023cc3d25ddcf1fe366a6cf50c90..0b9783c473585aed6a63f870e66a1809d00c0aee 100644
+index 274b3a5e1d4606ed47ba7e3e4ee369d607cea8a1..49f8afdaa91e89b899b9fcce1ef9a972ec141b8b 100644
 --- a/src/main/java/net/minecraft/server/level/ChunkMap.java
 +++ b/src/main/java/net/minecraft/server/level/ChunkMap.java
 @@ -1326,7 +1326,10 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
@@ -21,10 +21,10 @@ index 54bfe3dfda0e023cc3d25ddcf1fe366a6cf50c90..0b9783c473585aed6a63f870e66a1809
                  double d2 = d0 * d0;
                  // Paper start - Configurable entity tracking range by Y
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index ac8308be5b200237aa61a21404e558f245356546..c9c39cbdf7e0ff715630fc98712db0f202362eb5 100644
+index 5266e37ade8851a8b73a4ae12ecd67a8d0c6e09d..c572b1ab6f3763738747560296a604d65d05c12c 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-@@ -360,6 +360,7 @@ public class ServerPlayer extends net.minecraft.world.entity.player.Player imple
+@@ -358,6 +358,7 @@ public class ServerPlayer extends net.minecraft.world.entity.player.Player imple
      }
      // Paper end - rewrite chunk system
      public final me.samsuik.sakura.player.visibility.PlayerVisibilitySettings visibilitySettings = new me.samsuik.sakura.player.visibility.PlayerVisibilitySettings(); // Sakura - client visibility settings
@@ -33,10 +33,10 @@ index ac8308be5b200237aa61a21404e558f245356546..c9c39cbdf7e0ff715630fc98712db0f2
      public ServerPlayer(MinecraftServer server, ServerLevel world, GameProfile profile, ClientInformation clientOptions) {
          super(world, world.getSharedSpawnPos(), world.getSharedSpawnAngle(), profile);
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index ab38f0913b7adf3593c5d0b5a65441afefeeffbc..de2c9dcaf3b481ef4762598a7df0968a67d2d41a 100644
+index d00fcfd5219a532204533f159d68524b2d33ccc7..4d0027a08d11fc838aee3cb318b6ea9182b4183c 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -3039,6 +3039,18 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -3024,6 +3024,18 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          return (this.getHandle().requestedViewDistance() == 0) ? Bukkit.getViewDistance() : this.getHandle().requestedViewDistance();
      }
  

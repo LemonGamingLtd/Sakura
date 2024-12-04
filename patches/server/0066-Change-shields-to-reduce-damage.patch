@@ -5,10 +5,10 @@ Subject: [PATCH] Change shields to reduce damage
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-index 365ab6a0c564911bc58d3fb90e3abe82dbbdc642..8992f0ad55c1177bee9d4167cedf2fef54117a6a 100644
+index 16e6bd46e54cba9e0ef39a488cefcc5e49476403..8dab67d53a058b62d73e009e378d6376dae70075 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-@@ -2433,7 +2433,13 @@ public abstract class LivingEntity extends Entity implements Attackable {
+@@ -2444,7 +2444,13 @@ public abstract class LivingEntity extends Entity implements Attackable {
          com.google.common.base.Function<Double, Double> blocking = new com.google.common.base.Function<Double, Double>() {
              @Override
              public Double apply(Double f) {

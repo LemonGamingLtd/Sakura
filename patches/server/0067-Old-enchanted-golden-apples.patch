@@ -75,10 +75,10 @@ index 0000000000000000000000000000000000000000..18cb28a9bdfcb9a421bc001f057b4be5
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/world/item/Items.java b/src/main/java/net/minecraft/world/item/Items.java
-index 5a70111cd39af50981cfd440c021340da1de5eab..92a3ae94e936809004c9664c18dae74edf154399 100644
+index 6d16b4433e79eca0ff8008941f0b9b807b1db9db..5aeb780535d6ab8010e544cade33fa2b20f9068c 100644
 --- a/src/main/java/net/minecraft/world/item/Items.java
 +++ b/src/main/java/net/minecraft/world/item/Items.java
-@@ -1174,6 +1174,7 @@ public class Items {
+@@ -1183,6 +1183,7 @@ public class Items {
      public static final Item GOLDEN_APPLE = registerItem("golden_apple", new Item.Properties().food(Foods.GOLDEN_APPLE, Consumables.GOLDEN_APPLE));
      public static final Item ENCHANTED_GOLDEN_APPLE = registerItem(
          "enchanted_golden_apple",
