@@ -5,10 +5,10 @@ Subject: [PATCH] Configure cannon physics by version
 
 
 diff --git a/src/main/java/ca/spottedleaf/moonrise/patches/collisions/CollisionUtil.java b/src/main/java/ca/spottedleaf/moonrise/patches/collisions/CollisionUtil.java
-index a8abdfe0f9e7f8e1b1b92b03dec53906c553bf67..b85f739b21cab2f72237fcbc04386af77250527b 100644
+index 651a45b795818bd7b1364b95c52570fd99dd35e4..079aa846fa9b5650675ae855ba0bb61ca42a6b52 100644
 --- a/src/main/java/ca/spottedleaf/moonrise/patches/collisions/CollisionUtil.java
 +++ b/src/main/java/ca/spottedleaf/moonrise/patches/collisions/CollisionUtil.java
-@@ -1801,6 +1801,13 @@ public final class CollisionUtil {
+@@ -1774,6 +1774,13 @@ public final class CollisionUtil {
      }
  
      public static Vec3 performAABBCollisions(final Vec3 moveVector, AABB axisalignedbb, final List<AABB> potentialCollisions) {
@@ -22,7 +22,7 @@ index a8abdfe0f9e7f8e1b1b92b03dec53906c553bf67..b85f739b21cab2f72237fcbc04386af7
          double x = moveVector.x;
          double y = moveVector.y;
          double z = moveVector.z;
-@@ -1812,7 +1819,10 @@ public final class CollisionUtil {
+@@ -1785,7 +1792,10 @@ public final class CollisionUtil {
              }
          }
  
@@ -34,7 +34,7 @@ index a8abdfe0f9e7f8e1b1b92b03dec53906c553bf67..b85f739b21cab2f72237fcbc04386af7
  
          if (xSmaller && z != 0.0) {
              z = performAABBCollisionsZ(axisalignedbb, z, potentialCollisions);
-@@ -1838,9 +1848,18 @@ public final class CollisionUtil {
+@@ -1811,9 +1821,18 @@ public final class CollisionUtil {
      public static Vec3 performCollisions(final Vec3 moveVector, AABB axisalignedbb,
                                           final List<VoxelShape> voxels,
                                           final List<AABB> aabbs) {
@@ -54,7 +54,7 @@ index a8abdfe0f9e7f8e1b1b92b03dec53906c553bf67..b85f739b21cab2f72237fcbc04386af7
          }
  
          double x = moveVector.x;
-@@ -1855,7 +1874,10 @@ public final class CollisionUtil {
+@@ -1828,7 +1847,10 @@ public final class CollisionUtil {
              }
          }
  
@@ -106,7 +106,7 @@ index ebe5f0c8c2f09920b5f5ef734e63f5e7cd8bd3a1..320cdb1f4e655a2d093890e88476df90
      protected int getExplosionCount() {
          if (this.cause.getMergeEntityData().getMergeLevel() == MergeLevel.NONE) {
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index a56517cb6628939e6eed4b26e5e7f8bf6fc1c7af..57d9003a79c2d3a0c756b4e4738c33f7a206e62a 100644
+index 42c88e1dfbebcd28a0939c75719f8564a1b2f623..6ab4c1db02846123e72a805a2e8070c398d726e3 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
 @@ -341,7 +341,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess

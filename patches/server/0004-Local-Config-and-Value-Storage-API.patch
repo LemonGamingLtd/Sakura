@@ -213,7 +213,7 @@ index 0000000000000000000000000000000000000000..b445166f38202ec250bcaf124b88746b
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 686322e99b33fd3334302d3ccafd881b609b6d96..0bdefa7ad46887fe3eb9045b63195541d3b792e1 100644
+index a39b00ebb37a0bf041bc7b9861fb7f9ebd962c40..1f9f023a43c16cc472deea5285b01c19136e019f 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -1890,6 +1890,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -242,10 +242,10 @@ index 34e7ae8b36e375280f9515c1580c55c0832fc194..13e8ac95daa115720a2b1f52ad33d124
      public final com.destroystokyo.paper.antixray.ChunkPacketBlockController chunkPacketBlockController; // Paper - Anti-Xray
      public static BlockPos lastPhysicsProblem; // Spigot
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index a9f7ac8d1f5e184687d53ab3e8b348bb7f4f2ba0..7272e15eef99cee8c038219d3b5b49e33f9e432f 100644
+index 92d9f0ea8f7810ae20d3996f49aefa539b4bcb69..8fc4b65887351a4dc35eaa837dea4dc9513514a8 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-@@ -288,6 +288,13 @@ public class CraftWorld extends CraftRegionAccessor implements World {
+@@ -289,6 +289,13 @@ public class CraftWorld extends CraftRegionAccessor implements World {
      }
      // Paper end
  

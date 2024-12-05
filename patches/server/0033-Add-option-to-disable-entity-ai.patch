@@ -5,10 +5,10 @@ Subject: [PATCH] Add option to disable entity ai
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/Mob.java b/src/main/java/net/minecraft/world/entity/Mob.java
-index 5a3059cadbc9735b4b48745c6b1b11196596b06d..7ea45862e61d2ecb0722affef2286ea3a1a782a3 100644
+index 5a0b51342f4a646101f4588697bcae7d1ca8a010..700a690321fb08e0ce594505e6cc6f3b81d86995 100644
 --- a/src/main/java/net/minecraft/world/entity/Mob.java
 +++ b/src/main/java/net/minecraft/world/entity/Mob.java
-@@ -908,7 +908,7 @@ public abstract class Mob extends LivingEntity implements EquipmentUser, Leashab
+@@ -910,7 +910,7 @@ public abstract class Mob extends LivingEntity implements EquipmentUser, Leashab
      protected final void serverAiStep() {
          ++this.noActionTime;
          // Paper start - Allow nerfed mobs to jump and float

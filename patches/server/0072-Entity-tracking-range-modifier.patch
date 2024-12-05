@@ -21,7 +21,7 @@ index 274b3a5e1d4606ed47ba7e3e4ee369d607cea8a1..49f8afdaa91e89b899b9fcce1ef9a972
                  double d2 = d0 * d0;
                  // Paper start - Configurable entity tracking range by Y
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index 5266e37ade8851a8b73a4ae12ecd67a8d0c6e09d..c572b1ab6f3763738747560296a604d65d05c12c 100644
+index 2a9659158d39d4d5505328afd7a2d8dc9ecf456f..5f7945c852ef9eb0d1183cc0ce33db5a82edee56 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
 @@ -358,6 +358,7 @@ public class ServerPlayer extends net.minecraft.world.entity.player.Player imple
@@ -33,10 +33,10 @@ index 5266e37ade8851a8b73a4ae12ecd67a8d0c6e09d..c572b1ab6f3763738747560296a604d6
      public ServerPlayer(MinecraftServer server, ServerLevel world, GameProfile profile, ClientInformation clientOptions) {
          super(world, world.getSharedSpawnPos(), world.getSharedSpawnAngle(), profile);
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index d00fcfd5219a532204533f159d68524b2d33ccc7..4d0027a08d11fc838aee3cb318b6ea9182b4183c 100644
+index f3f4b4df097e1e593ac5028f7d3db92fc407d831..12e6681470575564a0833aa68cc62f7b399cef66 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -3024,6 +3024,18 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -3025,6 +3025,18 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          return (this.getHandle().requestedViewDistance() == 0) ? Bukkit.getViewDistance() : this.getHandle().requestedViewDistance();
      }
  

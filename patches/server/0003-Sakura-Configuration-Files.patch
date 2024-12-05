@@ -1183,7 +1183,7 @@ index 0000000000000000000000000000000000000000..4024f9738e039ffffd560a07a2210f75
 +public record DurableMaterial(int durability, float resistance) {
 +}
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index ab4f1bd1ebf0af54f3fa88ee9e2007d20445e7e9..686322e99b33fd3334302d3ccafd881b609b6d96 100644
+index ae4ebf509837e8d44255781c61d02873f8b74be8..a39b00ebb37a0bf041bc7b9861fb7f9ebd962c40 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -327,6 +327,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -1192,8 +1192,8 @@ index ab4f1bd1ebf0af54f3fa88ee9e2007d20445e7e9..686322e99b33fd3334302d3ccafd881b
      public final io.papermc.paper.configuration.PaperConfigurations paperConfigurations; // Paper - add paper configuration files
 +    public final me.samsuik.sakura.configuration.SakuraConfigurations sakuraConfigurations; // Sakura
      public boolean isIteratingOverLevels = false; // Paper - Throw exception on world create while being ticked
+     private final Set<String> pluginsBlockingSleep = new java.util.HashSet<>(); // Paper - API to allow/disallow tick sleeping
  
-     public volatile Thread shutdownThread; // Paper
 @@ -512,6 +513,10 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
          Runtime.getRuntime().addShutdownHook(new org.bukkit.craftbukkit.util.ServerShutdownThread(this));
          // CraftBukkit end
@@ -1222,7 +1222,7 @@ index 17a158ff6ce6520b69a5a0032ba4c05449dd0cf8..282a0f91e41a0dcdeb48111a64a83b48
          this.setPvpAllowed(dedicatedserverproperties.pvp);
          this.setFlightAllowed(dedicatedserverproperties.allowFlight);
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index 7270a94246df73ee195156fc7b62470d090a337a..e587c16e03f6b3a3ed5a051115583fd288b94bab 100644
+index 1f898500d0e9b18a880645ceb0a8ff0fe75f4e48..876dc65f91bf09865563c8d583b78e4fdafd82b7 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
 @@ -598,7 +598,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
@@ -1269,7 +1269,7 @@ index 27f9d167b5ae9ce5117798ea44324107df59425f..34e7ae8b36e375280f9515c1580c55c0
          this.world = new CraftWorld((ServerLevel) this, gen, biomeProvider, env);
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index ac8af406180bc680d46e8edc3da0fc2e5211345a..0f41db3a1e32eb81ea72084c0cf386872706613f 100644
+index 97b5d6ba2b19a7c730730c74175a29157aed1840..6009e6dc0b687b942dde60d32fc5a7a19a67ef9d 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -1086,6 +1086,7 @@ public final class CraftServer implements Server {
