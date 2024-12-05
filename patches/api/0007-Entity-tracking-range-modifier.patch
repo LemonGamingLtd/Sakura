@@ -5,7 +5,7 @@ Subject: [PATCH] Entity tracking range modifier
 
 
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index 0560784e8b71a927db6d8cdf9d36a23e3b56ef74..7cf2361157ac64c1bb959a0c911e27505acf25d0 100644
+index 5b95970ff306212a71e0f880a4968fe36243202b..9fd8f198acf87eb2ed613a54057536bf46032953 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
 @@ -70,6 +70,12 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM

@@ -6,7 +6,7 @@ Subject: [PATCH] Local Config and Value Storage API
 
 diff --git a/src/main/java/me/samsuik/sakura/local/config/LocalConfigManager.java b/src/main/java/me/samsuik/sakura/local/config/LocalConfigManager.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..58e2bada4d9120a4802def5caece906fd1628f67
+index 0000000000000000000000000000000000000000..2b77b942b1733380c566683ba0516a74ee5c6389
 --- /dev/null
 +++ b/src/main/java/me/samsuik/sakura/local/config/LocalConfigManager.java
 @@ -0,0 +1,141 @@
@@ -35,7 +35,7 @@ index 0000000000000000000000000000000000000000..58e2bada4d9120a4802def5caece906f
 +    private final Map<LocalRegion, LocalValueStorage> storageMap = new Object2ObjectOpenHashMap<>();
 +    // tree is a tree. it may not be correct but it works.
 +    private final Long2ObjectRBTreeMap<LocalRegion> regionTree = new Long2ObjectRBTreeMap<>();
-+    private final Long2ObjectMap<LocalValueConfig> configMap = new Long2ObjectOpenHashMap<>();
++    private final Long2ObjectMap<LocalValueConfig> chunkConfigs = new Long2ObjectOpenHashMap<>();
 +    private final Level level;
 +
 +    public LocalConfigManager(Level level) {
@@ -112,18 +112,18 @@ index 0000000000000000000000000000000000000000..58e2bada4d9120a4802def5caece906f
 +    public synchronized LocalValueConfig config(BlockPos position) {
 +        long chunkKey = ChunkPos.asLong(position.getX() >> 4, position.getZ() >> 4);
 +
-+        LocalValueConfig local = this.configMap.computeIfAbsent(chunkKey, (key) -> {
++        LocalValueConfig local = this.chunkConfigs.computeIfAbsent(chunkKey, key -> {
 +            LocalValueConfig config = new LocalValueConfig(new Expiry(MinecraftServer.currentTick, 600));
 +
 +            // defaults from sakura config
-+            config.init(level);
++            config.loadDefaults(this.level);
 +
 +            // search the entire map if we have to for a region
 +            LocalRegion region = this.locate(position.getX(), position.getZ(), Integer.MAX_VALUE);
 +
 +            if (region != null) {
 +                // load local values
-+                config.load(this.storageMap.get(region));
++                config.loadFromStorage(this.storageMap.get(region));
 +            }
 +
 +            return config;
@@ -137,7 +137,7 @@ index 0000000000000000000000000000000000000000..58e2bada4d9120a4802def5caece906f
 +        if (tick % 200 != 0) return;
 +
 +        // remove expired
-+        this.configMap.values().removeIf(obj -> obj.expiry().isExpired(tick));
++        this.chunkConfigs.values().removeIf(obj -> obj.expiry().isExpired(tick));
 +    }
 +
 +    private void ensureNotOverlapping(LocalRegion region) {
@@ -153,16 +153,16 @@ index 0000000000000000000000000000000000000000..58e2bada4d9120a4802def5caece906f
 +}
 diff --git a/src/main/java/me/samsuik/sakura/local/config/LocalValueConfig.java b/src/main/java/me/samsuik/sakura/local/config/LocalValueConfig.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..5b3e2cca7ee16bc6ecfa0f29438fa6588fa39a99
+index 0000000000000000000000000000000000000000..b445166f38202ec250bcaf124b88746b3559a952
 --- /dev/null
 +++ b/src/main/java/me/samsuik/sakura/local/config/LocalValueConfig.java
-@@ -0,0 +1,69 @@
+@@ -0,0 +1,55 @@
 +package me.samsuik.sakura.local.config;
 +
 +import io.papermc.paper.configuration.WorldConfiguration.Misc.RedstoneImplementation;
 +import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 +import me.samsuik.sakura.explosion.durable.DurableMaterial;
-+import me.samsuik.sakura.local.LocalValueKey;
++import me.samsuik.sakura.local.LocalValueKeys;
 +import me.samsuik.sakura.local.storage.LocalValueStorage;
 +import me.samsuik.sakura.physics.PhysicsVersion;
 +import me.samsuik.sakura.utils.objects.Expiry;
@@ -175,8 +175,8 @@ index 0000000000000000000000000000000000000000..5b3e2cca7ee16bc6ecfa0f29438fa658
 +public final class LocalValueConfig {
 +    private final Expiry expiry;
 +    public Map<Block, DurableMaterial> durableMaterials;
-+    public PhysicsVersion physicsVersion;
 +    public RedstoneImplementation redstoneImplementation;
++    public PhysicsVersion physicsVersion;
 +    public boolean consistentRadius;
 +    public boolean redstoneCache;
 +
@@ -184,42 +184,28 @@ index 0000000000000000000000000000000000000000..5b3e2cca7ee16bc6ecfa0f29438fa658
 +        this.expiry = expiry;
 +    }
 +
-+    void init(Level level) {
-+        // default materials
++    void loadDefaults(Level level) {
 +        this.durableMaterials = new Reference2ObjectOpenHashMap<>(level.sakuraConfig().cannons.explosion.durableMaterials);
-+
-+        // physics version
-+        this.physicsVersion = level.sakuraConfig().cannons.mechanics.physicsVersion;
-+
-+        // redstone implementation
 +        this.redstoneImplementation = level.paperConfig().misc.redstoneImplementation;
-+
-+        // consistent explosion radius
++        this.physicsVersion = level.sakuraConfig().cannons.mechanics.physicsVersion;
 +        this.consistentRadius = level.sakuraConfig().cannons.explosion.consistentRadius;
-+
-+        // redstone cache
 +        this.redstoneCache = level.sakuraConfig().technical.redstone.redstoneCache;
 +    }
 +
-+    void load(LocalValueStorage storage) {
-+        // local materials
-+        storage.value(LocalValueKey.DURABLE_MATERIALS, true).forEach(((material, entry) -> {
-+            this.durableMaterials.put(CraftMagicNumbers.getBlock(material), new DurableMaterial(entry.getKey(), entry.getValue()));
-+        }));
-+
-+        // physics version
-+        this.physicsVersion = storage.getOrDefault(LocalValueKey.PHYSICS_VERSION, this.physicsVersion);
-+
-+        // redstone implementation
-+        if (storage.exists(LocalValueKey.REDSTONE_IMPLEMENTATION)) {
-+            this.redstoneImplementation = RedstoneImplementation.values()[storage.value(LocalValueKey.REDSTONE_IMPLEMENTATION).ordinal()];
-+        }
-+
-+        // consistent explosion radius
-+        this.consistentRadius = storage.getOrDefault(LocalValueKey.CONSISTENT_EXPLOSION_RADIUS, this.consistentRadius);
-+
-+        // redstone cache
-+        this.redstoneCache = storage.getOrDefault(LocalValueKey.REDSTONE_CACHE, this.redstoneCache);
++    void loadFromStorage(LocalValueStorage storage) {
++        storage.get(LocalValueKeys.DURABLE_MATERIALS).ifPresent(materials -> {
++            materials.forEach((materialType, materialProperties) -> {
++                Block nmsBlock = CraftMagicNumbers.getBlock(materialType);
++                DurableMaterial durableMaterial = new DurableMaterial(materialProperties.getKey(), materialProperties.getValue());
++                this.durableMaterials.put(nmsBlock, durableMaterial);
++            });
++        });
++        storage.get(LocalValueKeys.REDSTONE_IMPLEMENTATION).ifPresent(implementation -> {
++            this.redstoneImplementation = RedstoneImplementation.values()[implementation.ordinal()];
++        });
++        this.physicsVersion = storage.getOrDefault(LocalValueKeys.PHYSICS_VERSION, this.physicsVersion);
++        this.consistentRadius = storage.getOrDefault(LocalValueKeys.CONSISTENT_EXPLOSION_RADIUS, this.consistentRadius);
++        this.redstoneCache = storage.getOrDefault(LocalValueKeys.REDSTONE_CACHE, this.redstoneCache);
 +    }
 +
 +    Expiry expiry() {
