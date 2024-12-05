@@ -87,10 +87,10 @@ index 0000000000000000000000000000000000000000..4a1540d4f6125bd2a8a4f6b7e645a3eb
 +}
 diff --git a/src/main/java/me/samsuik/sakura/local/LocalValueKeys.java b/src/main/java/me/samsuik/sakura/local/LocalValueKeys.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..43070da3fc644e22ef3825301d1d42bba27b945d
+index 0000000000000000000000000000000000000000..54c3693c97d5049882d7c10e14fc79ef6c76b1fc
 --- /dev/null
 +++ b/src/main/java/me/samsuik/sakura/local/LocalValueKeys.java
-@@ -0,0 +1,24 @@
+@@ -0,0 +1,25 @@
 +package me.samsuik.sakura.local;
 +
 +import me.samsuik.sakura.physics.PhysicsVersion;
@@ -110,6 +110,7 @@ index 0000000000000000000000000000000000000000..43070da3fc644e22ef3825301d1d42bb
 +    public static final LocalValueKey<RedstoneImplementation> REDSTONE_IMPLEMENTATION = create("redstone-implementation", () -> RedstoneImplementation.VANILLA);
 +    public static final LocalValueKey<Boolean> CONSISTENT_EXPLOSION_RADIUS = create("consistent-radius", () -> false);
 +    public static final LocalValueKey<Boolean> REDSTONE_CACHE = create("redstone-cache", () -> false);
++    public static final LocalValueKey<Integer> LAVA_FLOW_SPEED = create("lava-flow-speed", () -> -1);
 +
 +    private static <T> LocalValueKey<T> create(String key, Supplier<T> supplier) {
 +        return new LocalValueKey<>(new NamespacedKey(NAMESPACE, key), supplier);

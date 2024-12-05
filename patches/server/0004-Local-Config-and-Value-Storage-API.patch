@@ -153,10 +153,10 @@ index 0000000000000000000000000000000000000000..2b77b942b1733380c566683ba0516a74
 +}
 diff --git a/src/main/java/me/samsuik/sakura/local/config/LocalValueConfig.java b/src/main/java/me/samsuik/sakura/local/config/LocalValueConfig.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..b445166f38202ec250bcaf124b88746b3559a952
+index 0000000000000000000000000000000000000000..53d2c0f3d3c2d857a44c7a993cbd91ea5ce4b099
 --- /dev/null
 +++ b/src/main/java/me/samsuik/sakura/local/config/LocalValueConfig.java
-@@ -0,0 +1,55 @@
+@@ -0,0 +1,57 @@
 +package me.samsuik.sakura.local.config;
 +
 +import io.papermc.paper.configuration.WorldConfiguration.Misc.RedstoneImplementation;
@@ -179,6 +179,7 @@ index 0000000000000000000000000000000000000000..b445166f38202ec250bcaf124b88746b
 +    public PhysicsVersion physicsVersion;
 +    public boolean consistentRadius;
 +    public boolean redstoneCache;
++    public int lavaFlowSpeed = -1;
 +
 +    LocalValueConfig(Expiry expiry) {
 +        this.expiry = expiry;
@@ -206,6 +207,7 @@ index 0000000000000000000000000000000000000000..b445166f38202ec250bcaf124b88746b
 +        this.physicsVersion = storage.getOrDefault(LocalValueKeys.PHYSICS_VERSION, this.physicsVersion);
 +        this.consistentRadius = storage.getOrDefault(LocalValueKeys.CONSISTENT_EXPLOSION_RADIUS, this.consistentRadius);
 +        this.redstoneCache = storage.getOrDefault(LocalValueKeys.REDSTONE_CACHE, this.redstoneCache);
++        this.lavaFlowSpeed = storage.getOrDefault(LocalValueKeys.LAVA_FLOW_SPEED, this.lavaFlowSpeed);
 +    }
 +
 +    Expiry expiry() {

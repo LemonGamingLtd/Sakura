@@ -5,7 +5,7 @@ Subject: [PATCH] Option for fast nether dimension lava
 
 
 diff --git a/src/main/java/net/minecraft/world/level/material/LavaFluid.java b/src/main/java/net/minecraft/world/level/material/LavaFluid.java
-index e6ed1e46a4880743b7eeb73857b4b501971d6e29..4132e26332e6e8e061f43867426291ec0aefe0a2 100644
+index e6ed1e46a4880743b7eeb73857b4b501971d6e29..cc5ed4e2cc0ef8acf3768539103d2cdeab30362f 100644
 --- a/src/main/java/net/minecraft/world/level/material/LavaFluid.java
 +++ b/src/main/java/net/minecraft/world/level/material/LavaFluid.java
 @@ -184,7 +184,7 @@ public abstract class LavaFluid extends FlowingFluid {
@@ -13,7 +13,7 @@ index e6ed1e46a4880743b7eeb73857b4b501971d6e29..4132e26332e6e8e061f43867426291ec
      @Override
      public int getTickDelay(LevelReader world) {
 -        return world.dimensionType().ultraWarm() ? 10 : 30;
-+        return world.dimensionType().ultraWarm() && !(world instanceof Level level && level.sakuraConfig().environment.disableFastNetherLava) ? 10 : 30; // Sakura
++        return world.dimensionType().ultraWarm() && !(world instanceof Level level && level.sakuraConfig().environment.disableFastNetherLava) ? 10 : 30; // Sakura - add option for fast nether lava
      }
  
      @Override
