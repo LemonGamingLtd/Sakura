@@ -153,10 +153,10 @@ index 0000000000000000000000000000000000000000..58e2bada4d9120a4802def5caece906f
 +}
 diff --git a/src/main/java/me/samsuik/sakura/local/config/LocalValueConfig.java b/src/main/java/me/samsuik/sakura/local/config/LocalValueConfig.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..86a5964e7dea512da0a54ae675394bded91c5e0e
+index 0000000000000000000000000000000000000000..5b3e2cca7ee16bc6ecfa0f29438fa6588fa39a99
 --- /dev/null
 +++ b/src/main/java/me/samsuik/sakura/local/config/LocalValueConfig.java
-@@ -0,0 +1,73 @@
+@@ -0,0 +1,69 @@
 +package me.samsuik.sakura.local.config;
 +
 +import io.papermc.paper.configuration.WorldConfiguration.Misc.RedstoneImplementation;
@@ -179,7 +179,6 @@ index 0000000000000000000000000000000000000000..86a5964e7dea512da0a54ae675394bde
 +    public RedstoneImplementation redstoneImplementation;
 +    public boolean consistentRadius;
 +    public boolean redstoneCache;
-+    public int lavaFlowSpeed = -1;
 +
 +    LocalValueConfig(Expiry expiry) {
 +        this.expiry = expiry;
@@ -221,9 +220,6 @@ index 0000000000000000000000000000000000000000..86a5964e7dea512da0a54ae675394bde
 +
 +        // redstone cache
 +        this.redstoneCache = storage.getOrDefault(LocalValueKey.REDSTONE_CACHE, this.redstoneCache);
-+
-+        // lava flow speed
-+        this.lavaFlowSpeed = storage.getOrDefault(LocalValueKey.LAVA_FLOW_SPEED, this.lavaFlowSpeed);
 +    }
 +
 +    Expiry expiry() {
@@ -260,7 +256,7 @@ index 48c2d026fd678f7990738a0037780a535f1ac19b..613c402744314644f86b401fa84dbd20
      public final com.destroystokyo.paper.antixray.ChunkPacketBlockController chunkPacketBlockController; // Paper - Anti-Xray
      public final co.aikar.timings.WorldTimingsHandler timings; // Paper
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index e76186d580a2d7f1a83af4600b0bdd435b67eba3..d2f103e349e562ff0ffc5c1b72d287335b858cbb 100644
+index 33e4818ba5a90d78d69baad9f6b1be1b1382e9f3..d14c942a4505222c13bf0e7bc15ac4904f3ebbd1 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 @@ -291,6 +291,13 @@ public class CraftWorld extends CraftRegionAccessor implements World {
