@@ -857,7 +857,7 @@ index 84fa24880d02dc7ba1ec8bda3575be38447fd4b2..52f79a8d1b7890ffba3495ca9390f0ed
                          if (this.player.containerMenu != oldContainer) {
                              return;
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index 1b547be0fe97119edf4f29666cfe0037e0c778e0..29045a4857aadbc7f9ae0c612555743ad404682d 100644
+index 7ac7d0729705cb02f22277be3c467aed4f69ec0e..34a8c152a4570802d1e96430a6de9d937375fedd 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
 @@ -568,6 +568,10 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
@@ -896,10 +896,10 @@ index 809f5e847e2f5bb594c130cebd2cb897ea768d82..eebd53ac889da265cb259ba3cb8c1ce4
  
      public PrimedTnt(Level world, double x, double y, double z, @Nullable LivingEntity igniter) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 20f64850cb42d986358f01ffcdb42187e1684bca..f3f4b4df097e1e593ac5028f7d3db92fc407d831 100644
+index 6a647cab8b2e476987931486e290703b8726f2c7..5455f78d4417f3f8b2e4820619ad24d91054d986 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -2395,6 +2395,13 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -2403,6 +2403,13 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
                  handle.keepLevel = data.getBoolean("keepLevel");
              }
          }
@@ -913,7 +913,7 @@ index 20f64850cb42d986358f01ffcdb42187e1684bca..f3f4b4df097e1e593ac5028f7d3db92f
      }
  
      public void setExtraData(CompoundTag nbttagcompound) {
-@@ -2424,6 +2431,11 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -2432,6 +2439,11 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          paper.putLong("LastLogin", handle.loginTime);
          paper.putLong("LastSeen", System.currentTimeMillis());
          // Paper end
@@ -925,7 +925,7 @@ index 20f64850cb42d986358f01ffcdb42187e1684bca..f3f4b4df097e1e593ac5028f7d3db92f
      }
  
      @Override
-@@ -3083,6 +3095,13 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -3091,6 +3103,13 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          return this.getHandle().allowsListing();
      }
  
