@@ -53,7 +53,7 @@ index b4a8a81f1fa091e45f1f39fdb69c61871d7dc6b9..19aa5010b019e343d0fb085359eac98b
      protected Level(
          WritableLevelData levelData,
 diff --git a/net/minecraft/world/level/ServerExplosion.java b/net/minecraft/world/level/ServerExplosion.java
-index 0285e19d6265056fb5ff9855a5dd41bd16bbc082..b66a9f646dc853f8b2f86137a668fe692e523e92 100644
+index 0285e19d6265056fb5ff9855a5dd41bd16bbc082..2d0a2f6dc9c02a86b443ccdab2eeba283eb2d229 100644
 --- a/net/minecraft/world/level/ServerExplosion.java
 +++ b/net/minecraft/world/level/ServerExplosion.java
 @@ -133,7 +133,7 @@ public class ServerExplosion implements Explosion {
@@ -72,10 +72,10 @@ index 0285e19d6265056fb5ff9855a5dd41bd16bbc082..b66a9f646dc853f8b2f86137a668fe69
 +    // Sakura start - explosion durable blocks
 +    private Optional<Float> calculateBlockResistance(BlockState blockState, FluidState fluidState, BlockPos pos) {
 +        if (!blockState.isAir()) {
-+            Block block = blockState.getBlock();
-+            me.samsuik.sakura.explosion.durable.DurableMaterial material = this.level.localConfig().config(pos).durableMaterials.get(block);
++            final Block block = blockState.getBlock();
++            final me.samsuik.sakura.explosion.durable.DurableMaterial material = this.level.localConfig().config(pos).durableMaterials.get(block);
 +
-+            if (material != null && material.resistance() >= 0.0f && (this.level.sakuraConfig().cannons.explosion.allowNonTntBreakingDurableBlocks || this.source instanceof net.minecraft.world.entity.item.PrimedTnt)) {
++            if (material != null && material.resistance() >= 0.0f && pos.getY() > this.level.getMinY() && (this.level.sakuraConfig().cannons.explosion.allowNonTntBreakingDurableBlocks || this.source instanceof net.minecraft.world.entity.item.PrimedTnt)) {
 +                return Optional.of(material.resistance());
 +            }
 +        }
