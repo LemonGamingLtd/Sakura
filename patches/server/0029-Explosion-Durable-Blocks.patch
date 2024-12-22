@@ -104,7 +104,7 @@ index a8008c7550488be34b51f4280f5569170b1ebd1d..ccc0e211648a77bb396b8b0e9d3b3984
      public String getDescriptionId() {
          return this.getOrCreateDescriptionId();
 diff --git a/src/main/java/net/minecraft/world/level/Explosion.java b/src/main/java/net/minecraft/world/level/Explosion.java
-index 4571eca1a595c36791bca12ee1a65e55a4c693ac..ce61d1167c0a956cf461509b7c520c15bae56b0a 100644
+index ceedd8ab94f2f3e2f61b3caf84121dfef4e73bbe..2760075bf3a2f723a0470b559ed2c2e002991d9b 100644
 --- a/src/main/java/net/minecraft/world/level/Explosion.java
 +++ b/src/main/java/net/minecraft/world/level/Explosion.java
 @@ -145,7 +145,7 @@ public class Explosion {
@@ -126,7 +126,7 @@ index 4571eca1a595c36791bca12ee1a65e55a4c693ac..ce61d1167c0a956cf461509b7c520c15
 +            Block block = blockState.getBlock();
 +            me.samsuik.sakura.explosion.durable.DurableMaterial material = this.level.localConfig().config(pos).durableMaterials.get(block);
 +
-+            if (material != null && material.resistance() >= 0.0f && (this.level.sakuraConfig().cannons.explosion.allowNonTntBreakingDurableBlocks || this.source instanceof net.minecraft.world.entity.item.PrimedTnt)) {
++            if (material != null && material.resistance() >= 0.0f && pos.getY() > this.level.getMinBuildHeight() && (this.level.sakuraConfig().cannons.explosion.allowNonTntBreakingDurableBlocks || this.source instanceof net.minecraft.world.entity.item.PrimedTnt)) {
 +                return Optional.of(material.resistance());
 +            }
 +        }
