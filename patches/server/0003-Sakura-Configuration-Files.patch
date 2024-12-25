@@ -595,10 +595,10 @@ index 0000000000000000000000000000000000000000..94dd734ca4049354f925af1736bda57c
 +}
 diff --git a/src/main/java/me/samsuik/sakura/configuration/WorldConfiguration.java b/src/main/java/me/samsuik/sakura/configuration/WorldConfiguration.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..1bfc36c5dcd3310f91e337112f54b6c5f4b3b560
+index 0000000000000000000000000000000000000000..6c4e4ac7f85e7fca6ecf7606cf8304736bd51d3b
 --- /dev/null
 +++ b/src/main/java/me/samsuik/sakura/configuration/WorldConfiguration.java
-@@ -0,0 +1,242 @@
+@@ -0,0 +1,243 @@
 +package me.samsuik.sakura.configuration;
 +
 +import com.mojang.logging.LogUtils;
@@ -796,6 +796,7 @@ index 0000000000000000000000000000000000000000..1bfc36c5dcd3310f91e337112f54b6c5
 +
 +        public Items items = new Items();
 +        public class Items extends ConfigurationPart {
++            public boolean useWhitelistForExplosionResistantItems = true;
 +            public List<Item> explosionResistantItems = List.of();
 +        }
 +
