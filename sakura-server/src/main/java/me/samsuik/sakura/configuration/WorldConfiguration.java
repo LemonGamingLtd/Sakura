@@ -195,6 +195,7 @@ public final class WorldConfiguration extends ConfigurationPart {
 
         public Items items = new Items();
         public class Items extends ConfigurationPart {
+            public boolean useWhitelistForExplosionResistantItems = true;
             public List<Item> explosionResistantItems = List.of();
         }
 
