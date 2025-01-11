@@ -1,0 +1,26 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Samsuik <kfian294ma4@gmail.com>
+Date: Mon, 11 Nov 2024 19:20:44 +0000
+Subject: [PATCH] Configure TNT duplication
+
+Adds a configuration option to enable TNT duplication.
+
+diff --git a/src/main/java/net/minecraft/world/level/block/piston/PistonBaseBlock.java b/src/main/java/net/minecraft/world/level/block/piston/PistonBaseBlock.java
+index 4550217fdc3e804649b9c7e5e129680cae3ee0a5..a0e46d413c584e2c82c60b005e07f68f20af65f8 100644
+--- a/src/main/java/net/minecraft/world/level/block/piston/PistonBaseBlock.java
++++ b/src/main/java/net/minecraft/world/level/block/piston/PistonBaseBlock.java
+@@ -448,6 +448,14 @@ public class PistonBaseBlock extends DirectionalBlock {
+             for (j = list.size() - 1; j >= 0; --j) {
+                 // Paper start - fix a variety of piston desync dupes
+                 boolean allowDesync = io.papermc.paper.configuration.GlobalConfiguration.get().unsupportedSettings.allowPistonDuplication;
++                // Sakura start - configure tnt duplication
++                if (world.sakuraConfig().technical.allowTNTDuplication) {
++                    BlockState movedState = list1.get(j);
++                    if (movedState.is(Blocks.TNT) || movedState.getBlock() instanceof net.minecraft.world.level.block.BaseCoralPlantTypeBlock) {
++                        allowDesync = true;
++                    }
++                }
++                // Sakura end - configure tnt duplication
+                 BlockPos oldPos = blockposition3 = (BlockPos) list.get(j);
+                 iblockdata1 = allowDesync ? world.getBlockState(oldPos) : null;
+                 // Paper end - fix a variety of piston desync dupes

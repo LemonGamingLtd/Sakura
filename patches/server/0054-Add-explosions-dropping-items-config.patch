@@ -5,10 +5,10 @@ Subject: [PATCH] Add explosions dropping items config
 
 
 diff --git a/src/main/java/net/minecraft/world/level/Explosion.java b/src/main/java/net/minecraft/world/level/Explosion.java
-index f39507dd7e0890446c9c16e6ae45d96302577253..98df890c88c6635566b5702080753f5cb0c20598 100644
+index 7ee530df4c57e400766056e664622e2847f3fe5a..c3987012b1686354c68ef3e49d465a97e121db1e 100644
 --- a/src/main/java/net/minecraft/world/level/Explosion.java
 +++ b/src/main/java/net/minecraft/world/level/Explosion.java
-@@ -909,6 +909,11 @@ public class Explosion {
+@@ -912,6 +912,11 @@ public class Explosion {
                  this.level.densityCache.invalidate();
              }
              // Sakura end - explosion density cache

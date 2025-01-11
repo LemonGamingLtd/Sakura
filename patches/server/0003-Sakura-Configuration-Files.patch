@@ -595,10 +595,10 @@ index 0000000000000000000000000000000000000000..94dd734ca4049354f925af1736bda57c
 +}
 diff --git a/src/main/java/me/samsuik/sakura/configuration/WorldConfiguration.java b/src/main/java/me/samsuik/sakura/configuration/WorldConfiguration.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..7c579c28294452e107aa32eae3d07fde49087436
+index 0000000000000000000000000000000000000000..6c4e4ac7f85e7fca6ecf7606cf8304736bd51d3b
 --- /dev/null
 +++ b/src/main/java/me/samsuik/sakura/configuration/WorldConfiguration.java
-@@ -0,0 +1,236 @@
+@@ -0,0 +1,243 @@
 +package me.samsuik.sakura.configuration;
 +
 +import com.mojang.logging.LogUtils;
@@ -734,6 +734,12 @@ index 0000000000000000000000000000000000000000..7c579c28294452e107aa32eae3d07fde
 +            public boolean redstoneCache = false;
 +            public boolean fluidsBreakRedstone = true;
 +        }
++
++        @Comment(
++            "Allow TNT duplication while `allow-piston-duplication` is disabled.\n" +
++            "This exists so servers can enable TNT duplication without reintroducing the other forms of piston duplication."
++        )
++        public boolean allowTNTDuplication = false;
 +    }
 +
 +    public Players players;
@@ -790,6 +796,7 @@ index 0000000000000000000000000000000000000000..7c579c28294452e107aa32eae3d07fde
 +
 +        public Items items = new Items();
 +        public class Items extends ConfigurationPart {
++            public boolean useWhitelistForExplosionResistantItems = true;
 +            public List<Item> explosionResistantItems = List.of();
 +        }
 +
