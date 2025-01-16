@@ -587,7 +587,7 @@ index 19aa5010b019e343d0fb085359eac98bcb5b5efa..eeb37d088cec5b2b8e1ac4bd48b4491e
      public final me.samsuik.sakura.explosion.density.BlockDensityCache densityCache = new me.samsuik.sakura.explosion.density.BlockDensityCache(); // Sakura - explosion density cache
      public final me.samsuik.sakura.explosion.durable.DurableBlockManager durabilityManager = new me.samsuik.sakura.explosion.durable.DurableBlockManager(); // Sakura - explosion durable blocks
 diff --git a/net/minecraft/world/level/ServerExplosion.java b/net/minecraft/world/level/ServerExplosion.java
-index 43203ac9a40106ee4ffbb63d89e2d59b24723642..7e430d476ecd3b0b5c2dc4960a86d74669e0183f 100644
+index 7b5a50ef269d0ca59fb067258421b53971a9998d..a4ceca6cfaaf048f3f78b18724d54780675354e7 100644
 --- a/net/minecraft/world/level/ServerExplosion.java
 +++ b/net/minecraft/world/level/ServerExplosion.java
 @@ -412,6 +412,7 @@ public class ServerExplosion implements Explosion {
@@ -621,12 +621,13 @@ index 43203ac9a40106ee4ffbb63d89e2d59b24723642..7e430d476ecd3b0b5c2dc4960a86d746
                          }
                          if (hitResult == HitResult.Type.MISS) {
                              // Sakura end - replace density cache
-@@ -562,6 +569,14 @@ public class ServerExplosion implements Explosion {
+@@ -562,6 +569,15 @@ public class ServerExplosion implements Explosion {
                  }
  
                  if (cachedBlock.outOfWorld) {
 +                    // Sakura start - configure cannon physics
 +                    if (this.physics.before(1_17_0)) {
++                        power -= 0.22500001F;
 +                        currX += incX;
 +                        currY += incY;
 +                        currZ += incZ;
@@ -636,7 +637,7 @@ index 43203ac9a40106ee4ffbb63d89e2d59b24723642..7e430d476ecd3b0b5c2dc4960a86d746
                      break;
                  }
                  final BlockState iblockdata = cachedBlock.blockState;
-@@ -657,6 +672,12 @@ public class ServerExplosion implements Explosion {
+@@ -657,6 +673,12 @@ public class ServerExplosion implements Explosion {
                      double d2 = (entity instanceof PrimedTnt ? entity.getY() : entity.getEyeY()) - this.center.y;
                      double d3 = entity.getZ() - this.center.z;
                      double squareRoot = Math.sqrt(d1 * d1 + d2 * d2 + d3 * d3);
@@ -649,7 +650,7 @@ index 43203ac9a40106ee4ffbb63d89e2d59b24723642..7e430d476ecd3b0b5c2dc4960a86d746
                      if (squareRoot != 0.0) {
                          d1 /= squareRoot;
                          d2 /= squareRoot;
-@@ -948,7 +969,7 @@ public class ServerExplosion implements Explosion {
+@@ -948,7 +970,7 @@ public class ServerExplosion implements Explosion {
          // Sakura start - replace density cache
          float blockDensity = this.level.densityCache.getDensity(vec3d, entity);
          if (blockDensity == me.samsuik.sakura.explosion.density.BlockDensityCache.UNKNOWN_DENSITY) {
@@ -658,7 +659,7 @@ index 43203ac9a40106ee4ffbb63d89e2d59b24723642..7e430d476ecd3b0b5c2dc4960a86d746
              this.level.densityCache.putDensity(vec3d, entity, blockDensity);
              // Sakura end - replace density cache
          }
-@@ -956,6 +977,16 @@ public class ServerExplosion implements Explosion {
+@@ -956,6 +978,16 @@ public class ServerExplosion implements Explosion {
          return blockDensity;
      }
  
@@ -908,7 +909,7 @@ index f14e84e67746208dd188525fb91ab30b190d332b..1d66e5848a7f1b3c5e6b70f2e3835166
      }
  
 diff --git a/net/minecraft/world/level/block/piston/PistonBaseBlock.java b/net/minecraft/world/level/block/piston/PistonBaseBlock.java
-index ca22b585ef05fef2473bab5387b739f0ec358aad..7a8c7ff8a9c5e77ccb8b914694d02cdafb4be69d 100644
+index 3d3a8879b7706b1a9dbfb818e694ac9988bb21ab..2b2a4eff85db43f6ae330f924cb3c75ca175f682 100644
 --- a/net/minecraft/world/level/block/piston/PistonBaseBlock.java
 +++ b/net/minecraft/world/level/block/piston/PistonBaseBlock.java
 @@ -145,6 +145,11 @@ public class PistonBaseBlock extends DirectionalBlock {
