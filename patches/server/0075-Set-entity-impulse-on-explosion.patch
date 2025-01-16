@@ -17,10 +17,10 @@ index 289e935a2e6dfa5d45b9c913b8ed320e1a170f93..5920491a3857f3e75d02a33a1c3eae89
      }
  }
 diff --git a/src/main/java/net/minecraft/world/level/Explosion.java b/src/main/java/net/minecraft/world/level/Explosion.java
-index f248d8a3e63bb6f33001518e3481c7e7c75cac1b..10260736ac47e15cb55f43c4dd720cbbe7fe4e15 100644
+index 8091187e9d09b16e466f09935861a32309f399b5..2679c5062a6385466dc707582ada71b361ec7106 100644
 --- a/src/main/java/net/minecraft/world/level/Explosion.java
 +++ b/src/main/java/net/minecraft/world/level/Explosion.java
-@@ -786,6 +786,7 @@ public class Explosion {
+@@ -787,6 +787,7 @@ public class Explosion {
                              // Paper end - knockback events
                          }
                          // CraftBukkit end
