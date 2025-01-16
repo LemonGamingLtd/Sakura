@@ -13,7 +13,7 @@ paper-api-generator
 build.gradle.kts.rej
 sakura-api/build.gradle.kts
 sakura-server/build.gradle.kts
-src/minecraft/
-src/vanilla/
+sakura-server/src/minecraft/
+sakura-server/src/vanilla/
 
 !gradle/wrapper/gradle-wrapper.jar
