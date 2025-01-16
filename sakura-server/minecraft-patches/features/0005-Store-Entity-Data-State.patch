@@ -1,0 +1,48 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Samsuik <kfian294ma4@gmail.com>
+Date: Wed, 16 Aug 2023 22:34:49 +0100
+Subject: [PATCH] Store Entity Data/State
+
+
+diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
+index 7bbc4a982f442fdb9821221442737ae65e55289e..3671003b9fdf787fc5095d12df9ee2f15bd998f1 100644
+--- a/net/minecraft/world/entity/Entity.java
++++ b/net/minecraft/world/entity/Entity.java
+@@ -544,6 +544,25 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+         return flags;
+     }
+     // Sakura end - load chunks on movement
++    // Sakura start - store entity data/state
++    private me.samsuik.sakura.entity.EntityState entityState = null;
++
++    public final Vec3 stuckSpeedMultiplier() {
++        return this.stuckSpeedMultiplier;
++    }
++
++    public final void storeEntityState() {
++        this.entityState = me.samsuik.sakura.entity.EntityState.of(this);
++    }
++
++    public final me.samsuik.sakura.entity.EntityState entityState() {
++        return this.entityState;
++    }
++
++    public final boolean compareState(Entity to) {
++        return to.entityState() != null && to.entityState().comparePositionAndMotion(this);
++    }
++    // Sakura end - store entity data/state
+ 
+     public Entity(EntityType<?> entityType, Level level) {
+         this.type = entityType;
+diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
+index 3ba2228fd83bcd9af5f46d71409abe9fd2328f7e..e4584cd58d84f2b64748dfec7a1aa69fca119021 100644
+--- a/net/minecraft/world/level/Level.java
++++ b/net/minecraft/world/level/Level.java
+@@ -1510,6 +1510,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+ 
+     public <T extends Entity> void guardEntityTick(Consumer<T> consumerEntity, T entity) {
+         try {
++            entity.storeEntityState(); // Sakura - store entity data/state
+             consumerEntity.accept(entity);
+         } catch (Throwable var6) {
+             // Paper start - Prevent block entity and entity crashes

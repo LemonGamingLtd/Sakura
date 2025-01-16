@@ -1,6 +1,6 @@
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
-@@ -115,6 +_,18 @@
+@@ -116,6 +_,18 @@
          throw new AssertionError("Unknown entity " + (entity == null ? null : entity.getClass()));
      }
  

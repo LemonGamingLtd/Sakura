@@ -1,0 +1,72 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Samsuik <kfian294ma4@gmail.com>
+Date: Sat, 9 Sep 2023 18:39:15 +0100
+Subject: [PATCH] Merge Cannon Entities
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftFallingBlock.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftFallingBlock.java
+index 22b6016a8d6828b2b10c028b24fd160b3b9f9f59..ad924326b6bfd01b719096ff53ed4b8e513e25af 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftFallingBlock.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftFallingBlock.java
+@@ -26,6 +26,28 @@ public class CraftFallingBlock extends CraftEntity implements FallingBlock {
+     }
+     // Sakura end - falling block height parity api
+ 
++    // Sakura start - merge cannon entities
++    @Override
++    public @org.jetbrains.annotations.NotNull me.samsuik.sakura.entity.merge.MergeLevel getMergeLevel() {
++        return this.getHandle().getMergeEntityData().getMergeLevel();
++    }
++
++    @Override
++    public void setMergeLevel(@org.jetbrains.annotations.NotNull me.samsuik.sakura.entity.merge.MergeLevel level) {
++        this.getHandle().getMergeEntityData().setMergeLevel(level);
++    }
++
++    @Override
++    public int getStacked() {
++        return this.getHandle().getMergeEntityData().getCount();
++    }
++
++    @Override
++    public void setStacked(int stacked) {
++        this.getHandle().getMergeEntityData().setCount(stacked);
++    }
++    // Sakura end - merge cannon entities
++
+     @Override
+     public FallingBlockEntity getHandle() {
+         return (FallingBlockEntity) this.entity;
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftTNTPrimed.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftTNTPrimed.java
+index a61aec087fa7cec27a803668bdc1b9e6eb336755..c6f36ab2368d0e2e4555d5f8edc0132dcb61a53c 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftTNTPrimed.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftTNTPrimed.java
+@@ -12,6 +12,28 @@ public class CraftTNTPrimed extends CraftEntity implements TNTPrimed {
+         super(server, entity);
+     }
+ 
++    // Sakura start - merge cannon entities
++    @Override
++    public @org.jetbrains.annotations.NotNull me.samsuik.sakura.entity.merge.MergeLevel getMergeLevel() {
++        return this.getHandle().getMergeEntityData().getMergeLevel();
++    }
++
++    @Override
++    public void setMergeLevel(@org.jetbrains.annotations.NotNull me.samsuik.sakura.entity.merge.MergeLevel level) {
++        this.getHandle().getMergeEntityData().setMergeLevel(level);
++    }
++
++    @Override
++    public int getStacked() {
++        return this.getHandle().getMergeEntityData().getCount();
++    }
++
++    @Override
++    public void setStacked(int stacked) {
++        this.getHandle().getMergeEntityData().setCount(stacked);
++    }
++    // Sakura end - merge cannon entities
++
+     @Override
+     public float getYield() {
+         return this.getHandle().explosionPower;

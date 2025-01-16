@@ -23,7 +23,7 @@ import java.util.function.LongConsumer;
 public final class LocalConfigManager implements LocalStorageHandler {
     private static final int SMALL_REGION_SIZE = 12;
     private static final int CONFIG_CACHE_EXPIRATION = 600;
-    
+
     private final Map<LocalRegion, LocalValueStorage> storageMap = new Object2ObjectOpenHashMap<>();
     private final List<LocalRegion> largeRegions = new ObjectArrayList<>();
     private final Long2ObjectMap<List<LocalRegion>> smallRegions = new Long2ObjectOpenHashMap<>();
@@ -41,7 +41,7 @@ public final class LocalConfigManager implements LocalStorageHandler {
         int regionX = x >> this.regionExponent;
         int regionZ = z >> this.regionExponent;
         long regionPos = ChunkPos.asLong(regionX, regionZ);
-        List<LocalRegion> regions = this.smallRegions.get(regionPos);
+        List<LocalRegion> regions = this.smallRegions.getOrDefault(regionPos, List.of());
         for (LocalRegion region : Iterables.concat(regions, this.largeRegions)) {
             if (region.contains(x, z)) {
                 return Optional.of(region);
