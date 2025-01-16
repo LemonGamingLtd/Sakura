@@ -1,0 +1,21 @@
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
+@@ -115,6 +_,18 @@
+         throw new AssertionError("Unknown entity " + (entity == null ? null : entity.getClass()));
+     }
+ 
++    // Sakura start - entity pushed by fluid api
++    @Override
++    public final boolean isPushedByFluid() {
++        return this.getHandle().isPushedByFluid();
++    }
++
++    @Override
++    public final void setPushedByFluid(boolean push) {
++        this.getHandle().pushedByFluid = push;
++    }
++    // Sakura end - entity pushed by fluid api
++
+     @Override
+     public Location getLocation() {
+         return CraftLocation.toBukkit(this.entity.position(), this.getWorld(), this.entity.getBukkitYaw(), this.entity.getXRot());

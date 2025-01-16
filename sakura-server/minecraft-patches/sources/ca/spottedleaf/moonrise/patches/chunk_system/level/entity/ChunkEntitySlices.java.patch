@@ -1,0 +1,110 @@
+--- a/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java
++++ b/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java
+@@ -297,6 +_,12 @@
+         return true;
+     }
+ 
++    // Sakura start - add utility methods to entity slices
++    public Entity[] getSectionEntities(int sectionY) {
++        return this.allEntities.getSectionEntities(sectionY);
++    }
++    // Sakura end - add utility methods to entity slices
++
+     public void getHardCollidingEntities(final Entity except, final AABB box, final List<Entity> into, final Predicate<? super Entity> predicate) {
+         this.hardCollidingEntities.getEntities(except, box, into, predicate);
+     }
+@@ -383,6 +_,13 @@
+ 
+         private E[] storage;
+         private int size;
++        // Sakura start - use methods from EntityList
++        private it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap entityToIndex = null;
++        private void setupIndexMap() {
++            this.entityToIndex = new it.unimi.dsi.fastutil.ints.Int2IntOpenHashMap(2, 0.8f);
++            this.entityToIndex.defaultReturnValue(Integer.MIN_VALUE);
++        }
++        // Sakura end - use methods from EntityList
+ 
+         public BasicEntityList() {
+             this(0);
+@@ -403,6 +_,7 @@
+         private void resize() {
+             if (this.storage == EMPTY) {
+                 this.storage = (E[])new Entity[DEFAULT_CAPACITY];
++                this.setupIndexMap(); // Sakura - use methods from EntityList
+             } else {
+                 this.storage = Arrays.copyOf(this.storage, this.storage.length * 2);
+             }
+@@ -416,6 +_,7 @@
+             } else {
+                 this.storage[idx] = entity;
+             }
++            this.entityToIndex.put(entity.getId(), idx); // Sakura - use methods from EntityList
+         }
+ 
+         public int indexOf(final E entity) {
+@@ -431,24 +_,32 @@
+         }
+ 
+         public boolean remove(final E entity) {
+-            final int idx = this.indexOf(entity);
+-            if (idx == -1) {
+-                return false;
+-            }
+-
+-            final int size = --this.size;
+-            final E[] storage = this.storage;
+-            if (idx != size) {
+-                System.arraycopy(storage, idx + 1, storage, idx, size - idx);
+-            }
+-
+-            storage[size] = null;
++            // Sakura start - use methods from EntityList
++            if (this.entityToIndex == null) {
++                return false;
++            }
++
++            final int index = this.entityToIndex.remove(entity.getId());
++            if (index == Integer.MIN_VALUE) {
++                return false;
++            }
++
++            // move the entity at the end to this index
++            final int endIndex = --this.size;
++            final E end = this.storage[endIndex];
++            if (index != endIndex) {
++                // not empty after this call
++                this.entityToIndex.put(end.getId(), index); // update index
++            }
++            this.storage[index] = end;
++            this.storage[endIndex] = null;
++            // Sakura end - use methods from EntityList
+ 
+             return true;
+         }
+ 
+         public boolean has(final E entity) {
+-            return this.indexOf(entity) != -1;
++            return this.entityToIndex != null && this.entityToIndex.containsKey(entity.getId()); // Sakura - use methods from EntityList
+         }
+     }
+ 
+@@ -494,6 +_,18 @@
+                 this.entitiesBySection[sectionIndex] = null;
+             }
+         }
++
++        // Sakura start - add utility methods to entity slices
++        public Entity[] getSectionEntities(int sectionY) {
++            BasicEntityList<Entity> list = this.entitiesBySection[sectionY - this.slices.minSection];
++
++            if (list != null) {
++                return list.storage;
++            }
++
++            return new Entity[0];
++        }
++        // Sakura end - add utility methods to entity slices
+ 
+         public void getEntities(final Entity except, final AABB box, final List<Entity> into, final Predicate<? super Entity> predicate) {
+             if (this.count == 0) {

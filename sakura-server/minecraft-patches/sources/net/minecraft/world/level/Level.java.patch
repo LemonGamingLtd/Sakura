@@ -1,0 +1,37 @@
+--- a/net/minecraft/world/level/Level.java
++++ b/net/minecraft/world/level/Level.java
+@@ -168,6 +_,18 @@
+         return this.paperConfig;
+     }
+     // Paper end - add paper world config
++    // Sakura start - sakura configuration files
++    private final me.samsuik.sakura.configuration.WorldConfiguration sakuraConfig;
++    public final me.samsuik.sakura.configuration.WorldConfiguration sakuraConfig() {
++        return this.sakuraConfig;
++    }
++    // Sakura end - sakura configuration files
++    // Sakura start - local config and property storage
++    private final me.samsuik.sakura.local.config.LocalConfigManager localConfig = new me.samsuik.sakura.local.config.LocalConfigManager(this);
++    public final me.samsuik.sakura.local.config.LocalConfigManager localConfig() {
++        return this.localConfig;
++    }
++    // Sakura end - local config and property storage
+ 
+     public final io.papermc.paper.antixray.ChunkPacketBlockController chunkPacketBlockController; // Paper - Anti-Xray
+     public static BlockPos lastPhysicsProblem; // Spigot
+@@ -840,6 +_,7 @@
+         org.bukkit.World.Environment env, // CraftBukkit
+         java.util.function.Function<org.spigotmc.SpigotWorldConfig, // Spigot - create per world config
+         io.papermc.paper.configuration.WorldConfiguration> paperWorldConfigCreator, // Paper - create paper world config
++        java.util.function.Supplier<me.samsuik.sakura.configuration.WorldConfiguration> sakuraWorldConfigCreator, // Sakura - sakura configuration files
+         java.util.concurrent.Executor executor // Paper - Anti-Xray
+     ) {
+         // Paper start - getblock optimisations - cache world height/sections
+@@ -853,6 +_,7 @@
+         // Paper end - getblock optimisations - cache world height/sections
+         this.spigotConfig = new org.spigotmc.SpigotWorldConfig(((net.minecraft.world.level.storage.PrimaryLevelData) levelData).getLevelName()); // Spigot
+         this.paperConfig = paperWorldConfigCreator.apply(this.spigotConfig); // Paper - create paper world config
++        this.sakuraConfig = sakuraWorldConfigCreator.get(); // Sakura - sakura configuration files
+         this.generator = gen;
+         this.world = new CraftWorld((ServerLevel) this, gen, biomeProvider, env);
+ 

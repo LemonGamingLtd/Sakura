@@ -1,0 +1,10 @@
+--- a/net/minecraft/world/item/Items.java
++++ b/net/minecraft/world/item/Items.java
+@@ -1194,6 +_,7 @@
+     public static final Item GOLDEN_APPLE = registerItem("golden_apple", new Item.Properties().food(Foods.GOLDEN_APPLE, Consumables.GOLDEN_APPLE));
+     public static final Item ENCHANTED_GOLDEN_APPLE = registerItem(
+         "enchanted_golden_apple",
++        me.samsuik.sakura.player.combat.CustomGoldenApple::new, // Sakura - old enchanted golden apples
+         new Item.Properties()
+             .rarity(Rarity.RARE)
+             .food(Foods.ENCHANTED_GOLDEN_APPLE, Consumables.ENCHANTED_GOLDEN_APPLE)

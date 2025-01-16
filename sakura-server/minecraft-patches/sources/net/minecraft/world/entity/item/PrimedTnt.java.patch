@@ -1,0 +1,70 @@
+--- a/net/minecraft/world/entity/item/PrimedTnt.java
++++ b/net/minecraft/world/entity/item/PrimedTnt.java
+@@ -73,6 +_,12 @@
+         this.yo = y;
+         this.zo = z;
+         this.owner = owner;
++        // Sakura start - configure cannon mechanics
++        switch (level.sakuraConfig().cannons.mechanics.tntSpread) {
++            case NONE -> this.setDeltaMovement(0.0, 0.0, 0.0);
++            case Y -> this.setDeltaMovement(this.getDeltaMovement().multiply(0.0, 1.0, 0.0));
++        }
++        // Sakura end - configure cannon mechanics
+     }
+ 
+     @Override
+@@ -91,6 +_,21 @@
+         return !this.isRemoved();
+     }
+ 
++    // Sakura start - optimise tnt fluid state
++    @Override
++    protected boolean updateInWaterStateAndDoFluidPushing() {
++        if (this.isPushedByFluid()) {
++            return super.updateInWaterStateAndDoFluidPushing();
++        } else {
++            // super method also handles lava fluid pushing
++            // we only need to search for water to negate fall distance
++            this.fluidHeight.clear();
++            this.updateInWaterStateAndDoWaterCurrentPushing();
++            return this.isInWater();
++        }
++    }
++    // Sakura end - optimise tnt fluid state
++
+     @Override
+     protected double getDefaultGravity() {
+         return 0.04;
+@@ -98,7 +_,7 @@
+ 
+     @Override
+     public void tick() {
+-        if (this.level().spigotConfig.maxTntTicksPerTick > 0 && ++this.level().spigotConfig.currentPrimedTnt > this.level().spigotConfig.maxTntTicksPerTick) { return; } // Spigot
++        // Sakura - remove max tnt per tick
+         this.handlePortal();
+         this.applyGravity();
+         this.move(MoverType.SELF, this.getDeltaMovement());
+@@ -130,6 +_,14 @@
+                 this.level().addParticle(ParticleTypes.SMOKE, this.getX(), this.getY() + 0.5, this.getZ(), 0.0, 0.0, 0.0);
+             }
+         }
++        // Sakura start - configure force position updates
++        if (this.level().sakuraConfig().cannons.tnt.forcePositionUpdates) {
++            this.forcePositionUpdateInWater();
++        }
++    }
++
++    private void forcePositionUpdateInWater() {
++        // Sakura end - configure force position updates
+         // Paper start - Option to prevent TNT from moving in water
+         if (!this.isRemoved() && this.wasTouchingWater && this.level().paperConfig().fixes.preventTntFromMovingInWater) {
+             /*
+@@ -248,7 +_,7 @@
+     // Paper start - Option to prevent TNT from moving in water
+     @Override
+     public boolean isPushedByFluid() {
+-        return !this.level().paperConfig().fixes.preventTntFromMovingInWater && super.isPushedByFluid();
++        return !this.level().paperConfig().fixes.preventTntFromMovingInWater && this.level().sakuraConfig().cannons.mechanics.tntFlowsInWater  && super.isPushedByFluid(); // Sakura - configure cannon mechanics
+     }
+     // Paper end - Option to prevent TNT from moving in water
+ }

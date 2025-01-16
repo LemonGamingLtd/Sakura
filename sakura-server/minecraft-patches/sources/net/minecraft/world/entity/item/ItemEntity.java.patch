@@ -1,0 +1,14 @@
+--- a/net/minecraft/world/entity/item/ItemEntity.java
++++ b/net/minecraft/world/entity/item/ItemEntity.java
+@@ -363,6 +_,11 @@
+ 
+     @Override
+     public boolean ignoreExplosion(Explosion explosion) {
++        // Sakura start - add list of items that ignore explosions
++        if (this.level().sakuraConfig().entity.items.explosionResistantItems.contains(this.getItem().getItem())) {
++            return true;
++        }
++        // Sakura end - add list of items that ignore explosions
+         return !explosion.shouldAffectBlocklikeEntities() || super.ignoreExplosion(explosion);
+     }
+ 
