@@ -5,7 +5,7 @@ Subject: [PATCH] Optimise entity scheduler ticking
 
 
 diff --git a/src/main/java/io/papermc/paper/threadedregions/EntityScheduler.java b/src/main/java/io/papermc/paper/threadedregions/EntityScheduler.java
-index c03608fec96b51e1867f43d8f42e5aefb1520e46..9a363b8a15d76911813e31fdb525815b74539b02 100644
+index c03608fec96b51e1867f43d8f42e5aefb1520e46..543251fc4973157dbb239729e656a8820fe88654 100644
 --- a/src/main/java/io/papermc/paper/threadedregions/EntityScheduler.java
 +++ b/src/main/java/io/papermc/paper/threadedregions/EntityScheduler.java
 @@ -50,6 +50,22 @@ public final class EntityScheduler {
@@ -35,7 +35,7 @@ index c03608fec96b51e1867f43d8f42e5aefb1520e46..9a363b8a15d76911813e31fdb525815b
                  return new ArrayList<>();
              }).add(task);
          }
-+        this.newScheduledTask(); // Sakura - tick entity schedulers only when necessary
++        this.newScheduledTask(); // Sakura - optimise entity scheduler ticking
  
          return true;
      }
