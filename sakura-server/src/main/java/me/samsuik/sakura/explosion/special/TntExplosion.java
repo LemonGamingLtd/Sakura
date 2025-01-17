@@ -37,6 +37,13 @@ public final class TntExplosion extends SpecialisedExplosion<PrimedTnt> {
         this.bounds = new AABB(center, center);
     }
 
+    // Sakura start - physics version api
+    @Override
+    protected double getExplosionOffset() {
+        return this.physics.before(1_10_0) ? (double) 0.49f : super.getExplosionOffset();
+    }
+    // Sakura end - physics version api
+
     @Override
     protected int getExplosionCount() {
         if (this.cause.getMergeEntityData().getMergeLevel() == MergeLevel.NONE) {

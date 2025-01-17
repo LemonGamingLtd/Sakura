@@ -5,6 +5,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.BlockPos.MutableBlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 
@@ -20,6 +21,14 @@ public final class BlockPosIterator extends AbstractIterator<BlockPos> {
 
     public static Iterable<BlockPos> iterable(AABB bb) {
         return () -> new BlockPosIterator(bb);
+    }
+
+    public static Iterable<BlockPos> traverseArea(Vec3 vec, AABB boundingBox) {
+        double toTravel = Math.min(16.0 / vec.length(), 1.0);
+        Vec3 movement = vec.scale(toTravel);
+        AABB fromBB = boundingBox.move(-vec.x, -vec.y, -vec.z);
+        AABB searchArea = fromBB.expandTowards(movement);
+        return me.samsuik.sakura.utils.BlockPosIterator.iterable(searchArea);
     }
 
     public BlockPosIterator(AABB bb) {

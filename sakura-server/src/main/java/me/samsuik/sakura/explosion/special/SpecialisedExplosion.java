@@ -161,9 +161,15 @@ public abstract class SpecialisedExplosion<T extends Entity> extends ServerExplo
 
         if (distanceFromBottom <= 1.0) {
             double x = entity.getX() - pos.x;
-            double y = (entity instanceof PrimedTnt ? entity.getY() : entity.getEyeY()) - pos.y;
+            double y = entity.getEyeY() - pos.y; // Sakura - physics version api
             double z = entity.getZ() - pos.z;
             double distance = Math.sqrt(x * x + y * y + z * z);
+            // Sakura start - physics version api
+            if (this.physics.before(1_17_0)) {
+                distanceFromBottom = (float) distanceFromBottom;
+                distance = (float) distance;
+            }
+            // Sakura end - physics version api
 
             if (distance != 0.0D) {
                 x /= distance;
