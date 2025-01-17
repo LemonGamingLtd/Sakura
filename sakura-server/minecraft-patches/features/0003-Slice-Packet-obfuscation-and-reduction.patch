@@ -179,15 +179,19 @@ index 066884516b6c9120433864b043276836e087978d..17e810e201fab2e400ac3685e15fa98d
  
      public BlockPos getStartPos() {
 diff --git a/net/minecraft/world/entity/item/PrimedTnt.java b/net/minecraft/world/entity/item/PrimedTnt.java
-index 3c74cb8d4b71fcfa600742c21d6ad8e3942a2ab7..8dd0ae62c489544ba52894cb870e5befccad7aba 100644
+index 3c74cb8d4b71fcfa600742c21d6ad8e3942a2ab7..b6467f9ff64a76104076a01bfd56852ce712d95b 100644
 --- a/net/minecraft/world/entity/item/PrimedTnt.java
 +++ b/net/minecraft/world/entity/item/PrimedTnt.java
-@@ -241,7 +241,7 @@ public class PrimedTnt extends Entity implements TraceableEntity {
+@@ -241,7 +241,11 @@ public class PrimedTnt extends Entity implements TraceableEntity {
      }
  
      public void setFuse(int life) {
 -        this.entityData.set(DATA_FUSE_ID, life);
-+        this.entityData.set(DATA_FUSE_ID, life, (life / 10) * 10); // Slice - packet obfuscation and reduction
++        // Slice start - packet obfuscation and reduction; obfuscate tnt fuse
++        final int phase = ((life / 10) & 1) == 0 ? 10 : 0;
++        final int obfuscatedFuse = 80 + phase - 9;
++        this.entityData.set(DATA_FUSE_ID, life, obfuscatedFuse);
++        // Slice end - packet obfuscation and reduction; obfuscate tnt fuse
      }
  
      public int getFuse() {

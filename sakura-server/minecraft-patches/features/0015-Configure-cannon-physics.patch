@@ -315,7 +315,7 @@ index f525262a153919deeeb1e6df20009b78f9e8e601..6a2bb2d4fa2ff76f85648ea39c8f0abd
      }
  
 diff --git a/net/minecraft/world/entity/item/PrimedTnt.java b/net/minecraft/world/entity/item/PrimedTnt.java
-index 438a8974cc0b8e0ef4e7a2268c61f45f5fd6b959..87c5669d534365d361b177407a0912d0698f19bd 100644
+index 28fd804bcaf5e96c7c90881587c073cde94ae1d5..15f88b0b4e16db42955601ee2d28a0b693d88ace 100644
 --- a/net/minecraft/world/entity/item/PrimedTnt.java
 +++ b/net/minecraft/world/entity/item/PrimedTnt.java
 @@ -80,6 +80,22 @@ public class PrimedTnt extends Entity implements TraceableEntity, me.samsuik.sak
@@ -402,7 +402,7 @@ index 438a8974cc0b8e0ef4e7a2268c61f45f5fd6b959..87c5669d534365d361b177407a0912d0
                  this.getZ(),
                  event.getRadius(), // CraftBukkit
                  event.getFire(), // CraftBukkit
-@@ -310,7 +338,7 @@ public class PrimedTnt extends Entity implements TraceableEntity, me.samsuik.sak
+@@ -314,7 +342,7 @@ public class PrimedTnt extends Entity implements TraceableEntity, me.samsuik.sak
      // Paper start - Option to prevent TNT from moving in water
      @Override
      public boolean isPushedByFluid() {
