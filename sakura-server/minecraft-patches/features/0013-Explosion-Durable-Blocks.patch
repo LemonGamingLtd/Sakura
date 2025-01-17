@@ -53,7 +53,7 @@ index b4a8a81f1fa091e45f1f39fdb69c61871d7dc6b9..19aa5010b019e343d0fb085359eac98b
      protected Level(
          WritableLevelData levelData,
 diff --git a/net/minecraft/world/level/ServerExplosion.java b/net/minecraft/world/level/ServerExplosion.java
-index 0285e19d6265056fb5ff9855a5dd41bd16bbc082..58c14cc2d041348f42e8466fc93f18736c2618da 100644
+index 0285e19d6265056fb5ff9855a5dd41bd16bbc082..b66a9f646dc853f8b2f86137a668fe692e523e92 100644
 --- a/net/minecraft/world/level/ServerExplosion.java
 +++ b/net/minecraft/world/level/ServerExplosion.java
 @@ -133,7 +133,7 @@ public class ServerExplosion implements Explosion {
@@ -86,16 +86,14 @@ index 0285e19d6265056fb5ff9855a5dd41bd16bbc082..58c14cc2d041348f42e8466fc93f1873
  
      public ServerExplosion(
          ServerLevel level,
-@@ -779,6 +793,16 @@ public class ServerExplosion implements Explosion {
+@@ -779,6 +793,14 @@ public class ServerExplosion implements Explosion {
                  }
              }
              // CraftBukkit end
 +            // Sakura start - explosion durable blocks
 +            if (this.level.sakuraConfig().cannons.explosion.allowNonTntBreakingDurableBlocks || this.source instanceof net.minecraft.world.entity.item.PrimedTnt) {
-+                me.samsuik.sakura.explosion.durable.DurableMaterial material = this.level.localConfig().config(blockposition).durableMaterials.get(block);
-+
-+                if (material != null && material.durability() >= 0 && !this.level.durabilityManager.damage(blockposition, material)) {
-+                    iterator.remove();
++                final me.samsuik.sakura.explosion.durable.DurableMaterial material = this.level.localConfig().config(blockPos).durableMaterials.get(block);
++                if (material != null && material.durability() >= 0 && !this.level.durabilityManager.damage(blockPos, material)) {
 +                    continue;
 +                }
 +            }

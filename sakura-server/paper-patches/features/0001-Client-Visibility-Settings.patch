@@ -5,10 +5,10 @@ Subject: [PATCH] Client Visibility Settings
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index dab4d38a2408af5f8f415e5a916845bf08ec536c..7f8bbddc7b5b0c8d13a2772b91df44d6e99aadf3 100644
+index 65630cd6cf77a3fe21c19968d1e84f781b300f88..62b09cac9e0e6c1bef426b0d3a42753c20c5e739 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -2385,6 +2385,13 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -2397,6 +2397,13 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
                  handle.keepLevel = data.getBoolean("keepLevel");
              }
          }
@@ -22,7 +22,7 @@ index dab4d38a2408af5f8f415e5a916845bf08ec536c..7f8bbddc7b5b0c8d13a2772b91df44d6
      }
  
      public void setExtraData(CompoundTag nbttagcompound) {
-@@ -2414,6 +2421,11 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -2426,6 +2433,11 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          paper.putLong("LastLogin", handle.loginTime);
          paper.putLong("LastSeen", System.currentTimeMillis());
          // Paper end

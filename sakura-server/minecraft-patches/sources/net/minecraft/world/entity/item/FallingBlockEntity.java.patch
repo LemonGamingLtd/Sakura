@@ -12,8 +12,8 @@
      }
  
      public FallingBlockEntity(Level level, double x, double y, double z, BlockState state) {
-@@ -138,6 +_,13 @@
-         return !this.isRemoved();
+@@ -85,6 +_,13 @@
+         this.setStartPos(this.blockPosition());
      }
  
 +    // Sakura start - falling block height parity api
@@ -23,9 +23,9 @@
 +    }
 +    // Sakura end - falling block height parity api
 +
-     @Override
-     protected double getDefaultGravity() {
-         return 0.04;
+     public static FallingBlockEntity fall(Level level, BlockPos pos, BlockState blockState) {
+         FallingBlockEntity fallingBlockEntity = new FallingBlockEntity(
+             level,
 @@ -165,7 +_,7 @@
              this.handlePortal();
              if (this.level() instanceof ServerLevel serverLevel && (this.isAlive() || this.forceTickAfterTeleportToDuplicate)) {

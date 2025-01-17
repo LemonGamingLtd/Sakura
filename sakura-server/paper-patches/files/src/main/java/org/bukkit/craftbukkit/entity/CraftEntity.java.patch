@@ -1,7 +1,7 @@
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
-@@ -116,6 +_,18 @@
-         throw new AssertionError("Unknown entity " + (entity == null ? null : entity.getClass()));
+@@ -90,6 +_,18 @@
+         this.entityType = CraftEntityType.minecraftToBukkit(entity.getType());
      }
  
 +    // Sakura start - entity pushed by fluid api
@@ -16,6 +16,6 @@
 +    }
 +    // Sakura end - entity pushed by fluid api
 +
-     @Override
-     public Location getLocation() {
-         return CraftLocation.toBukkit(this.entity.position(), this.getWorld(), this.entity.getBukkitYaw(), this.entity.getXRot());
+     public static <T extends Entity> CraftEntity getEntity(CraftServer server, T entity) {
+         Preconditions.checkArgument(entity != null, "Unknown entity");
+ 

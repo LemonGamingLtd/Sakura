@@ -164,7 +164,7 @@ index 77618757c0e678532dbab814aceed83f7f1cd892..65d359c497b73c821b082a885c063a73
  
      public void clearRemoved() {
 diff --git a/net/minecraft/world/level/block/entity/HopperBlockEntity.java b/net/minecraft/world/level/block/entity/HopperBlockEntity.java
-index 5cd1326ad5d046c88b2b3449d610a78fa880b4cd..900ed60d6294a8afea48800808a7b89a8a8b27ad 100644
+index 5cd1326ad5d046c88b2b3449d610a78fa880b4cd..c5e7040367d7d652e4298a4f8f8e589a2c11183f 100644
 --- a/net/minecraft/world/level/block/entity/HopperBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/HopperBlockEntity.java
 @@ -28,7 +28,7 @@ import net.minecraft.world.level.block.HopperBlock;
@@ -210,7 +210,7 @@ index 5cd1326ad5d046c88b2b3449d610a78fa880b4cd..900ed60d6294a8afea48800808a7b89a
 +
 +    private static @Nullable Container sakura_getSourceContainer(Level level, Hopper hopper, BlockPos pos, BlockState state) {
 +        Container container = getSourceContainer(level, hopper, pos, state);
-+        if (hopper instanceof HopperBlockEntity hbe && HopperInventorySearchEvent.getHandlerList().getRegisteredListeners().length == 0) {
++        if (hopper instanceof HopperBlockEntity hbe && org.bukkit.event.inventory.HopperInventorySearchEvent.getHandlerList().getRegisteredListeners().length == 0) {
 +            hbe.listenForContainerChanges(container, SOURCE_CONTAINER);
 +        }
 +        return container;
@@ -218,7 +218,7 @@ index 5cd1326ad5d046c88b2b3449d610a78fa880b4cd..900ed60d6294a8afea48800808a7b89a
 +
 +    private static @Nullable Container sakura_getAttachedContainer(Level level, BlockPos pos, HopperBlockEntity hbe) {
 +        Container container = getAttachedContainer(level, pos, hbe);
-+        if (HopperInventorySearchEvent.getHandlerList().getRegisteredListeners().length == 0) {
++        if (org.bukkit.event.inventory.HopperInventorySearchEvent.getHandlerList().getRegisteredListeners().length == 0) {
 +            hbe.listenForContainerChanges(container, ATTACHED_CONTAINER);
 +        }
 +        return container;

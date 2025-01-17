@@ -1,7 +1,7 @@
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -3003,6 +_,18 @@
-         return (this.getHandle().requestedViewDistance() == 0) ? Bukkit.getViewDistance() : this.getHandle().requestedViewDistance();
+@@ -226,6 +_,18 @@
+         this.firstPlayed = System.currentTimeMillis();
      }
  
 +    // Sakura start - entity tracking range modifier
@@ -16,6 +16,6 @@
 +    }
 +    // Sakura end - entity tracking range modifier
 +
-     // Paper start
-     @Override
-     public java.util.Locale locale() {
+     public GameProfile getProfile() {
+         return this.getHandle().getGameProfile();
+     }
