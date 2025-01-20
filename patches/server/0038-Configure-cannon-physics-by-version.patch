@@ -475,7 +475,7 @@ index 4d0cfa1f96a04713cb1d51c7aaaf91374a0d6c17..96c43df6834e20a9e04eb095f36a644e
      // Paper end - Option to prevent TNT from moving in water
  }
 diff --git a/src/main/java/net/minecraft/world/level/Explosion.java b/src/main/java/net/minecraft/world/level/Explosion.java
-index bf39d7aa21c3f0dc9cf1b31224cce3a114e8ea86..016ab8ff4be6a8f7e96bce34452180cefa43c44a 100644
+index 6852abf596187b328a1e67bd915c5870a1a60688..d0ba33c84cb2c1d01a368f5ec8a047da5cf81863 100644
 --- a/src/main/java/net/minecraft/world/level/Explosion.java
 +++ b/src/main/java/net/minecraft/world/level/Explosion.java
 @@ -78,6 +78,7 @@ public class Explosion {
@@ -508,7 +508,7 @@ index bf39d7aa21c3f0dc9cf1b31224cce3a114e8ea86..016ab8ff4be6a8f7e96bce34452180ce
                          }
                          if (hitResult == HitResult.Type.MISS) {
                              // Sakura end - replace density cache
-@@ -581,6 +587,14 @@ public class Explosion {
+@@ -581,6 +587,15 @@ public class Explosion {
                              }
  
                              if (cachedBlock.outOfWorld) {
@@ -517,13 +517,14 @@ index bf39d7aa21c3f0dc9cf1b31224cce3a114e8ea86..016ab8ff4be6a8f7e96bce34452180ce
 +                                    currX += incX;
 +                                    currY += incY;
 +                                    currZ += incZ;
++                                    power -= 0.22500001F;
 +                                    continue;
 +                                }
 +                                // Sakura end - physics version api
                                  break;
                              }
                              // Paper end - collision optimisations
-@@ -683,9 +697,15 @@ public class Explosion {
+@@ -683,9 +698,15 @@ public class Explosion {
  
                  if (d7 <= 1.0D) {
                      double d8 = entity.getX() - this.x;
@@ -540,7 +541,7 @@ index bf39d7aa21c3f0dc9cf1b31224cce3a114e8ea86..016ab8ff4be6a8f7e96bce34452180ce
  
                      if (d11 != 0.0D) {
                          d8 /= d11;
-@@ -1018,7 +1038,7 @@ public class Explosion {
+@@ -1018,7 +1039,7 @@ public class Explosion {
          // Sakura start - replace density cache
          float blockDensity = this.level.densityCache.getDensity(vec3d, entity);
          if (blockDensity == me.samsuik.sakura.explosion.density.BlockDensityCache.UNKNOWN_DENSITY) {
@@ -549,7 +550,7 @@ index bf39d7aa21c3f0dc9cf1b31224cce3a114e8ea86..016ab8ff4be6a8f7e96bce34452180ce
              this.level.densityCache.putDensity(vec3d, entity, blockDensity);
              // Sakura end - replace density cache
          }
-@@ -1026,6 +1046,17 @@ public class Explosion {
+@@ -1026,6 +1047,17 @@ public class Explosion {
          return blockDensity;
      }
  
