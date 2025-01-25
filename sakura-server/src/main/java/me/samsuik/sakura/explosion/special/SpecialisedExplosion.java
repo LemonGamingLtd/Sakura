@@ -205,5 +205,6 @@ public abstract class SpecialisedExplosion<T extends Entity> extends ServerExplo
         }
 
         entity.setDeltaMovement(moveX, moveY, moveZ);
+        entity.hasImpulse = true;
     }
 }
