@@ -5,7 +5,7 @@ Subject: [PATCH] Configurable left shooting and adjusting limits
 
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 37d2ab5f3cfe10478e87d1649d072fe6b69fb914..f9b9d81cc60785488a7cf57caabb4a5fdd84ecae 100644
+index 88a83d0b81fc65b4091c7f2c44820b4913356a2f..dd56f4e128793006c370514007755bdfb9d656d0 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -608,6 +608,46 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
@@ -13,7 +13,7 @@ index 37d2ab5f3cfe10478e87d1649d072fe6b69fb914..f9b9d81cc60785488a7cf57caabb4a5f
      }
      // Sakura end - entity travel distance limits
 +    // Sakura start - configurable left shooting and adjusting limits
-+    public final void limitLeftShooting() {
++    protected final void limitLeftShooting() {
 +        Vec3 movement = this.getDeltaMovement();
 +        int threshold = this.level.sakuraConfig().cannons.restrictions.leftShootingThreshold.or(-1);
 +        if (threshold > 0 && (movement.x != 0.0 || movement.z != 0.0) && this.origin != null) {
@@ -30,7 +30,7 @@ index 37d2ab5f3cfe10478e87d1649d072fe6b69fb914..f9b9d81cc60785488a7cf57caabb4a5f
 +        }
 +    }
 +
-+    public final void limitAdjustMovement(AABB currBoundingBox, double dir, boolean xAdjust, List<VoxelShape> shapes) {
++    private void limitAdjustMovement(AABB currBoundingBox, double dir, boolean xAdjust, List<VoxelShape> shapes) {
 +        int adjustDistance = this.level.sakuraConfig().cannons.restrictions.maxAdjustDistance.or(-1);
 +        if (adjustDistance > 0 && Math.abs(dir) > adjustDistance) {
 +            double minX = Double.NEGATIVE_INFINITY;
@@ -55,7 +55,7 @@ index 37d2ab5f3cfe10478e87d1649d072fe6b69fb914..f9b9d81cc60785488a7cf57caabb4a5f
  
      public Entity(EntityType<?> entityType, Level level) {
          this.type = entityType;
-@@ -1641,6 +1681,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1579,6 +1619,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          }
  
          if (xSmaller && z != 0.0) {
@@ -63,7 +63,7 @@ index 37d2ab5f3cfe10478e87d1649d072fe6b69fb914..f9b9d81cc60785488a7cf57caabb4a5f
              z = this.scanZ(currBoundingBox, z, voxelList, bbList);
              if (z != 0.0) {
                  currBoundingBox = ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.offsetZ(currBoundingBox, z);
-@@ -1648,6 +1689,11 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1586,6 +1627,11 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          }
  
          if (x != 0.0) {
@@ -76,14 +76,14 @@ index 37d2ab5f3cfe10478e87d1649d072fe6b69fb914..f9b9d81cc60785488a7cf57caabb4a5f
              if (x != 0.0) {
                  currBoundingBox = ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.offsetX(currBoundingBox, x);
 diff --git a/net/minecraft/world/entity/item/FallingBlockEntity.java b/net/minecraft/world/entity/item/FallingBlockEntity.java
-index d82e5184515c14a819b70c4d621cc6d93d120cc9..77656b3e8b80b07e9aa44a4d2c9bca468c52d26b 100644
+index 10799fe7188f69c6eb56403ba0942a437139fb84..8ecc4a7b6f7bd997aecc85c5d0c12b0e8926a505 100644
 --- a/net/minecraft/world/entity/item/FallingBlockEntity.java
 +++ b/net/minecraft/world/entity/item/FallingBlockEntity.java
-@@ -263,6 +263,7 @@ public class FallingBlockEntity extends Entity implements me.samsuik.sakura.enti
+@@ -270,6 +270,7 @@ public class FallingBlockEntity extends Entity implements me.samsuik.sakura.enti
              // Sakura end - configure cannon physics
              this.time++;
              this.applyGravity();
 +            this.limitLeftShooting(); // Sakura - configurable left shooting and adjusting limits
-             this.moveStripped(MoverType.SELF, this.getDeltaMovement()); // Sakura - optimise cannon entity movement
+             this.move(MoverType.SELF, this.getDeltaMovement());
              this.applyEffectsFromBlocks();
              // Paper start - Configurable falling blocks height nerf

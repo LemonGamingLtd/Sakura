@@ -5,91 +5,24 @@ Subject: [PATCH] Optimise cannon entity movement
 
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 2a617bd6d5d14cd69b149d6c5f82f8b2c3bc2d5d..8c3e0ca06f89e4d8c08d30272475cdeaca20b3ef 100644
+index 2a617bd6d5d14cd69b149d6c5f82f8b2c3bc2d5d..d2f9708b9166a46adb5009bd6d927cd03f3f9820 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -1141,6 +1141,75 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
-         return this.moveStartZ;
-     }
-     // Paper end - detailed watchdog information
-+    // Sakura start - optimise cannon entity movement; stripped back movement method
-+    public final void moveStripped(MoverType movementType, Vec3 movement) {
-+        ca.spottedleaf.moonrise.common.util.TickThread.ensureTickThread("Cannot move an entity off-main");
-+        if (this.noPhysics) {
-+            this.setPos(this.getX() + movement.x, this.getY() + movement.y, this.getZ() + movement.z);
-+        } else {
-+            if (movementType == MoverType.PISTON) {
-+                movement = this.limitPistonMovement(movement);
-+                if (movement.equals(Vec3.ZERO)) {
-+                    return;
-+                }
-+            }
-+
-+            ProfilerFiller gameprofilerfiller = Profiler.get();
-+            gameprofilerfiller.push("move");
-+            if (this.stuckSpeedMultiplier.lengthSqr() > 1.0E-7D) {
-+                movement = movement.multiply(this.stuckSpeedMultiplier);
-+                this.stuckSpeedMultiplier = Vec3.ZERO;
-+                this.setDeltaMovement(Vec3.ZERO);
-+            }
-+
-+            Vec3 vec3d1 = this.sakura_collide(movement);
-+            double d0 = vec3d1.lengthSqr();
-+
-+            if (d0 > 1.0E-7D || movement.lengthSqr() - d0 < 1.0E-7D) {
-+                if (this.fallDistance != 0.0F && d0 >= 1.0D && !this.isFallingBlock) {
-+                    BlockHitResult clipResult = this.level().clip(new ClipContext(this.position(), this.position().add(vec3d1), ClipContext.Block.FALLDAMAGE_RESETTING, ClipContext.Fluid.WATER, this));
-+                    if (clipResult.getType() != HitResult.Type.MISS) {
-+                        this.resetFallDistance();
-+                    }
-+                }
-+
-+                this.setPos(this.getX() + vec3d1.x, this.getY() + vec3d1.y, this.getZ() + vec3d1.z);
-+            }
-+
-+            gameprofilerfiller.pop();
-+            gameprofilerfiller.push("rest");
-+            boolean movedX = !Mth.equal(movement.x, vec3d1.x);
-+            boolean movedZ = !Mth.equal(movement.z, vec3d1.z);
-+
-+            this.horizontalCollision = movedX || movedZ;
-+            this.verticalCollision = movement.y != vec3d1.y;
-+            this.verticalCollisionBelow = this.verticalCollision && movement.y < 0.0D;
-+
-+            this.setOnGroundWithMovement(this.verticalCollisionBelow, this.horizontalCollision, vec3d1);
-+            BlockPos blockPosBelow = this.getOnPosLegacy();
-+            BlockState blockstate = this.level().getBlockState(blockPosBelow);
-+
-+            this.checkFallDamage(vec3d1.y, this.onGround(), blockstate, blockPosBelow);
-+            if (this.isRemoved()) {
-+                gameprofilerfiller.pop();
-+            } else {
-+                if (this.horizontalCollision) {
-+                    Vec3 vec3d2 = this.getDeltaMovement();
-+                    this.setDeltaMovement(movedX ? 0.0D : vec3d2.x, vec3d2.y, movedZ ? 0.0D : vec3d2.z);
-+                }
-+
-+                Block block = blockstate.getBlock();
-+                if (movement.y != vec3d1.y) { // remove y momentum
-+                    block.updateEntityMovementAfterFallOn(this.level(), this);
-+                }
-+
-+                float f = this.getBlockSpeedFactor();
-+                this.setDeltaMovement(this.getDeltaMovement().multiply((double) f, 1.0D, (double) f));
-+                gameprofilerfiller.pop();
-+            }
-+        }
-+    }
-+    // Sakura end -  optimise cannon entity movement; stripped back movement method
- 
-     public void move(MoverType type, Vec3 movement) {
-         final Vec3 originalMovement = movement; // Paper - Expose pre-collision velocity
-@@ -1488,6 +1557,107 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1186,7 +1186,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+             Vec3 vec3 = this.collide(movement);
+             double d = vec3.lengthSqr();
+             if (d > 1.0E-7 || movement.lengthSqr() - d < 1.0E-7) {
+-                if (this.fallDistance != 0.0F && d >= 1.0) {
++                if (this.fallDistance != 0.0F && d >= 1.0 && !this.isFallingBlock) { // Sakura - optimise cannon entity movement
+                     BlockHitResult blockHitResult = this.level()
+                         .clip(
+                             new ClipContext(this.position(), this.position().add(vec3), ClipContext.Block.FALLDAMAGE_RESETTING, ClipContext.Fluid.WATER, this)
+@@ -1488,6 +1488,131 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          return distance;
      }
  
 +    // Sakura start - optimise cannon entity movement
-+    private Vec3 sakura_collide(Vec3 movement) {
++    protected final Vec3 sakura_collide(Vec3 movement) {
 +        if (movement.x == 0.0 && movement.y == 0.0 && movement.z == 0.0) {
 +            return movement;
 +        }
@@ -116,7 +49,7 @@ index 2a617bd6d5d14cd69b149d6c5f82f8b2c3bc2d5d..8c3e0ca06f89e4d8c08d30272475cdea
 +        } else {
 +            bb = currBoundingBox.expandTowards(movement.x, movement.y, movement.z);
 +        }
-+        this.collectCollisions(bb, voxelList, bbList);
++        this.collectCollisions(bb, voxelList, bbList, ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.COLLISION_FLAG_CHECK_BORDER);
 +        return ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.performCollisions(movement, currBoundingBox, voxelList, bbList);
 +    }
 +
@@ -155,11 +88,11 @@ index 2a617bd6d5d14cd69b149d6c5f82f8b2c3bc2d5d..8c3e0ca06f89e4d8c08d30272475cdea
 +        return new Vec3(x, y, z);
 +    }
 +
-+    private void collectCollisions(AABB collisionBox, List<VoxelShape> voxelList, List<AABB> bbList) {
++    private void collectCollisions(AABB collisionBox, List<VoxelShape> voxelList, List<AABB> bbList, int flags) {
 +        // Copied from the collide method below
 +        ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.getCollisionsForBlocksOrWorldBorder(
 +            this.level, this, collisionBox, voxelList, bbList,
-+            ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.COLLISION_FLAG_CHECK_BORDER  | this.getExtraCollisionFlags(), null // Sakura - load chunks on movement
++            flags  | this.getExtraCollisionFlags(), null // Sakura - load chunks on movement
 +        );
 +
 +        ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.getEntityHardCollisions(
@@ -168,24 +101,48 @@ index 2a617bd6d5d14cd69b149d6c5f82f8b2c3bc2d5d..8c3e0ca06f89e4d8c08d30272475cdea
 +    }
 +
 +    private double scanX(AABB currBoundingBox, double x, List<VoxelShape> voxelList, List<AABB> bbList) {
-+        AABB scanBox = currBoundingBox.expandTowards(x, 0.0, 0.0);
-+        this.collectCollisions(scanBox, voxelList, bbList);
++        AABB scanBox = cutBoundingBoxX(currBoundingBox, x);
++        this.collectCollisions(scanBox, voxelList, bbList, ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.COLLISION_FLAG_CHECK_BORDER);
 +        x = ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.performAABBCollisionsX(currBoundingBox, x, bbList);
 +        return ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.performVoxelCollisionsX(currBoundingBox, x, voxelList);
 +    }
 +
 +    private double scanY(AABB currBoundingBox, double y, List<VoxelShape> voxelList, List<AABB> bbList) {
-+        AABB scanBox = currBoundingBox.expandTowards(0.0, y, 0.0);
-+        this.collectCollisions(scanBox, voxelList, bbList);
++        AABB scanBox = cutBoundingBoxY(currBoundingBox, y);
++        this.collectCollisions(scanBox, voxelList, bbList, 0);
 +        y = ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.performAABBCollisionsY(currBoundingBox, y, bbList);
 +        return ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.performVoxelCollisionsY(currBoundingBox, y, voxelList);
 +    }
 +
 +    private double scanZ(AABB currBoundingBox, double z, List<VoxelShape> voxelList, List<AABB> bbList) {
-+        AABB scanBox = currBoundingBox.expandTowards(0.0, 0.0, z);
-+        this.collectCollisions(scanBox, voxelList, bbList);
++        AABB scanBox = cutBoundingBoxZ(currBoundingBox, z);
++        this.collectCollisions(scanBox, voxelList, bbList, ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.COLLISION_FLAG_CHECK_BORDER);
 +        z = ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.performAABBCollisionsZ(currBoundingBox, z, bbList);
 +        return ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.performVoxelCollisionsZ(currBoundingBox, z, voxelList);
++    }
++
++    private static AABB cutBoundingBoxX(AABB bb, double x) {
++        if (x > 0.0) {
++            return ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.cutRight(bb, x);
++        } else {
++            return ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.cutLeft(bb, x);
++        }
++    }
++
++    private static AABB cutBoundingBoxY(AABB bb, double y) {
++        if (y > 0.0) {
++            return ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.cutUpwards(bb, y);
++        } else {
++            return ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.cutDownwards(bb, y);
++        }
++    }
++
++    private static AABB cutBoundingBoxZ(AABB bb, double z) {
++        if (z > 0.0) {
++            return ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.cutForwards(bb, z);
++        } else {
++            return ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.cutBackwards(bb, z);
++        }
 +    }
 +    // Sakura end - optimise cannon entity movement
 +
@@ -193,28 +150,36 @@ index 2a617bd6d5d14cd69b149d6c5f82f8b2c3bc2d5d..8c3e0ca06f89e4d8c08d30272475cdea
      protected Vec3 collide(Vec3 movement) {
          final boolean xZero = movement.x == 0.0;
 diff --git a/net/minecraft/world/entity/item/FallingBlockEntity.java b/net/minecraft/world/entity/item/FallingBlockEntity.java
-index 1d9afcf995ee734f13803e26956439e5c3450f44..c6836ab9a2789520931d2119aeebeaf2179f27fa 100644
+index 58baa1a72ccdc6557257aa2c9f652200cb9c4c70..af42bea9fb18bb0f6e576d4344cdee2cd0e9a4ef 100644
 --- a/net/minecraft/world/entity/item/FallingBlockEntity.java
 +++ b/net/minecraft/world/entity/item/FallingBlockEntity.java
-@@ -213,7 +213,7 @@ public class FallingBlockEntity extends Entity implements me.samsuik.sakura.enti
-             Block block = this.blockState.getBlock();
-             this.time++;
-             this.applyGravity();
--            this.move(MoverType.SELF, this.getDeltaMovement());
-+            this.moveStripped(MoverType.SELF, this.getDeltaMovement()); // Sakura - optimise cannon entity movement
-             this.applyEffectsFromBlocks();
-             // Paper start - Configurable falling blocks height nerf
-             if (this.level().paperConfig().fixes.fallingBlockHeightNerf.test(v -> this.getY() > v)) {
+@@ -119,6 +119,12 @@ public class FallingBlockEntity extends Entity implements me.samsuik.sakura.enti
+         return itemEntity;
+     }
+     // Sakura end - merge cannon entities
++    // Sakura start - optimise cannon entity movement
++    @Override
++    protected final Vec3 collide(Vec3 movement) {
++        return this.sakura_collide(movement);
++    }
++    // Sakura end - optimise cannon entity movement
+ 
+     public FallingBlockEntity(EntityType<? extends FallingBlockEntity> entityType, Level level) {
+         super(entityType, level);
 diff --git a/net/minecraft/world/entity/item/PrimedTnt.java b/net/minecraft/world/entity/item/PrimedTnt.java
-index c88fe6c244f6a88f1e42822dd0795187dcc3b655..2ee04093d7c8b61a48913bd4c929528e357aa971 100644
+index cb972f9d619c7acc8bbed4cc18513ad4b97f19ed..d23193d3f11505cea428414487f891ab584ad071 100644
 --- a/net/minecraft/world/entity/item/PrimedTnt.java
 +++ b/net/minecraft/world/entity/item/PrimedTnt.java
-@@ -148,7 +148,7 @@ public class PrimedTnt extends Entity implements TraceableEntity, me.samsuik.sak
-         // Sakura - remove max tnt per tick
-         this.handlePortal();
-         this.applyGravity();
--        this.move(MoverType.SELF, this.getDeltaMovement());
-+        this.moveStripped(MoverType.SELF, this.getDeltaMovement()); // Sakura - optimise cannon entity movement
-         this.applyEffectsFromBlocks();
-         // Paper start - Configurable TNT height nerf
-         if (this.level().paperConfig().fixes.tntEntityHeightNerf.test(v -> this.getY() > v)) {
+@@ -80,6 +80,12 @@ public class PrimedTnt extends Entity implements TraceableEntity, me.samsuik.sak
+         this.mergeData.setCount(count); // Sakura - specialised explosions
+     }
+     // Sakura end - merge cannon entities
++    // Sakura start - optimise cannon entity movement
++    @Override
++    protected final net.minecraft.world.phys.Vec3 collide(net.minecraft.world.phys.Vec3 movement) {
++        return this.sakura_collide(movement);
++    }
++    // Sakura end - optimise cannon entity movement
+ 
+     public PrimedTnt(EntityType<? extends PrimedTnt> entityType, Level level) {
+         super(entityType, level);

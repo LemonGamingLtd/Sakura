@@ -5,10 +5,10 @@ Subject: [PATCH] Optimise check inside blocks and traverse blocks
 
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index f9b9d81cc60785488a7cf57caabb4a5fdd84ecae..17e5148f7fb273e6de3ab5f159cbfc5d4819eb9f 100644
+index dd56f4e128793006c370514007755bdfb9d656d0..052cb99dd690f2ba6138d6a37bc7f3309c6c38bf 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -1930,6 +1930,11 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1892,6 +1892,11 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
      private void checkInsideBlocks(List<Entity.Movement> movements, Set<BlockState> blocksInside) {
          if (this.isAffectedByBlocks()) {
              LongSet set = this.visitedBlocks;
@@ -20,7 +20,7 @@ index f9b9d81cc60785488a7cf57caabb4a5fdd84ecae..17e5148f7fb273e6de3ab5f159cbfc5d
  
              for (Entity.Movement movement : movements) {
                  Vec3 vec3 = movement.from();
-@@ -1949,7 +1954,19 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1911,7 +1916,19 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
                          return;
                      }
  
