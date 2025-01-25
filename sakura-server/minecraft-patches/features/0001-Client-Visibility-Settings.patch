@@ -199,10 +199,10 @@ index e71c1a564e5d4ac43460f89879ff709ee685706f..7d2fe5df38db1d492ae65aa729592002
          }
      }
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 27ef385a85b13ceb58e8d149849983107c539b31..c44c9399ddbb34408b255550a98f5c54ecdf6aff 100644
+index 5738709f5fa6fee2ed88ba41a7718c976b780e96..b8953cdfe5de16f7e5aab1fc2b06cb53693386e1 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -3185,6 +3185,7 @@ public class ServerGamePacketListenerImpl
+@@ -3192,6 +3192,7 @@ public class ServerGamePacketListenerImpl
  
                          event.setCancelled(cancelled);
                          AbstractContainerMenu oldContainer = this.player.containerMenu; // SPIGOT-1224
@@ -226,7 +226,7 @@ index 54a3ac38b70a9733173fb2ce4a7f86b534de1136..c4ace72f2eaf6a15c98490d18d3478b9
      public Entity(EntityType<?> entityType, Level level) {
          this.type = entityType;
 diff --git a/net/minecraft/world/entity/item/FallingBlockEntity.java b/net/minecraft/world/entity/item/FallingBlockEntity.java
-index 6b708503367f989665b89a39d367935c80210d1d..5462a423be1317a306ca12ed10edcab636cd0c7f 100644
+index 6ccc7810c81e5acb81b0cc21aeeeb464214a7b1c..a36c1c93012ce825b3dfdcf88e4da86c149bfa65 100644
 --- a/net/minecraft/world/entity/item/FallingBlockEntity.java
 +++ b/net/minecraft/world/entity/item/FallingBlockEntity.java
 @@ -73,6 +73,7 @@ public class FallingBlockEntity extends Entity {
@@ -238,7 +238,7 @@ index 6b708503367f989665b89a39d367935c80210d1d..5462a423be1317a306ca12ed10edcab6
  
      public FallingBlockEntity(Level level, double x, double y, double z, BlockState state) {
 diff --git a/net/minecraft/world/entity/item/PrimedTnt.java b/net/minecraft/world/entity/item/PrimedTnt.java
-index 3c673e5b8a52e322d41ed442ed06337cacb58771..8118911019f7fc81218a656e1ecbd7eada505741 100644
+index 6f14584c5e06864d449ebc045f4875476bbe4320..c5b9ebbd159284ae2650b0698e06011104d4b70f 100644
 --- a/net/minecraft/world/entity/item/PrimedTnt.java
 +++ b/net/minecraft/world/entity/item/PrimedTnt.java
 @@ -61,6 +61,7 @@ public class PrimedTnt extends Entity implements TraceableEntity {
