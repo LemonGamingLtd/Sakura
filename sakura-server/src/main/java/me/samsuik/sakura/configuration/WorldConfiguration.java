@@ -79,11 +79,6 @@ public final class WorldConfiguration extends ConfigurationPart {
             public boolean preventAgainstBorder = false;
             @NestedSetting({"prevent-stacking", "world-height"})
             public boolean preventAtWorldHeight = false;
-
-            public boolean isFallingBlockInBounds(FallingBlockEntity entity) {
-                return (!this.preventAgainstBorder || !ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.isCollidingWithBorder(entity.level().getWorldBorder(), entity.getBoundingBox().inflate(0.01)))
-                    && (!this.preventAtWorldHeight || entity.blockPosition().getY() < entity.level().getMaxY() - 1);
-            }
         }
 
         public Explosion explosion = new Explosion();
