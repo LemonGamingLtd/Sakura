@@ -73,7 +73,7 @@ public abstract class SpecialisedExplosion<T extends Entity> extends ServerExplo
             this.getHitPlayers().clear();
         }
 
-        return !explodedPositions.isEmpty();
+        return !explodedPositions.isEmpty() && !this.wasCanceled;
     }
 
     protected void postExplosion(List<BlockPos> foundBlocks, boolean destroyedBlocks) {

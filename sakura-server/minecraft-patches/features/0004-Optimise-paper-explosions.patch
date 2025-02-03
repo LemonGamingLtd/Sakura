@@ -4,6 +4,41 @@ Date: Fri, 19 Apr 2024 22:20:03 +0100
 Subject: [PATCH] Optimise paper explosions
 
 
+diff --git a/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java b/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java
+index d21ce54ebb5724c04eadf56a2cde701d5eeb5db2..f214229185c9b54f54b146487232b432ef1314e6 100644
+--- a/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java
++++ b/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java
+@@ -297,6 +297,12 @@ public final class ChunkEntitySlices {
+         return true;
+     }
+ 
++    // Sakura start - optimise paper explosions; expose slice entity list
++    public Entity[] getSectionEntities(int sectionY) {
++        return this.allEntities.getSectionEntities(sectionY);
++    }
++    // Sakura end - optimise paper explosions; expose slice entity list
++
+     public void getHardCollidingEntities(final Entity except, final AABB box, final List<Entity> into, final Predicate<? super Entity> predicate) {
+         this.hardCollidingEntities.getEntities(except, box, into, predicate);
+     }
+@@ -495,6 +501,17 @@ public final class ChunkEntitySlices {
+             }
+         }
+ 
++        // Sakura start - optimise paper explosions; expose slice entity list
++        public Entity[] getSectionEntities(int sectionY) {
++            final BasicEntityList<Entity> list = this.entitiesBySection[sectionY - this.slices.minSection];
++            if (list != null) {
++                return list.storage;
++            } else {
++                return new Entity[0];
++            }
++        }
++        // Sakura end - optimise paper explosions; expose slice entity list
++
+         public void getEntities(final Entity except, final AABB box, final List<Entity> into, final Predicate<? super Entity> predicate) {
+             if (this.count == 0) {
+                 return;
 diff --git a/net/minecraft/world/level/ServerExplosion.java b/net/minecraft/world/level/ServerExplosion.java
 index df584256e133bfc0b7effd56961f1b91c264c7bd..9f06e32101f494d94d9210210255d5d72ca4ff36 100644
 --- a/net/minecraft/world/level/ServerExplosion.java

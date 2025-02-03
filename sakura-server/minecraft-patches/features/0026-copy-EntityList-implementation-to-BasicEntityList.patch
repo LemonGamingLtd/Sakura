@@ -1,19 +1,14 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Samsuik <kfian294ma4@gmail.com>
+Date: Sun, 2 Feb 2025 17:05:05 +0000
+Subject: [PATCH] copy EntityList implementation to BasicEntityList
+
+
+diff --git a/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java b/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java
+index a242b68b6d603d3da46d9e0635a86a07a7149b3b..2cf9c56d234b32a1ae95bdde73fd5f6aaa2ca82c 100644
 --- a/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java
 +++ b/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java
-@@ -297,6 +_,12 @@
-         return true;
-     }
- 
-+    // Sakura start - add utility methods to entity slices
-+    public Entity[] getSectionEntities(int sectionY) {
-+        return this.allEntities.getSectionEntities(sectionY);
-+    }
-+    // Sakura end - add utility methods to entity slices
-+
-     public void getHardCollidingEntities(final Entity except, final AABB box, final List<Entity> into, final Predicate<? super Entity> predicate) {
-         this.hardCollidingEntities.getEntities(except, box, into, predicate);
-     }
-@@ -383,6 +_,13 @@
+@@ -396,6 +396,13 @@ public final class ChunkEntitySlices {
  
          private E[] storage;
          private int size;
@@ -27,7 +22,7 @@
  
          public BasicEntityList() {
              this(0);
-@@ -403,6 +_,7 @@
+@@ -416,6 +423,7 @@ public final class ChunkEntitySlices {
          private void resize() {
              if (this.storage == EMPTY) {
                  this.storage = (E[])new Entity[DEFAULT_CAPACITY];
@@ -35,7 +30,7 @@
              } else {
                  this.storage = Arrays.copyOf(this.storage, this.storage.length * 2);
              }
-@@ -416,6 +_,7 @@
+@@ -429,6 +437,7 @@ public final class ChunkEntitySlices {
              } else {
                  this.storage[idx] = entity;
              }
@@ -43,32 +38,27 @@
          }
  
          public int indexOf(final E entity) {
-@@ -431,24 +_,32 @@
+@@ -444,24 +453,32 @@ public final class ChunkEntitySlices {
          }
  
          public boolean remove(final E entity) {
 -            final int idx = this.indexOf(entity);
 -            if (idx == -1) {
--                return false;
--            }
--
++            // Sakura start - use methods from EntityList
++            if (this.entityToIndex == null) {
+                 return false;
+             }
+ 
 -            final int size = --this.size;
 -            final E[] storage = this.storage;
 -            if (idx != size) {
 -                System.arraycopy(storage, idx + 1, storage, idx, size - idx);
--            }
--
--            storage[size] = null;
-+            // Sakura start - use methods from EntityList
-+            if (this.entityToIndex == null) {
-+                return false;
-+            }
-+
 +            final int index = this.entityToIndex.remove(entity.getId());
 +            if (index == Integer.MIN_VALUE) {
 +                return false;
-+            }
-+
+             }
+ 
+-            storage[size] = null;
 +            // move the entity at the end to this index
 +            final int endIndex = --this.size;
 +            final E end = this.storage[endIndex];
@@ -89,22 +79,3 @@
          }
      }
  
-@@ -494,6 +_,18 @@
-                 this.entitiesBySection[sectionIndex] = null;
-             }
-         }
-+
-+        // Sakura start - add utility methods to entity slices
-+        public Entity[] getSectionEntities(int sectionY) {
-+            BasicEntityList<Entity> list = this.entitiesBySection[sectionY - this.slices.minSection];
-+
-+            if (list != null) {
-+                return list.storage;
-+            }
-+
-+            return new Entity[0];
-+        }
-+        // Sakura end - add utility methods to entity slices
- 
-         public void getEntities(final Entity except, final AABB box, final List<Entity> into, final Predicate<? super Entity> predicate) {
-             if (this.count == 0) {

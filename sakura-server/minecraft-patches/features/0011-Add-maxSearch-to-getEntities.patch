@@ -5,7 +5,7 @@ Subject: [PATCH] Add maxSearch to getEntities
 
 
 diff --git a/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java b/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java
-index 39148fe540d616cdd4d63c4d1a02b422cab0f6eb..50a551d5bcac9b2b6644d7b43e625185090657a6 100644
+index f214229185c9b54f54b146487232b432ef1314e6..a242b68b6d603d3da46d9e0635a86a07a7149b3b 100644
 --- a/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java
 +++ b/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java
 @@ -314,7 +314,14 @@ public final class ChunkEntitySlices {
@@ -24,7 +24,7 @@ index 39148fe540d616cdd4d63c4d1a02b422cab0f6eb..50a551d5bcac9b2b6644d7b43e625185
      }
  
      public <T extends Entity> void getEntities(final EntityType<?> type, final AABB box, final List<? super T> into,
-@@ -570,6 +577,13 @@ public final class ChunkEntitySlices {
+@@ -552,6 +559,13 @@ public final class ChunkEntitySlices {
  
          public boolean getEntitiesLimited(final Entity except, final AABB box, final List<Entity> into, final Predicate<? super Entity> predicate,
                                            final int maxCount) {
@@ -38,7 +38,7 @@ index 39148fe540d616cdd4d63c4d1a02b422cab0f6eb..50a551d5bcac9b2b6644d7b43e625185
              if (this.count == 0) {
                  return false;
              }
-@@ -591,8 +605,14 @@ public final class ChunkEntitySlices {
+@@ -573,8 +587,14 @@ public final class ChunkEntitySlices {
  
                  final Entity[] storage = list.storage;
  

@@ -75,23 +75,13 @@ index 88a83d0b81fc65b4091c7f2c44820b4913356a2f..dd56f4e128793006c370514007755bdf
              x = this.scanX(currBoundingBox, x, voxelList, bbList);
              if (x != 0.0) {
                  currBoundingBox = ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.offsetX(currBoundingBox, x);
-<<<<<<< HEAD:sakura-server/minecraft-patches/features/0022-Configurable-left-shooting-and-adjusting-limits.patch
 diff --git a/net/minecraft/world/entity/item/FallingBlockEntity.java b/net/minecraft/world/entity/item/FallingBlockEntity.java
-index 10799fe7188f69c6eb56403ba0942a437139fb84..8ecc4a7b6f7bd997aecc85c5d0c12b0e8926a505 100644
+index e4e708609799799ed2e7dd516ba8bf61e98bc022..5b7fb6a1c39121bbfc7ef6631aea741f9bd0e244 100644
 --- a/net/minecraft/world/entity/item/FallingBlockEntity.java
 +++ b/net/minecraft/world/entity/item/FallingBlockEntity.java
-@@ -270,6 +270,7 @@ public class FallingBlockEntity extends Entity implements me.samsuik.sakura.enti
+@@ -284,6 +284,7 @@ public class FallingBlockEntity extends Entity implements me.samsuik.sakura.enti
              // Sakura end - configure cannon physics
              this.time++;
-=======
-diff --git a/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java b/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
-index eeca55d482787ff4f032db46a6934e98865f14aa..6d13b037a4e2c0d677c1cb4b39cf6d50c659c87e 100644
---- a/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
-+++ b/src/main/java/net/minecraft/world/entity/item/FallingBlockEntity.java
-@@ -276,6 +276,7 @@ public class FallingBlockEntity extends Entity implements me.samsuik.sakura.enti
-             // Sakura end - physics version api
-             ++this.time;
->>>>>>> db70cd2 (Fix falling block stacking restrictions when using legacy physics):patches/server/0076-Configurable-left-shooting-and-adjusting-limits.patch
              this.applyGravity();
 +            this.limitLeftShooting(); // Sakura - configurable left shooting and adjusting limits
              this.move(MoverType.SELF, this.getDeltaMovement());

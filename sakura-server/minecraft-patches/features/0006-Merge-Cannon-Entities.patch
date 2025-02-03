@@ -85,7 +85,7 @@ index 3671003b9fdf787fc5095d12df9ee2f15bd998f1..2a617bd6d5d14cd69b149d6c5f82f8b2
          if (!(this instanceof ServerPlayer) && removalReason != RemovalReason.CHANGED_DIMENSION && !alreadyRemoved) {
              // Players need to be special cased, because they are regularly removed from the world
 diff --git a/net/minecraft/world/entity/item/FallingBlockEntity.java b/net/minecraft/world/entity/item/FallingBlockEntity.java
-index 4836be29ff5e87e4f2b9beb0d4a9943281ab5262..1d9afcf995ee734f13803e26956439e5c3450f44 100644
+index b9b8ed9c5e16a703e41997e1a781796363bcf5aa..aa81292b862e22e276cabc9d7611362cbd91602d 100644
 --- a/net/minecraft/world/entity/item/FallingBlockEntity.java
 +++ b/net/minecraft/world/entity/item/FallingBlockEntity.java
 @@ -54,7 +54,7 @@ import org.bukkit.craftbukkit.event.CraftEventFactory;
@@ -160,7 +160,7 @@ index 4836be29ff5e87e4f2b9beb0d4a9943281ab5262..1d9afcf995ee734f13803e26956439e5
      }
  
      public FallingBlockEntity(Level level, double x, double y, double z, BlockState state) {
-@@ -222,6 +273,7 @@ public class FallingBlockEntity extends Entity {
+@@ -236,6 +287,7 @@ public class FallingBlockEntity extends Entity {
                                      return;
                                  }
                                  // CraftBukkit end
@@ -168,7 +168,7 @@ index 4836be29ff5e87e4f2b9beb0d4a9943281ab5262..1d9afcf995ee734f13803e26956439e5
                                  if (this.level().setBlock(blockPos, this.blockState, 3)) {
                                      ((ServerLevel)this.level())
                                          .getChunkSource()
-@@ -328,6 +380,7 @@ public class FallingBlockEntity extends Entity {
+@@ -342,6 +394,7 @@ public class FallingBlockEntity extends Entity {
  
          compound.putBoolean("CancelDrop", this.cancelDrop);
          if (!this.autoExpire) compound.putBoolean("Paper.AutoExpire", false); // Paper - Expand FallingBlock API
@@ -176,7 +176,7 @@ index 4836be29ff5e87e4f2b9beb0d4a9943281ab5262..1d9afcf995ee734f13803e26956439e5
      }
  
      @Override
-@@ -360,6 +413,11 @@ public class FallingBlockEntity extends Entity {
+@@ -374,6 +427,11 @@ public class FallingBlockEntity extends Entity {
              this.autoExpire = compound.getBoolean("Paper.AutoExpire");
          }
          // Paper end - Expand FallingBlock API
@@ -189,7 +189,7 @@ index 4836be29ff5e87e4f2b9beb0d4a9943281ab5262..1d9afcf995ee734f13803e26956439e5
  
      public void setHurtsEntities(float fallDamagePerDistance, int fallDamageMax) {
 diff --git a/net/minecraft/world/entity/item/PrimedTnt.java b/net/minecraft/world/entity/item/PrimedTnt.java
-index 9e9463d62aa1618a4a749bb7e2636c9b090991e9..b378b4c4930c4ebd55795591aca173fd1fee46c9 100644
+index b6467f9ff64a76104076a01bfd56852ce712d95b..e6aa1d1a5fc5cd2ffc156125c4eef2d0d1aeef4a 100644
 --- a/net/minecraft/world/entity/item/PrimedTnt.java
 +++ b/net/minecraft/world/entity/item/PrimedTnt.java
 @@ -33,7 +33,7 @@ import org.bukkit.event.entity.EntityRemoveEvent;

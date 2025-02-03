@@ -12,7 +12,7 @@
      }
  
      public FallingBlockEntity(Level level, double x, double y, double z, BlockState state) {
-@@ -85,6 +_,13 @@
+@@ -85,6 +_,27 @@
          this.setStartPos(this.blockPosition());
      }
  
@@ -22,6 +22,20 @@
 +        return this.heightParity ? this.getY() : super.getEyeY();
 +    }
 +    // Sakura end - falling block height parity api
++    // Sakura start - falling block stacking restrictions
++    private static boolean isFallingBlockInBounds(Level level, BlockPos blockPosition) {
++        if (level.sakuraConfig().cannons.sand.preventAtWorldHeight && blockPosition.getY() >= level.getMaxY() - 1) {
++            return false;
++        }
++
++        Vec3 center = blockPosition.getBottomCenter();
++        if (level.sakuraConfig().cannons.sand.preventAgainstBorder && !level.getWorldBorder().isWithinBounds(center.x(), center.z(), -1.0)) {
++            return false;
++        }
++
++        return true;
++    }
++    // Sakura end - falling block stacking restrictions
 +
      public static FallingBlockEntity fall(Level level, BlockPos pos, BlockState blockState) {
          FallingBlockEntity fallingBlockEntity = new FallingBlockEntity(
@@ -49,7 +63,7 @@
                              boolean flag2 = FallingBlock.isFree(this.level().getBlockState(blockPos.below())) && (!flag || !flag1);
                              boolean flag3 = this.blockState.canSurvive(this.level(), blockPos) && !flag2;
 -                            if (canBeReplaced && flag3) {
-+                            if (canBeReplaced && flag3 && this.level().sakuraConfig().cannons.sand.isFallingBlockInBounds(this)) { // Sakura - falling block stacking restrictions
++                            if (canBeReplaced && flag3 && isFallingBlockInBounds(this.level(), blockPos)) { // Sakura - falling block stacking restrictions
                                  if (this.blockState.hasProperty(BlockStateProperties.WATERLOGGED)
                                      && this.level().getFluidState(blockPos).getType() == Fluids.WATER) {
                                      this.blockState = this.blockState.setValue(BlockStateProperties.WATERLOGGED, Boolean.valueOf(true));

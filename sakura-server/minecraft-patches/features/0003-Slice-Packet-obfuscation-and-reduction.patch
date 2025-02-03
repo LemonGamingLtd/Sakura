@@ -166,10 +166,10 @@ index 00b3e16d5465547e7d4f8126664fb7eda3b3c568..7bbc4a982f442fdb9821221442737ae6
      }
  
 diff --git a/net/minecraft/world/entity/item/FallingBlockEntity.java b/net/minecraft/world/entity/item/FallingBlockEntity.java
-index 066884516b6c9120433864b043276836e087978d..17e810e201fab2e400ac3685e15fa98dcf4c1978 100644
+index fcb7b396db2605146be99f2b14da6806cdaa0f44..b9b8ed9c5e16a703e41997e1a781796363bcf5aa 100644
 --- a/net/minecraft/world/entity/item/FallingBlockEntity.java
 +++ b/net/minecraft/world/entity/item/FallingBlockEntity.java
-@@ -127,7 +127,7 @@ public class FallingBlockEntity extends Entity {
+@@ -141,7 +141,7 @@ public class FallingBlockEntity extends Entity {
      }
  
      public void setStartPos(BlockPos startPos) {
@@ -196,7 +196,7 @@ index 3c74cb8d4b71fcfa600742c21d6ad8e3942a2ab7..b6467f9ff64a76104076a01bfd56852c
  
      public int getFuse() {
 diff --git a/net/minecraft/world/entity/player/Player.java b/net/minecraft/world/entity/player/Player.java
-index ee6d5d3ccd55cffdeb96eeb77f648fd82feceb80..09209e5a9b61244a0877818c0841d19aee72522b 100644
+index c1630a2ea3c89f9acc9f3f20faacae769e7449d1..6f3c0f5c68af30619fd46204f930c0da2f789670 100644
 --- a/net/minecraft/world/entity/player/Player.java
 +++ b/net/minecraft/world/entity/player/Player.java
 @@ -673,7 +673,7 @@ public abstract class Player extends LivingEntity {

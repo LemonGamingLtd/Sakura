@@ -28,7 +28,7 @@ public final class TntExplosion extends SpecialisedExplosion<PrimedTnt> {
     private final Vec3 originalPosition;
     private final List<Vec3> explosions = new ObjectArrayList<>();
     private AABB bounds;
-    private int wrapped = 0;
+    private int swinging = 0;
     private boolean moved = false;
 
     public TntExplosion(ServerLevel level, PrimedTnt tnt, @Nullable DamageSource damageSource, @Nullable ExplosionDamageCalculator behavior, Vec3 center, float power, boolean createFire, BlockInteraction destructionType, Consumer<SpecialisedExplosion<PrimedTnt>> applyEffects) {
@@ -47,7 +47,7 @@ public final class TntExplosion extends SpecialisedExplosion<PrimedTnt> {
     @Override
     protected int getExplosionCount() {
         if (this.cause.getMergeEntityData().getMergeLevel() == MergeLevel.NONE) {
-            this.mergeEntitiesBeforeExplosion();
+            this.mergeEntitiesBeforeExploding();
         }
         return this.cause.getMergeEntityData().getCount();
     }
@@ -55,44 +55,33 @@ public final class TntExplosion extends SpecialisedExplosion<PrimedTnt> {
     @Override
     protected void startExplosion() {
         for (int i = this.getExplosionCount() - 1; i >= 0; --i) {
-            Vec3 previousMomentum = this.cause.entityState().momentum();
             boolean lastCycle = i == 0;
-            List<BlockPos> toBlow = this.midExplosion(previousMomentum, lastCycle); // search for blocks and impact entities
-            boolean destroyedBlocks = this.finalizeExplosionAndParticles(toBlow);
+            List<BlockPos> toBlow = this.midExplosion(lastCycle); // search for blocks and impact entities
+            boolean destroyedBlocks = this.finalizeExplosionAndParticles(toBlow); // call events, break blocks and send particles
 
             if (!lastCycle) {
                 EntityState entityState = this.nextSourceVelocity();
-                this.postExplosion(toBlow, destroyedBlocks); // update wrapped, clear recent block cache
+                this.postExplosion(toBlow, destroyedBlocks);
                 this.updateExplosionPosition(entityState, destroyedBlocks);
             }
         }
     }
 
-    private List<BlockPos> midExplosion(Vec3 previousMomentum, boolean lastCycle) {
+    private List<BlockPos> midExplosion(boolean lastCycle) {
         final List<BlockPos> explodedPositions;
-        if (this.wrapped < FOUND_ALL_BLOCKS) {
+        if (this.swinging < FOUND_ALL_BLOCKS) {
             explodedPositions = this.calculateExplodedPositions();
         } else {
             explodedPositions = List.of();
         }
 
-        if (this.wrapped < ALL_DIRECTIONS) {
-            Vec3 momentum = this.cause.entityState().momentum();
-            for (Direction.Axis axis : Direction.Axis.VALUES) {
-                double current  = momentum.get(axis);
-                double previous = previousMomentum.get(axis);
-                if (current == previous || current * previous < 0) {
-                    this.wrapped |= 1 << axis.ordinal();
-                }
-            }
-        }
+        Vec3 center = this.center;
+        this.bounds = this.bounds.expand(center);
+        this.explosions.add(center);
 
-        this.bounds = this.bounds.expand(this.center);
-        this.explosions.add(this.center);
-
-        if (lastCycle || this.requiresImpactEntities(explodedPositions, this.center)) {
+        if (lastCycle || this.requiresImpactEntities(explodedPositions, center)) {
             this.locateAndImpactEntitiesInBounds();
-            this.bounds = new AABB(this.center, this.center);
+            this.bounds = new AABB(center, center);
             this.explosions.clear();
         }
 
@@ -102,12 +91,23 @@ public final class TntExplosion extends SpecialisedExplosion<PrimedTnt> {
     @Override
     protected void postExplosion(List<BlockPos> foundBlocks, boolean destroyedBlocks) {
         super.postExplosion(foundBlocks, destroyedBlocks);
-        // Update wrapped, this is for tracking swinging and if blocks are found
-        if (this.wrapped >= ALL_DIRECTIONS) {
+        if (this.swinging >= ALL_DIRECTIONS) {
+            // Increment "swinging" if no blocks have been found, and it has swung in every direction.
+            // This is used to skip expensive exploded block calculations.
             if (!destroyedBlocks && this.level().sakuraConfig().cannons.explosion.avoidRedundantBlockSearches) {
-                this.wrapped++;
+                this.swinging++;
             } else {
-                this.wrapped = ALL_DIRECTIONS;
+                this.swinging = ALL_DIRECTIONS;
+            }
+        }
+    }
+
+    private void updateSwingingState(Vec3 momentum, Vec3 previousMomentum) {
+        for (Direction.Axis axis : Direction.Axis.VALUES) {
+            double current  = momentum.get(axis);
+            double previous = previousMomentum.get(axis);
+            if (current == previous || current * previous <= 0.0) {
+                this.swinging |= 1 << axis.ordinal();
             }
         }
     }
@@ -127,6 +127,7 @@ public final class TntExplosion extends SpecialisedExplosion<PrimedTnt> {
 
     private void updateExplosionPosition(EntityState entityState, boolean destroyedBlocks) {
         // Before setting entity state, otherwise we might cause issues.
+        Vec3 entityMomentum = this.cause.entityState().momentum();
         final boolean hasMoved;
         if (this.moved) {
             hasMoved = true;
@@ -134,7 +135,7 @@ public final class TntExplosion extends SpecialisedExplosion<PrimedTnt> {
             hasMoved = false;
         } else {
             double newMomentum = entityState.momentum().lengthSqr();
-            double oldMomentum = this.cause.entityState().momentum().lengthSqr();
+            double oldMomentum = entityMomentum.lengthSqr();
             hasMoved = oldMomentum <= Math.pow(this.radius() * 2.0 + 1.0, 2.0) || newMomentum <= oldMomentum;
         }
 
@@ -146,12 +147,19 @@ public final class TntExplosion extends SpecialisedExplosion<PrimedTnt> {
         if (destroyedBlocks || hasMoved) {
             this.cause.setFuse(100);
             this.cause.tick();
-            this.moved |= !this.center.equals(this.originalPosition);
             this.recalculateExplosionPosition();
+            this.moved |= !this.center.equals(this.originalPosition);
+        }
+
+        // Update swinging state
+        if (this.moved) {
+            this.updateSwingingState(entityState.momentum(), entityMomentum);
+        } else {
+            this.swinging = ALL_DIRECTIONS;
         }
     }
 
-    private void mergeEntitiesBeforeExplosion() {
+    private void mergeEntitiesBeforeExploding() {
         IteratorSafeOrderedReferenceSet<Entity> entities = this.level().entityTickList.entities;
         int index = entities.indexOf(this.cause);
 
@@ -173,10 +181,10 @@ public final class TntExplosion extends SpecialisedExplosion<PrimedTnt> {
         Vec3 center = bb.getCenter();
         double change = Math.max(bb.getXsize(), Math.max(bb.getYsize(), bb.getZsize()));
         double maxDistanceSqr = Math.pow(radius + change, 2.0);
-        boolean moved = (change != 0.0);
+        boolean positionChanged = change != 0.0;
 
         this.forEachEntitySliceInBounds(bb.inflate(radius), entities -> {
-            if (moved) {
+            if (positionChanged) {
                 this.impactEntitiesSwinging(entities, center, radius, maxDistanceSqr);
             } else {
                 this.impactEntitiesFromPosition(entities, this.explosions.getFirst(), this.explosions.size(), radius);
@@ -190,7 +198,7 @@ public final class TntExplosion extends SpecialisedExplosion<PrimedTnt> {
             if (entity == null) break;
 
             if (entity != this.source && !entity.ignoreExplosion(this) && entity.distanceToSqr(center.x, center.y, center.z) <= maxDistanceSqr) {
-                this.impactEntity(entity, radius);
+                this.impactEntitySwinging(entity, radius);
             }
 
             if (entities[i] != entity) {
@@ -199,7 +207,7 @@ public final class TntExplosion extends SpecialisedExplosion<PrimedTnt> {
         }
     }
 
-    private void impactEntity(Entity entity, double radius) {
+    private void impactEntitySwinging(Entity entity, double radius) {
         //noinspection ForLoopReplaceableByForEach
         for (int i = 0; i < this.explosions.size(); i++) {
             this.impactEntity(entity, this.explosions.get(i), 1, radius);
