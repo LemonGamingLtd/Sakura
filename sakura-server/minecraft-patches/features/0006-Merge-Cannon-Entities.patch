@@ -45,10 +45,10 @@ index 30454e69d603c3de3e2ecb5498d79c25bcc15a07..83bd1ddec7edb09e9a28eead178d7d07
                                      this.guardEntityTick(this::tickNonPassenger, entity);
                                      profilerFiller.pop();
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 3671003b9fdf787fc5095d12df9ee2f15bd998f1..2a617bd6d5d14cd69b149d6c5f82f8b2c3bc2d5d 100644
+index 30e6492e60fc7b5767d09574304ad3a3977e862a..1fbbade760d5ddbb0fc2f764d382d37d01f9ea33 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -563,6 +563,23 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -559,6 +559,23 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          return to.entityState() != null && to.entityState().comparePositionAndMotion(this);
      }
      // Sakura end - store entity data/state
@@ -72,7 +72,7 @@ index 3671003b9fdf787fc5095d12df9ee2f15bd998f1..2a617bd6d5d14cd69b149d6c5f82f8b2
  
      public Entity(EntityType<?> entityType, Level level) {
          this.type = entityType;
-@@ -4964,6 +4981,11 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4960,6 +4977,11 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          if (this.removalReason != Entity.RemovalReason.UNLOADED_TO_CHUNK) { this.getPassengers().forEach(Entity::stopRiding); } // Paper - rewrite chunk system
          this.levelCallback.onRemove(removalReason);
          this.onRemoval(removalReason);
@@ -279,7 +279,7 @@ index b6467f9ff64a76104076a01bfd56852ce712d95b..e6aa1d1a5fc5cd2ffc156125c4eef2d0
  
      @Nullable
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index e4584cd58d84f2b64748dfec7a1aa69fca119021..a4d7c95514c3db5799efe178efee796413d1bac8 100644
+index 0e790ff68d87ecc6977da77a6a148270014f4766..2aed31848b1d4bad27e7c7cc621497182466c2bb 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
 @@ -837,6 +837,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl

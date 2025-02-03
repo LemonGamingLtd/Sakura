@@ -136,7 +136,7 @@ index b49a0c3eb4236c71e390f42278412dce59e98cbd..30454e69d603c3de3e2ecb5498d79c25
          }
  
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 4535ea5fe788fc5c473d8289c031f2c9e56cfce6..92ee40a77f1b13c2c720cd41747206f82a735f9e 100644
+index 4bf7e288b9e9643ac161fcf017d0194419290a54..8a27d202854e083d9c29abcd8486fc760a7bddd8 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
 @@ -424,6 +424,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
@@ -199,7 +199,7 @@ index e71c1a564e5d4ac43460f89879ff709ee685706f..7d2fe5df38db1d492ae65aa729592002
          }
      }
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 5738709f5fa6fee2ed88ba41a7718c976b780e96..b8953cdfe5de16f7e5aab1fc2b06cb53693386e1 100644
+index 882dbb1276c548316938bbc50f5f7e01f8547ff8..b2079b8c8ba713f48c89ccd7c871af1ff4beb21e 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -3192,6 +3192,7 @@ public class ServerGamePacketListenerImpl
@@ -211,10 +211,10 @@ index 5738709f5fa6fee2ed88ba41a7718c976b780e96..b8953cdfe5de16f7e5aab1fc2b06cb53
                          if (this.player.containerMenu != oldContainer) {
                              return;
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 54a3ac38b70a9733173fb2ce4a7f86b534de1136..c4ace72f2eaf6a15c98490d18d3478b9ad5ed1a6 100644
+index a652ed38dd54c43547e272204154e791fb666f48..d0107d42212ddff92b5637205417e98ac76dfd69 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -526,6 +526,10 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -522,6 +522,10 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
      }
      // Paper end - optimise entity tracker
      public boolean pushedByFluid = true; // Sakura - entity pushed by fluid api
@@ -226,7 +226,7 @@ index 54a3ac38b70a9733173fb2ce4a7f86b534de1136..c4ace72f2eaf6a15c98490d18d3478b9
      public Entity(EntityType<?> entityType, Level level) {
          this.type = entityType;
 diff --git a/net/minecraft/world/entity/item/FallingBlockEntity.java b/net/minecraft/world/entity/item/FallingBlockEntity.java
-index 6ccc7810c81e5acb81b0cc21aeeeb464214a7b1c..a36c1c93012ce825b3dfdcf88e4da86c149bfa65 100644
+index e80b09ae0b34b5859cff7db350a731a387706ef1..bf5f3db9d62c063e8b880b831edb2f3a43d7005a 100644
 --- a/net/minecraft/world/entity/item/FallingBlockEntity.java
 +++ b/net/minecraft/world/entity/item/FallingBlockEntity.java
 @@ -73,6 +73,7 @@ public class FallingBlockEntity extends Entity {

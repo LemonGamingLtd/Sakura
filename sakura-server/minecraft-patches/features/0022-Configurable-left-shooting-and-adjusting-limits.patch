@@ -5,10 +5,10 @@ Subject: [PATCH] Configurable left shooting and adjusting limits
 
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 88a83d0b81fc65b4091c7f2c44820b4913356a2f..dd56f4e128793006c370514007755bdfb9d656d0 100644
+index 770cc8898b94a0e10b697de6adcd04a3b850bbf6..5117f1b572eca36f043b78689b8377dc66cfa899 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -608,6 +608,46 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -604,6 +604,46 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          return Math.max(x, z) >= this.travelDistanceLimit;
      }
      // Sakura end - entity travel distance limits
@@ -55,7 +55,7 @@ index 88a83d0b81fc65b4091c7f2c44820b4913356a2f..dd56f4e128793006c370514007755bdf
  
      public Entity(EntityType<?> entityType, Level level) {
          this.type = entityType;
-@@ -1579,6 +1619,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1575,6 +1615,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          }
  
          if (xSmaller && z != 0.0) {
@@ -63,7 +63,7 @@ index 88a83d0b81fc65b4091c7f2c44820b4913356a2f..dd56f4e128793006c370514007755bdf
              z = this.scanZ(currBoundingBox, z, voxelList, bbList);
              if (z != 0.0) {
                  currBoundingBox = ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.offsetZ(currBoundingBox, z);
-@@ -1586,6 +1627,11 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1582,6 +1623,11 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          }
  
          if (x != 0.0) {

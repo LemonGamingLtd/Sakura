@@ -5,10 +5,10 @@ Subject: [PATCH] Store Entity Data/State
 
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 7bbc4a982f442fdb9821221442737ae65e55289e..3671003b9fdf787fc5095d12df9ee2f15bd998f1 100644
+index 5e48d84c5ab335975f6533472aec1e1789375bbf..30e6492e60fc7b5767d09574304ad3a3977e862a 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -544,6 +544,25 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -540,6 +540,25 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          return flags;
      }
      // Sakura end - load chunks on movement
@@ -35,7 +35,7 @@ index 7bbc4a982f442fdb9821221442737ae65e55289e..3671003b9fdf787fc5095d12df9ee2f1
      public Entity(EntityType<?> entityType, Level level) {
          this.type = entityType;
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index 3ba2228fd83bcd9af5f46d71409abe9fd2328f7e..e4584cd58d84f2b64748dfec7a1aa69fca119021 100644
+index 38fc85d18f737736dcdf5142c8357f9af43e4d19..0e790ff68d87ecc6977da77a6a148270014f4766 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
 @@ -1510,6 +1510,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl

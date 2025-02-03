@@ -51,10 +51,10 @@ index 8f12a4df5d63ecd11e6e615d910b6e3f6dde5f3c..56beffa0c5cdb0d6a4836a0ee496bd63
      public static <T> TicketType<T> create(String name, Comparator<T> comparator) {
          return new TicketType<>(name, comparator, 0L);
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index c4ace72f2eaf6a15c98490d18d3478b9ad5ed1a6..00b3e16d5465547e7d4f8126664fb7eda3b3c568 100644
+index d0107d42212ddff92b5637205417e98ac76dfd69..2208f8c2176451eb65eeba05d47703f58e5d3e29 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -530,6 +530,20 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -526,6 +526,20 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
      public boolean isPrimedTNT;
      public boolean isFallingBlock;
      // Sakura end - client visibility settings
@@ -75,7 +75,7 @@ index c4ace72f2eaf6a15c98490d18d3478b9ad5ed1a6..00b3e16d5465547e7d4f8126664fb7ed
  
      public Entity(EntityType<?> entityType, Level level) {
          this.type = entityType;
-@@ -1469,7 +1483,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1465,7 +1479,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
  
          ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.getCollisionsForBlocksOrWorldBorder(
              this.level, (Entity)(Object)this, initialCollisionBox, potentialCollisionsVoxel, potentialCollisionsBB,
@@ -84,7 +84,7 @@ index c4ace72f2eaf6a15c98490d18d3478b9ad5ed1a6..00b3e16d5465547e7d4f8126664fb7ed
          );
          potentialCollisionsBB.addAll(entityAABBs);
          final Vec3 collided = ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.performCollisions(movement, currentBox, potentialCollisionsVoxel, potentialCollisionsBB);
-@@ -4961,13 +4975,14 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4957,13 +4971,14 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
      @Override
      public boolean shouldBeSaved() {
          return (this.removalReason == null || this.removalReason.shouldSave())
@@ -101,7 +101,7 @@ index c4ace72f2eaf6a15c98490d18d3478b9ad5ed1a6..00b3e16d5465547e7d4f8126664fb7ed
  
      public boolean mayInteract(ServerLevel level, BlockPos pos) {
 diff --git a/net/minecraft/world/entity/item/FallingBlockEntity.java b/net/minecraft/world/entity/item/FallingBlockEntity.java
-index 5462a423be1317a306ca12ed10edcab636cd0c7f..ee5ec7a780488182e30134b29a20cc192609d64b 100644
+index bf5f3db9d62c063e8b880b831edb2f3a43d7005a..fcb7b396db2605146be99f2b14da6806cdaa0f44 100644
 --- a/net/minecraft/world/entity/item/FallingBlockEntity.java
 +++ b/net/minecraft/world/entity/item/FallingBlockEntity.java
 @@ -74,6 +74,7 @@ public class FallingBlockEntity extends Entity {
@@ -113,7 +113,7 @@ index 5462a423be1317a306ca12ed10edcab636cd0c7f..ee5ec7a780488182e30134b29a20cc19
  
      public FallingBlockEntity(Level level, double x, double y, double z, BlockState state) {
 diff --git a/net/minecraft/world/entity/item/PrimedTnt.java b/net/minecraft/world/entity/item/PrimedTnt.java
-index 8118911019f7fc81218a656e1ecbd7eada505741..e7b4efe35c20e11f130b5bce5c8c20390c65e0a4 100644
+index c5b9ebbd159284ae2650b0698e06011104d4b70f..3c74cb8d4b71fcfa600742c21d6ad8e3942a2ab7 100644
 --- a/net/minecraft/world/entity/item/PrimedTnt.java
 +++ b/net/minecraft/world/entity/item/PrimedTnt.java
 @@ -62,6 +62,7 @@ public class PrimedTnt extends Entity implements TraceableEntity {
