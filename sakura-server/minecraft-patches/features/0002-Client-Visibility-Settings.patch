@@ -4,18 +4,6 @@ Date: Tue, 21 Sep 2021 23:54:25 +0100
 Subject: [PATCH] Client Visibility Settings
 
 
-diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index 3a926d4d34a7c68a24b9e00bcbcff271c8992ad2..f1f322f623756f0c0a06a4207a12765c9623e151 100644
---- a/net/minecraft/server/MinecraftServer.java
-+++ b/net/minecraft/server/MinecraftServer.java
-@@ -1749,6 +1749,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
-             profilerFiller.pop();
-             profilerFiller.pop();
-             serverLevel.explosionDensityCache.clear(); // Paper - Optimize explosions
-+            serverLevel.explosionPositions.clear(); // Sakura - client visibility settings
-         }
-         this.isIteratingOverLevels = false; // Paper - Throw exception on world create while being ticked
- 
 diff --git a/net/minecraft/server/level/ChunkMap.java b/net/minecraft/server/level/ChunkMap.java
 index 8f9f759885a9cda57ae7d665ec309a57e12969fd..e096463443639e9eef5311d7154f6d2ac1517883 100644
 --- a/net/minecraft/server/level/ChunkMap.java
@@ -90,7 +78,7 @@ index 8f9f759885a9cda57ae7d665ec309a57e12969fd..e096463443639e9eef5311d7154f6d2a
                  if (flag && !player.getBukkitEntity().canSee(this.entity.getBukkitEntity())) { // Paper - only consider hits
                      flag = false;
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index b49a0c3eb4236c71e390f42278412dce59e98cbd..30454e69d603c3de3e2ecb5498d79c25bcc15a07 100644
+index b49a0c3eb4236c71e390f42278412dce59e98cbd..0604b5075122494ec82b4e1b458645958b93c806 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -569,6 +569,21 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
@@ -115,7 +103,15 @@ index b49a0c3eb4236c71e390f42278412dce59e98cbd..30454e69d603c3de3e2ecb5498d79c25
  
      public ServerLevel(
          MinecraftServer server,
-@@ -1854,7 +1869,18 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -681,6 +696,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+         this.chunkDataController = new ca.spottedleaf.moonrise.patches.chunk_system.io.datacontroller.ChunkDataController((ServerLevel)(Object)this, this.chunkTaskScheduler);
+         // Paper end - rewrite chunk system
+         this.getCraftServer().addWorld(this.getWorld()); // CraftBukkit
++        this.levelTickScheduler.registerNewTask(this.explosionPositions::clear, 0); // Sakura - client visibility settings
+     }
+ 
+     // Paper start
+@@ -1854,7 +1870,18 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
          for (ServerPlayer serverPlayer : this.players) {
              if (serverPlayer.distanceToSqr(vec3) < 4096.0) {
                  Optional<Vec3> optional = Optional.ofNullable(serverExplosion.getHitPlayers().get(serverPlayer));

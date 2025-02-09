@@ -421,13 +421,13 @@ index d23193d3f11505cea428414487f891ab584ad071..ffd96218e2ee84aae7a008ef1b95f84d
      // Paper end - Option to prevent TNT from moving in water
  }
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index ee391a6fe70381ce4abc069034f7f9704029e416..cd607496df8a33f38d267c8316ffe8406868f02c 100644
+index 7d98febf87a51fb7d9b502fa362d1bc4ac1e3eaa..911a665e1ae07b2665222e04a9e1b0a80af0f877 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
-@@ -837,6 +837,170 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
-         return chunk != null ? chunk.getNoiseBiome(x, y, z) : this.getUncachedNoiseBiome(x, y, z);
-     }
-     // Paper end - optimise random ticking
+@@ -844,6 +844,170 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+     public final me.samsuik.sakura.entity.merge.EntityMergeHandler mergeHandler = new me.samsuik.sakura.entity.merge.EntityMergeHandler(); // Sakura - merge cannon entities
+     public final me.samsuik.sakura.explosion.density.BlockDensityCache densityCache = new me.samsuik.sakura.explosion.density.BlockDensityCache(); // Sakura - explosion density cache
+     public final me.samsuik.sakura.explosion.durable.DurableBlockManager durabilityManager = new me.samsuik.sakura.explosion.durable.DurableBlockManager(); // Sakura - explosion durable blocks
 +    // Sakura start - configure cannon physics
 +    public final net.minecraft.world.phys.BlockHitResult.Type clipLegacy(Vec3 from, Vec3 to) {
 +        int toX = Mth.floor(to.x);
@@ -592,9 +592,9 @@ index ee391a6fe70381ce4abc069034f7f9704029e416..cd607496df8a33f38d267c8316ffe840
 +        return x >= bb.minX && x <= bb.maxX && y >= bb.minY && y <= bb.maxY;
 +    }
 +    // Sakura end - configure cannon physics
-     public final me.samsuik.sakura.entity.merge.EntityMergeHandler mergeHandler = new me.samsuik.sakura.entity.merge.EntityMergeHandler(); // Sakura - merge cannon entities
-     public final me.samsuik.sakura.explosion.density.BlockDensityCache densityCache = new me.samsuik.sakura.explosion.density.BlockDensityCache(); // Sakura - explosion density cache
-     public final me.samsuik.sakura.explosion.durable.DurableBlockManager durabilityManager = new me.samsuik.sakura.explosion.durable.DurableBlockManager(); // Sakura - explosion durable blocks
+ 
+     protected Level(
+         WritableLevelData levelData,
 diff --git a/net/minecraft/world/level/ServerExplosion.java b/net/minecraft/world/level/ServerExplosion.java
 index 7b5a50ef269d0ca59fb067258421b53971a9998d..a4ceca6cfaaf048f3f78b18724d54780675354e7 100644
 --- a/net/minecraft/world/level/ServerExplosion.java
@@ -961,7 +961,7 @@ index a89a42a3ad6cecd5cc4d44e4456d52a2997ba2e5..9c3c0305aa96b4a1b40841d1c1f145af
      }
  
 diff --git a/net/minecraft/world/level/block/piston/PistonMovingBlockEntity.java b/net/minecraft/world/level/block/piston/PistonMovingBlockEntity.java
-index a6413663112685554afd79f13d3d76f1cd753801..184a9c681b4d1359d028d227dc0a74d7b78b7667 100644
+index d1fdb60b3dbcfc244c16d6f61802774ec54cc6ec..933dbea525cf342a246f60510bdac98e1ff7b00a 100644
 --- a/net/minecraft/world/level/block/piston/PistonMovingBlockEntity.java
 +++ b/net/minecraft/world/level/block/piston/PistonMovingBlockEntity.java
 @@ -165,6 +165,12 @@ public class PistonMovingBlockEntity extends BlockEntity {

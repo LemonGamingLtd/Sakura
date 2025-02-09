@@ -35,10 +35,10 @@ index 5e48d84c5ab335975f6533472aec1e1789375bbf..30e6492e60fc7b5767d09574304ad3a3
      public Entity(EntityType<?> entityType, Level level) {
          this.type = entityType;
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index 38fc85d18f737736dcdf5142c8357f9af43e4d19..0e790ff68d87ecc6977da77a6a148270014f4766 100644
+index 1165cf61413e9a1cd4373ef5f5858e8c5a040a20..5c61a690327cd1c872cdb3604cfa89d988918360 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
-@@ -1510,6 +1510,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+@@ -1514,6 +1514,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
  
      public <T extends Entity> void guardEntityTick(Consumer<T> consumerEntity, T entity) {
          try {

@@ -5,10 +5,10 @@ Subject: [PATCH] Add entity travel distance limits
 
 
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index ee44ba44773f245d351aac9461bd6cff18204f01..12f5f0002d2b298c4f9bd021d13626ddb5719317 100644
+index 88b377a53159a473a43bdf06b78bfd3d4a2362a1..539c2e465d4c89584b5bccaad18fadc41db0643a 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -1292,6 +1292,11 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1295,6 +1295,11 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
          final boolean isActive = io.papermc.paper.entity.activation.ActivationRange.checkIfActive(entity); // Paper - EAR 2
          if (isActive) { // Paper - EAR 2
          entity.tick();

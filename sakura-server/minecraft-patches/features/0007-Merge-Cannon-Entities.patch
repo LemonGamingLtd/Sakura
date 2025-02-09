@@ -4,23 +4,19 @@ Date: Sat, 9 Sep 2023 18:39:15 +0100
 Subject: [PATCH] Merge Cannon Entities
 
 
-diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index f1f322f623756f0c0a06a4207a12765c9623e151..ae1fad06d85de83f53884449cff21fc0ae62bf97 100644
---- a/net/minecraft/server/MinecraftServer.java
-+++ b/net/minecraft/server/MinecraftServer.java
-@@ -1750,6 +1750,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
-             profilerFiller.pop();
-             serverLevel.explosionDensityCache.clear(); // Paper - Optimize explosions
-             serverLevel.explosionPositions.clear(); // Sakura - client visibility settings
-+            serverLevel.mergeHandler.expire(currentTick); // Sakura - merge cannon entities
-         }
-         this.isIteratingOverLevels = false; // Paper - Throw exception on world create while being ticked
- 
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 30454e69d603c3de3e2ecb5498d79c25bcc15a07..83bd1ddec7edb09e9a28eead178d7d07cbde8749 100644
+index 0604b5075122494ec82b4e1b458645958b93c806..8fec4a46a9cf13d832306bd87a4fe17be79bef86 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -810,6 +810,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -697,6 +697,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+         // Paper end - rewrite chunk system
+         this.getCraftServer().addWorld(this.getWorld()); // CraftBukkit
+         this.levelTickScheduler.registerNewTask(this.explosionPositions::clear, 0); // Sakura - client visibility settings
++        this.levelTickScheduler.registerNewTask(this.mergeHandler::expire, 200); // Sakura - merge cannon entities
+     }
+ 
+     // Paper start
+@@ -811,6 +812,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
              }
  
              io.papermc.paper.entity.activation.ActivationRange.activateEntities(this); // Paper - EAR
@@ -28,7 +24,7 @@ index 30454e69d603c3de3e2ecb5498d79c25bcc15a07..83bd1ddec7edb09e9a28eead178d7d07
              this.entityTickList
                  .forEach(
                      entity -> {
-@@ -828,6 +829,15 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -829,6 +831,15 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
                                          entity.stopRiding();
                                      }
  
@@ -279,13 +275,13 @@ index b6467f9ff64a76104076a01bfd56852ce712d95b..e6aa1d1a5fc5cd2ffc156125c4eef2d0
  
      @Nullable
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index 0e790ff68d87ecc6977da77a6a148270014f4766..2aed31848b1d4bad27e7c7cc621497182466c2bb 100644
+index 5c61a690327cd1c872cdb3604cfa89d988918360..410a086f2fe2b6f695dd9bcce5a1f064b239f5c2 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
-@@ -837,6 +837,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
-         return chunk != null ? chunk.getNoiseBiome(x, y, z) : this.getUncachedNoiseBiome(x, y, z);
-     }
-     // Paper end - optimise random ticking
+@@ -841,6 +841,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+     public final me.samsuik.sakura.listener.LevelTickScheduler levelTickScheduler = new me.samsuik.sakura.listener.LevelTickScheduler();
+     public final me.samsuik.sakura.listener.BlockChangeTracker blockChangeTracker = new me.samsuik.sakura.listener.BlockChangeTracker(this);
+     // Sakura end - track block changes and tick scheduler
 +    public final me.samsuik.sakura.entity.merge.EntityMergeHandler mergeHandler = new me.samsuik.sakura.entity.merge.EntityMergeHandler(); // Sakura - merge cannon entities
  
      protected Level(

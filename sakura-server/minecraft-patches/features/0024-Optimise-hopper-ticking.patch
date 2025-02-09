@@ -42,10 +42,10 @@ index 2d3721e311851c1801b090e99d4f9d0daf4e5f99..2249f5338f97471a833acddcee95f6a7
  
      boolean isEmpty();
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index eeb37d088cec5b2b8e1ac4bd48b4491eed0822e2..28fc6372b3e4815fa62217a27f265f182046fe73 100644
+index 911a665e1ae07b2665222e04a9e1b0a80af0f877..818887bef8265731b01f16f4edbfd88bc89cc4c9 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
-@@ -1659,7 +1659,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+@@ -1663,7 +1663,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
              // Spigot end
              if (tickingBlockEntity.isRemoved()) {
                  toRemove.add(tickingBlockEntity); // Paper - Fix MC-117075; use removeAll
@@ -282,10 +282,10 @@ index 28e3b73507b988f7234cbf29c4024c88180d0aef..a0d247aa883553708c4b921582324255
 +    // Sakura end - optimise hopper ticking
  }
 diff --git a/net/minecraft/world/level/chunk/LevelChunk.java b/net/minecraft/world/level/chunk/LevelChunk.java
-index 761fdcd4a4e18f45547afd8edff44f61c6eeacb4..04477dd45088c06c97c2f8e24e9d1a7362a62a61 100644
+index 7887799c39b6e5b1657aff49d7110cf14bec8a79..f71ae8ebf7ce494b2abf350513f826139c18eadc 100644
 --- a/net/minecraft/world/level/chunk/LevelChunk.java
 +++ b/net/minecraft/world/level/chunk/LevelChunk.java
-@@ -955,6 +955,13 @@ public class LevelChunk extends ChunkAccess implements ca.spottedleaf.moonrise.p
+@@ -972,6 +972,13 @@ public class LevelChunk extends ChunkAccess implements ca.spottedleaf.moonrise.p
              return BlockEntityType.getKey(this.blockEntity.getType()).toString();
          }
  
@@ -299,7 +299,7 @@ index 761fdcd4a4e18f45547afd8edff44f61c6eeacb4..04477dd45088c06c97c2f8e24e9d1a73
          @Override
          public String toString() {
              return "Level ticker for " + this.getType() + "@" + this.getPos();
-@@ -1003,6 +1010,13 @@ public class LevelChunk extends ChunkAccess implements ca.spottedleaf.moonrise.p
+@@ -1020,6 +1027,13 @@ public class LevelChunk extends ChunkAccess implements ca.spottedleaf.moonrise.p
              return this.ticker.getType();
          }
  

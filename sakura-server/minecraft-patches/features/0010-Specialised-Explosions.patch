@@ -5,10 +5,10 @@ Subject: [PATCH] Specialised Explosions
 
 
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 83bd1ddec7edb09e9a28eead178d7d07cbde8749..ee44ba44773f245d351aac9461bd6cff18204f01 100644
+index dce3331c7dbbf9bb6c6342d0a760c040342a2d0c..88b377a53159a473a43bdf06b78bfd3d4a2362a1 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -1866,7 +1866,16 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1869,7 +1869,16 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
              case STANDARD -> Explosion.BlockInteraction.DESTROY; // CraftBukkit - handle custom explosion type
          };
          Vec3 vec3 = new Vec3(x, y, z);
@@ -26,7 +26,7 @@ index 83bd1ddec7edb09e9a28eead178d7d07cbde8749..ee44ba44773f245d351aac9461bd6cff
          if (configurator != null) configurator.accept(serverExplosion);// Paper - Allow explosions to damage source
          serverExplosion.explode();
          // CraftBukkit start
-@@ -1874,6 +1883,15 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1877,6 +1886,15 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
              return serverExplosion;
          }
          // CraftBukkit end
@@ -42,7 +42,7 @@ index 83bd1ddec7edb09e9a28eead178d7d07cbde8749..ee44ba44773f245d351aac9461bd6cff
          ParticleOptions particleOptions = serverExplosion.isSmall() ? smallExplosionParticles : largeExplosionParticles;
  
          for (ServerPlayer serverPlayer : this.players) {
-@@ -1894,7 +1912,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1897,7 +1915,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
              }
          }
  
@@ -52,7 +52,7 @@ index 83bd1ddec7edb09e9a28eead178d7d07cbde8749..ee44ba44773f245d351aac9461bd6cff
  
      private Explosion.BlockInteraction getDestroyType(GameRules.Key<GameRules.BooleanValue> decayGameRule) {
 diff --git a/net/minecraft/world/entity/item/PrimedTnt.java b/net/minecraft/world/entity/item/PrimedTnt.java
-index b378b4c4930c4ebd55795591aca173fd1fee46c9..c88fe6c244f6a88f1e42822dd0795187dcc3b655 100644
+index e6aa1d1a5fc5cd2ffc156125c4eef2d0d1aeef4a..cb972f9d619c7acc8bbed4cc18513ad4b97f19ed 100644
 --- a/net/minecraft/world/entity/item/PrimedTnt.java
 +++ b/net/minecraft/world/entity/item/PrimedTnt.java
 @@ -77,20 +77,7 @@ public class PrimedTnt extends Entity implements TraceableEntity, me.samsuik.sak

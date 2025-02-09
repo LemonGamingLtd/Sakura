@@ -39,7 +39,7 @@ public final class TrackedMergeHistory {
         return this.historyMap.get(originPosition);
     }
 
-    public void expire(int tick) {
+    public void expire(long tick) {
         this.historyMap.values().removeIf(p -> p.expiry().isExpired(tick));
     }
 

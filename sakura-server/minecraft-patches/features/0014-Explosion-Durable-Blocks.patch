@@ -41,11 +41,11 @@ index 68e50c6ade879d263424f244070677cb81c34c33..8467af4ee57b6699227370ada7bf15ca
          return !interactionResult.consumesAction() && context.getItemInHand().has(DataComponents.CONSUMABLE)
              ? super.use(context.getLevel(), context.getPlayer(), context.getHand())
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index b4a8a81f1fa091e45f1f39fdb69c61871d7dc6b9..19aa5010b019e343d0fb085359eac98bcb5b5efa 100644
+index 544617311ccc2573273cebba62e9503caa8a8dc3..7d98febf87a51fb7d9b502fa362d1bc4ac1e3eaa 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
-@@ -839,6 +839,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
-     // Paper end - optimise random ticking
+@@ -843,6 +843,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+     // Sakura end - track block changes and tick scheduler
      public final me.samsuik.sakura.entity.merge.EntityMergeHandler mergeHandler = new me.samsuik.sakura.entity.merge.EntityMergeHandler(); // Sakura - merge cannon entities
      public final me.samsuik.sakura.explosion.density.BlockDensityCache densityCache = new me.samsuik.sakura.explosion.density.BlockDensityCache(); // Sakura - explosion density cache
 +    public final me.samsuik.sakura.explosion.durable.DurableBlockManager durabilityManager = new me.samsuik.sakura.explosion.durable.DurableBlockManager(); // Sakura - explosion durable blocks

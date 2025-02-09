@@ -5,7 +5,7 @@ Subject: [PATCH] Protect scaffolding from creepers
 
 
 diff --git a/net/minecraft/world/level/ServerExplosion.java b/net/minecraft/world/level/ServerExplosion.java
-index ad44fb3a3ee0b6595564031f73fc61c459a8d951..d2d2bb0e60f4f12761fa02b1c6fb293d15e4efed 100644
+index 0ed83fa6b8c8c38cc9f94a381276d300abdac839..b43487bd468179a9634897002df44146e9f24c1b 100644
 --- a/net/minecraft/world/level/ServerExplosion.java
 +++ b/net/minecraft/world/level/ServerExplosion.java
 @@ -412,6 +412,11 @@ public class ServerExplosion implements Explosion {

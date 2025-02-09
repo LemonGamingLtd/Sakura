@@ -83,10 +83,10 @@ index 7554c109c35397bc1a43dd80e87764fd78645bbf..d60f30f7afb15cc90c1bd4b816136d00
                          }
                      }
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index 9217983e973fb522776babe0588dd419653e3b39..e0341e79c87fe115732aab1aa0bd1d8c514ba7b8 100644
+index 4314234e1d7f7a0fedf0ecf29ac3284e51be88d7..544617311ccc2573273cebba62e9503caa8a8dc3 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
-@@ -1791,10 +1791,18 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+@@ -1795,10 +1795,18 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
          this.getEntities(entityTypeTest, bounds, predicate, output, Integer.MAX_VALUE);
      }
  
@@ -106,7 +106,7 @@ index 9217983e973fb522776babe0588dd419653e3b39..e0341e79c87fe115732aab1aa0bd1d8c
          Profiler.get().incrementCounter("getEntities");
  
          if (entityTypeTest instanceof net.minecraft.world.entity.EntityType<T> byType) {
-@@ -1811,7 +1819,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+@@ -1815,7 +1823,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
  
          if (entityTypeTest == null) {
              if (maxCount != Integer.MAX_VALUE) {
