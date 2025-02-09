@@ -83,7 +83,7 @@ index 7554c109c35397bc1a43dd80e87764fd78645bbf..d60f30f7afb15cc90c1bd4b816136d00
                          }
                      }
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index 4dd2c4110d85bb7e6575b325196329900d719c64..b4a8a81f1fa091e45f1f39fdb69c61871d7dc6b9 100644
+index 9217983e973fb522776babe0588dd419653e3b39..e0341e79c87fe115732aab1aa0bd1d8c514ba7b8 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
 @@ -1791,10 +1791,18 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
@@ -91,10 +91,10 @@ index 4dd2c4110d85bb7e6575b325196329900d719c64..b4a8a81f1fa091e45f1f39fdb69c6187
      }
  
 -    // Paper start - rewrite chunk system
-+    // Sakura start - add maxSearch to getEntities
      public <T extends Entity> void getEntities(final EntityTypeTest<Entity, T> entityTypeTest,
                                                 final AABB boundingBox, final Predicate<? super T> predicate,
                                                 final List<? super T> into, final int maxCount) {
++        // Sakura start - add maxSearch to getEntities
 +        this.getEntities(entityTypeTest, boundingBox, predicate, into, maxCount, Integer.MAX_VALUE);
 +    }
 +
