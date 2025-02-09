@@ -1,7 +1,7 @@
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
-@@ -61,6 +_,12 @@
-  */
+@@ -64,6 +_,12 @@
+ @NullMarked
  public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginMessageRecipient, net.kyori.adventure.identity.Identified, net.kyori.adventure.bossbar.BossBarViewer, com.destroystokyo.paper.network.NetworkClient { // Paper
  
 +    // Sakura start - entity tracking range modifier
@@ -12,4 +12,4 @@
 +
      // Paper start
      @Override
-     default net.kyori.adventure.identity.@NotNull Identity identity() {
+     default net.kyori.adventure.identity.Identity identity() {
