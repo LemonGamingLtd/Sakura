@@ -42,10 +42,10 @@ index 2d3721e311851c1801b090e99d4f9d0daf4e5f99..2249f5338f97471a833acddcee95f6a7
  
      boolean isEmpty();
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index 911a665e1ae07b2665222e04a9e1b0a80af0f877..818887bef8265731b01f16f4edbfd88bc89cc4c9 100644
+index 7d98febf87a51fb7d9b502fa362d1bc4ac1e3eaa..cfbec037f4314d7425e4abf14c77e57752eb2ae3 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
-@@ -1663,7 +1663,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+@@ -1499,7 +1499,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
              // Spigot end
              if (tickingBlockEntity.isRemoved()) {
                  toRemove.add(tickingBlockEntity); // Paper - Fix MC-117075; use removeAll
