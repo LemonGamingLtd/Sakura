@@ -1,4 +1,4 @@
-package me.samsuik.sakura.local.config;
+package me.samsuik.sakura.configuration.local;
 
 import com.google.common.collect.Iterables;
 import it.unimi.dsi.fastutil.Pair;

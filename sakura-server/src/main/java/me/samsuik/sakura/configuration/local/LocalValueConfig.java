@@ -1,4 +1,4 @@
-package me.samsuik.sakura.local.config;
+package me.samsuik.sakura.configuration.local;
 
 import io.papermc.paper.configuration.WorldConfiguration.Misc.RedstoneImplementation;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
