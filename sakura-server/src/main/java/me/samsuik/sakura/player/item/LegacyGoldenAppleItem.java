@@ -1,4 +1,4 @@
-package me.samsuik.sakura.player.combat;
+package me.samsuik.sakura.player.item;
 
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.InteractionHand;
@@ -20,7 +20,7 @@ import java.util.Optional;
 
 @NullMarked
 @SuppressWarnings("OptionalAssignedToNull")
-public final class CustomGoldenApple extends Item {
+public final class LegacyGoldenAppleItem extends Item {
     private static final Consumable LEGACY_ENCHANTED_GOLDEN_APPLE = Consumables.defaultFood()
         .onConsume(
             new ApplyStatusEffectsConsumeEffect(
@@ -34,7 +34,7 @@ public final class CustomGoldenApple extends Item {
         )
         .build();
 
-    public CustomGoldenApple(Properties settings) {
+    public LegacyGoldenAppleItem(Properties settings) {
         super(settings);
     }
 
