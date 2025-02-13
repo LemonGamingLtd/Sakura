@@ -15,7 +15,7 @@ public final class MilkBucketItem extends Item {
     @Override
     public void verifyComponentsAfterLoad(ItemStack stack) {
         int maxStackSize = DataComponentHelper.bucketMaxStackSize();
-        if (GlobalConfiguration.get().players.stackableMilkBuckets && maxStackSize > 0 && maxStackSize < 100) {
+        if (DataComponentHelper.stackableMilkBuckets() && maxStackSize > 0 && maxStackSize < 100) {
             stack.set(DataComponents.MAX_STACK_SIZE, maxStackSize);
         }
     }
