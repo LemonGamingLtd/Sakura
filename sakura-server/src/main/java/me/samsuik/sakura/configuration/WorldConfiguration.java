@@ -29,7 +29,7 @@ import java.util.Map;
 public final class WorldConfiguration extends ConfigurationPart {
 
     private static final Logger LOGGER = LogUtils.getClassLogger();
-    static final int CURRENT_VERSION = 6; // (when you change the version, change the comment, so it conflicts on rebases): rename filter bad nbt from spawn eggs
+    static final int CURRENT_VERSION = 7; // (when you change the version, change the comment, so it conflicts on rebases): rename filter bad nbt from spawn eggs
 
     private transient final ResourceLocation worldKey;
     WorldConfiguration(ResourceLocation worldKey) {
@@ -133,7 +133,7 @@ public final class WorldConfiguration extends ConfigurationPart {
             "Allow TNT duplication while `allow-piston-duplication` is disabled.\n" +
             "This exists so servers can enable TNT duplication without reintroducing the other forms of piston duplication."
         )
-        public boolean allowTNTDuplication = false;
+        public boolean allowTntDuplication = false;
     }
 
     public Players players;
