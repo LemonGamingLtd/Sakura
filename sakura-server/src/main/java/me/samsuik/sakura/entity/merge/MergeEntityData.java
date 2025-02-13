@@ -9,7 +9,7 @@ import java.util.List;
 
 public final class MergeEntityData {
     private final Entity entity;
-    private List<MergeEntityData> connected = new ObjectArrayList<>();
+    private final List<MergeEntityData> connected = new ObjectArrayList<>();
     private int count = 1;
     private MergeLevel mergeLevel = MergeLevel.NONE;
 
@@ -17,10 +17,17 @@ public final class MergeEntityData {
         this.entity = entity;
     }
 
+    private void updateEntityHandles(Entity entity) {
+        for (MergeEntityData entityData : this.connected) {
+            entityData.entity.updateBukkitHandle(entity);
+        }
+    }
+
     public void mergeWith(@NotNull MergeEntityData mergeEntityData) {
         this.connected.add(mergeEntityData);
         this.connected.addAll(mergeEntityData.connected);
         this.count += mergeEntityData.getCount();
+        mergeEntityData.updateEntityHandles(this.entity);
         mergeEntityData.setCount(0);
     }
 
