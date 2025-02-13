@@ -41,10 +41,10 @@ index 0604b5075122494ec82b4e1b458645958b93c806..8fec4a46a9cf13d832306bd87a4fe17b
                                      this.guardEntityTick(this::tickNonPassenger, entity);
                                      profilerFiller.pop();
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 30e6492e60fc7b5767d09574304ad3a3977e862a..1fbbade760d5ddbb0fc2f764d382d37d01f9ea33 100644
+index 30e6492e60fc7b5767d09574304ad3a3977e862a..9844928c361cfc31d618186ecd10fba5975bbb7d 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -559,6 +559,23 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -559,6 +559,24 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          return to.entityState() != null && to.entityState().comparePositionAndMotion(this);
      }
      // Sakura end - store entity data/state
@@ -52,8 +52,9 @@ index 30e6492e60fc7b5767d09574304ad3a3977e862a..1fbbade760d5ddbb0fc2f764d382d37d
 +    public final void updateBukkitHandle(Entity entity) {
 +        if (this.bukkitEntity != null) {
 +            this.bukkitEntity.setHandle(entity);
++        } else {
++            this.bukkitEntity = entity.getBukkitEntity();
 +        }
-+        this.bukkitEntity = entity.getBukkitEntity();
 +    }
 +
 +    public final long getPackedOriginPosition() {
@@ -68,7 +69,7 @@ index 30e6492e60fc7b5767d09574304ad3a3977e862a..1fbbade760d5ddbb0fc2f764d382d37d
  
      public Entity(EntityType<?> entityType, Level level) {
          this.type = entityType;
-@@ -4960,6 +4977,11 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4960,6 +4978,11 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          if (this.removalReason != Entity.RemovalReason.UNLOADED_TO_CHUNK) { this.getPassengers().forEach(Entity::stopRiding); } // Paper - rewrite chunk system
          this.levelCallback.onRemove(removalReason);
          this.onRemoval(removalReason);
@@ -275,7 +276,7 @@ index b6467f9ff64a76104076a01bfd56852ce712d95b..e6aa1d1a5fc5cd2ffc156125c4eef2d0
  
      @Nullable
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index 5c61a690327cd1c872cdb3604cfa89d988918360..410a086f2fe2b6f695dd9bcce5a1f064b239f5c2 100644
+index 8688f08fa902445807fe018c44e4a3b3ca01c55e..0db34fe552d65145e5714b4a9adec20c119384e7 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
 @@ -841,6 +841,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl

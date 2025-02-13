@@ -21,10 +21,10 @@ index 88b377a53159a473a43bdf06b78bfd3d4a2362a1..539c2e465d4c89584b5bccaad18fadc4
          } else {entity.inactiveTick();} // Paper - EAR 2
          profilerFiller.pop();
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index e72c6eed0280aab425ae1dfa1d104a2d87651b63..770cc8898b94a0e10b697de6adcd04a3b850bbf6 100644
+index a80fd65ea35590a992c6340a2f42f578afdaf1ab..8c50cd2cd5b2c1ae5238be359c52b13948472cf7 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -591,6 +591,19 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -592,6 +592,19 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          return this.physics;
      }
      // Sakura end - configure cannon physics
@@ -44,7 +44,7 @@ index e72c6eed0280aab425ae1dfa1d104a2d87651b63..770cc8898b94a0e10b697de6adcd04a3
  
      public Entity(EntityType<?> entityType, Level level) {
          this.type = entityType;
-@@ -620,6 +633,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -621,6 +634,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          this.setPos(0.0, 0.0, 0.0);
          this.eyeHeight = this.dimensions.eyeHeight();
          this.despawnTime = type == EntityType.PLAYER ? -1 : level.paperConfig().entities.spawning.despawnTime.getOrDefault(type, io.papermc.paper.configuration.type.number.IntOr.Disabled.DISABLED).or(-1); // Paper - entity despawn time limit
