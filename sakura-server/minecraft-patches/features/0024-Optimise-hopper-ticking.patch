@@ -42,7 +42,7 @@ index 2d3721e311851c1801b090e99d4f9d0daf4e5f99..2249f5338f97471a833acddcee95f6a7
  
      boolean isEmpty();
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index 7d98febf87a51fb7d9b502fa362d1bc4ac1e3eaa..cfbec037f4314d7425e4abf14c77e57752eb2ae3 100644
+index f7a341082d78667d34e7832f4567bbf4f3f86a00..850de480eb3408b3a4468266aa7d16a09332b237 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
 @@ -1499,7 +1499,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
@@ -282,7 +282,7 @@ index 28e3b73507b988f7234cbf29c4024c88180d0aef..a0d247aa883553708c4b921582324255
 +    // Sakura end - optimise hopper ticking
  }
 diff --git a/net/minecraft/world/level/chunk/LevelChunk.java b/net/minecraft/world/level/chunk/LevelChunk.java
-index 7887799c39b6e5b1657aff49d7110cf14bec8a79..f71ae8ebf7ce494b2abf350513f826139c18eadc 100644
+index 2fb04fa82cc7b726df1e42a1cf452ebfbdd4503a..e2b684c630a44d7f84790ad305593823edb241ca 100644
 --- a/net/minecraft/world/level/chunk/LevelChunk.java
 +++ b/net/minecraft/world/level/chunk/LevelChunk.java
 @@ -972,6 +972,13 @@ public class LevelChunk extends ChunkAccess implements ca.spottedleaf.moonrise.p

@@ -41,7 +41,7 @@ index 68e50c6ade879d263424f244070677cb81c34c33..8467af4ee57b6699227370ada7bf15ca
          return !interactionResult.consumesAction() && context.getItemInHand().has(DataComponents.CONSUMABLE)
              ? super.use(context.getLevel(), context.getPlayer(), context.getHand())
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index 544617311ccc2573273cebba62e9503caa8a8dc3..7d98febf87a51fb7d9b502fa362d1bc4ac1e3eaa 100644
+index dc3c1d354bd4fb557f295c8dca14a31048def456..f7a341082d78667d34e7832f4567bbf4f3f86a00 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
 @@ -843,6 +843,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl

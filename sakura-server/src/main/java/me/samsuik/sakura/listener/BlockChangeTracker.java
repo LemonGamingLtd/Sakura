@@ -12,7 +12,6 @@ import net.minecraft.world.level.chunk.LevelChunk;
 import org.jspecify.annotations.NullMarked;
 
 import java.util.*;
-import java.util.function.BiPredicate;
 import java.util.function.LongConsumer;
 
 @NullMarked
@@ -26,7 +25,7 @@ public final class BlockChangeTracker {
         this.level = level;
     }
 
-    public long listenForChangesOnce(BiPredicate<BlockState, BlockState> filter, Set<BlockPos> positions, Runnable callback) {
+    public long listenForChangesOnce(BlockChangeFilter filter, Set<BlockPos> positions, Runnable callback) {
         LongConsumer singleUseCallback = (identifier) -> {
             callback.run();
             this.stopListening(identifier);
@@ -34,7 +33,7 @@ public final class BlockChangeTracker {
         return this.listenForChanges(filter, positions, singleUseCallback);
     }
 
-    public long listenForChanges(BiPredicate<BlockState, BlockState> filter, Set<BlockPos> positions, LongConsumer callback) {
+    public long listenForChanges(BlockChangeFilter filter, Set<BlockPos> positions, LongConsumer callback) {
         long identifier = this.identifier++;
         Listener listener = new Listener(
             filter, positions, identifier, callback
@@ -48,8 +47,10 @@ public final class BlockChangeTracker {
 
     public void stopListening(long identifier) {
         Listener listener = this.identifiersInUse.remove(identifier);
-        for (ChunkPos chunkPos : getChunkPositions(listener.positions())) {
-            this.removeListenerFronChunk(chunkPos, listener);
+        if (listener != null) {
+            for (ChunkPos chunkPos : getChunkPositions(listener.positions())) {
+                this.removeListenerFronChunk(chunkPos, listener);
+            }
         }
     }
 
@@ -88,14 +89,18 @@ public final class BlockChangeTracker {
         return chunkPositions;
     }
 
-    public record Listener(BiPredicate<BlockState, BlockState> filter, Set<BlockPos> positions,
+    public interface BlockChangeFilter {
+        boolean test(Level level, BlockPos pos, BlockState newBlock, BlockState oldBlock);
+    }
+
+    public record Listener(BlockChangeFilter filter, Set<BlockPos> positions,
                            long identifier, LongConsumer callback) {
         public void call() {
             this.callback.accept(this.identifier);
         }
 
-        public boolean test(BlockPos pos, BlockState newBlock, BlockState oldBlock) {
-            return this.filter.test(newBlock, oldBlock) && this.positions.contains(pos);
+        public boolean test(Level level, BlockPos pos, BlockState newBlock, BlockState oldBlock) {
+            return this.filter.test(level, pos, newBlock, oldBlock) && this.positions.contains(pos);
         }
     }
 }

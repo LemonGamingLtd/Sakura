@@ -165,7 +165,7 @@ public final class LocalConfigManager implements LocalStorageHandler {
 
     public synchronized LocalValueConfig config(BlockPos position) {
         long gameTime = this.level.getGameTime();
-        long ticks = this.expirationTick - gameTime;
+        long ticks = gameTime - this.expirationTick;
         if (ticks >= CONFIG_CACHE_EXPIRATION / 3) {
             this.chunkConfigCache.values().removeIf(pair -> pair.value().isExpired(gameTime));
             this.expirationTick = gameTime;

@@ -17,7 +17,7 @@ index 3a926d4d34a7c68a24b9e00bcbcff271c8992ad2..259c2b2d459d86cb11ab848c77f48c38
          this.isIteratingOverLevels = false; // Paper - Throw exception on world create while being ticked
  
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index 38fc85d18f737736dcdf5142c8357f9af43e4d19..1165cf61413e9a1cd4373ef5f5858e8c5a040a20 100644
+index 316dca7b4b20c6d05bf76f64a79984d10807dab5..9fbce0f31a73928a7db752e085fb3d0020fc6387 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
 @@ -837,6 +837,10 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
@@ -32,7 +32,7 @@ index 38fc85d18f737736dcdf5142c8357f9af43e4d19..1165cf61413e9a1cd4373ef5f5858e8c
      protected Level(
          WritableLevelData levelData,
 diff --git a/net/minecraft/world/level/chunk/LevelChunk.java b/net/minecraft/world/level/chunk/LevelChunk.java
-index 761fdcd4a4e18f45547afd8edff44f61c6eeacb4..7887799c39b6e5b1657aff49d7110cf14bec8a79 100644
+index 761fdcd4a4e18f45547afd8edff44f61c6eeacb4..2fb04fa82cc7b726df1e42a1cf452ebfbdd4503a 100644
 --- a/net/minecraft/world/level/chunk/LevelChunk.java
 +++ b/net/minecraft/world/level/chunk/LevelChunk.java
 @@ -126,6 +126,21 @@ public class LevelChunk extends ChunkAccess implements ca.spottedleaf.moonrise.p
@@ -48,7 +48,7 @@ index 761fdcd4a4e18f45547afd8edff44f61c6eeacb4..7887799c39b6e5b1657aff49d7110cf1
 +
 +    private void blockChange(BlockPos pos, BlockState newBlock, BlockState oldBlock) {
 +        for (me.samsuik.sakura.listener.BlockChangeTracker.Listener listener : this.blockChangeListeners) {
-+            if (listener.test(pos, newBlock, oldBlock)) {
++            if (listener.test(this.level, pos, newBlock, oldBlock)) {
 +                listener.call();
 +            }
 +        }
