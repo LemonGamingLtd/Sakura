@@ -5,19 +5,15 @@ Subject: [PATCH] Store Entity Data/State
 
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 5e48d84c5ab335975f6533472aec1e1789375bbf..30e6492e60fc7b5767d09574304ad3a3977e862a 100644
+index 5e48d84c5ab335975f6533472aec1e1789375bbf..597a776ef357fb1a12722ed64bf09bfbc6619265 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -540,6 +540,25 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -540,6 +540,21 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          return flags;
      }
      // Sakura end - load chunks on movement
 +    // Sakura start - store entity data/state
 +    private me.samsuik.sakura.entity.EntityState entityState = null;
-+
-+    public final Vec3 stuckSpeedMultiplier() {
-+        return this.stuckSpeedMultiplier;
-+    }
 +
 +    public final void storeEntityState() {
 +        this.entityState = me.samsuik.sakura.entity.EntityState.of(this);

@@ -14,7 +14,7 @@ public record EntityState(Vec3 position, Vec3 momentum, AABB bb, Vec3 stuckSpeed
     public static EntityState of(Entity entity) {
         return new EntityState(
             entity.position(), entity.getDeltaMovement(), entity.getBoundingBox(),
-            entity.stuckSpeedMultiplier(), entity.mainSupportingBlockPos,
+            entity.stuckSpeedMultiplier, entity.mainSupportingBlockPos,
             entity.onGround(), entity.fallDistance
         );
     }

@@ -41,10 +41,10 @@ index 0604b5075122494ec82b4e1b458645958b93c806..8fec4a46a9cf13d832306bd87a4fe17b
                                      this.guardEntityTick(this::tickNonPassenger, entity);
                                      profilerFiller.pop();
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 30e6492e60fc7b5767d09574304ad3a3977e862a..9844928c361cfc31d618186ecd10fba5975bbb7d 100644
+index 597a776ef357fb1a12722ed64bf09bfbc6619265..8ef66c8b9fae500049b778232ca4016092a9a9b3 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -559,6 +559,24 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -555,6 +555,24 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          return to.entityState() != null && to.entityState().comparePositionAndMotion(this);
      }
      // Sakura end - store entity data/state
@@ -69,7 +69,7 @@ index 30e6492e60fc7b5767d09574304ad3a3977e862a..9844928c361cfc31d618186ecd10fba5
  
      public Entity(EntityType<?> entityType, Level level) {
          this.type = entityType;
-@@ -4960,6 +4978,11 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4956,6 +4974,11 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          if (this.removalReason != Entity.RemovalReason.UNLOADED_TO_CHUNK) { this.getPassengers().forEach(Entity::stopRiding); } // Paper - rewrite chunk system
          this.levelCallback.onRemove(removalReason);
          this.onRemoval(removalReason);
