@@ -126,20 +126,18 @@
          }
  
          return damageAmount;
-@@ -2248,7 +_,13 @@
+@@ -2248,6 +_,11 @@
          com.google.common.base.Function<Double, Double> blocking = new com.google.common.base.Function<Double, Double>() {
              @Override
              public Double apply(Double f) {
-+                    // Sakura start - shield damage reduction
-+                    if (!level().sakuraConfig().players.combat.shieldDamageReduction || damagesource.getDirectEntity() instanceof AbstractArrow) {
++                // Sakura start - shield damage reduction & allow blocking with swords
++                if (LivingEntity.this.isBlockingWithSword() || LivingEntity.this.level().sakuraConfig().players.combat.shieldDamageReduction && !(damagesource.getDirectEntity() instanceof AbstractArrow)) {
++                    return -(LivingEntity.this.isBlocking() ? f * 0.5 : 0.0);
++                }
++                // Sakura end - shield damage reduction & allow blocking with swords
                  return -((LivingEntity.this.isDamageSourceBlocked(damagesource)) ? f : 0.0);
-+                    } else {
-+                        return -(LivingEntity.this.isBlocking() ? f * 0.5 : 0.0);
-+                    }
-+                    // Sakura end - shield damage reduction
              }
          };
-         float blockingModifier = blocking.apply((double) amount).floatValue();
 @@ -2344,6 +_,12 @@
              // Apply damage to armor
              if (!damageSource.is(DamageTypeTags.BYPASSES_ARMOR)) {
@@ -174,3 +172,22 @@
              this.hurtServer(serverLevel, this.damageSources().drown(), 1.0F);
          }
      }
+@@ -4047,8 +_,16 @@
+     }
+ 
+     public boolean isBlocking() {
+-        return this.getItemBlockingWith() != null;
+-    }
++        // Sakura start - allow blocking with swords
++        return this.getItemBlockingWith() != null || this.isBlockingWithSword();
++    }
++
++    public final boolean isBlockingWithSword() {
++        return this.isUsingItem() && !this.useItem.isEmpty()
++            && me.samsuik.sakura.configuration.GlobalConfiguration.get().players.combat.blockWithSwords
++            && this.useItem.getItem() instanceof me.samsuik.sakura.player.item.BlockableSwordItem;
++    }
++    // Sakura end - allow blocking with swords
+ 
+     @Nullable
+     public ItemStack getItemBlockingWith() {
