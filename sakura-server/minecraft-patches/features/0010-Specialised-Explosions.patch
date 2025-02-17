@@ -5,10 +5,10 @@ Subject: [PATCH] Specialised Explosions
 
 
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index dce3331c7dbbf9bb6c6342d0a760c040342a2d0c..88b377a53159a473a43bdf06b78bfd3d4a2362a1 100644
+index a826ddc16ce9e646c6d552381ee85eaa4d523436..ce89182a48b7f89b2223407cc907f0572e777598 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -1869,7 +1869,16 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1871,7 +1871,16 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
              case STANDARD -> Explosion.BlockInteraction.DESTROY; // CraftBukkit - handle custom explosion type
          };
          Vec3 vec3 = new Vec3(x, y, z);
@@ -26,7 +26,7 @@ index dce3331c7dbbf9bb6c6342d0a760c040342a2d0c..88b377a53159a473a43bdf06b78bfd3d
          if (configurator != null) configurator.accept(serverExplosion);// Paper - Allow explosions to damage source
          serverExplosion.explode();
          // CraftBukkit start
-@@ -1877,6 +1886,15 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1879,6 +1888,15 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
              return serverExplosion;
          }
          // CraftBukkit end
@@ -42,7 +42,7 @@ index dce3331c7dbbf9bb6c6342d0a760c040342a2d0c..88b377a53159a473a43bdf06b78bfd3d
          ParticleOptions particleOptions = serverExplosion.isSmall() ? smallExplosionParticles : largeExplosionParticles;
  
          for (ServerPlayer serverPlayer : this.players) {
-@@ -1897,7 +1915,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1899,7 +1917,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
              }
          }
  
@@ -78,7 +78,7 @@ index e6aa1d1a5fc5cd2ffc156125c4eef2d0d1aeef4a..cb972f9d619c7acc8bbed4cc18513ad4
      // Sakura end - merge cannon entities
  
 diff --git a/net/minecraft/world/level/ServerExplosion.java b/net/minecraft/world/level/ServerExplosion.java
-index 76697d12a12eeedbaab6aef169080320791aff6e..0285e19d6265056fb5ff9855a5dd41bd16bbc082 100644
+index bdd60268dfe82988fb9a86bb524706c807dac237..04a0f15e25e0746c638b8b01671adb579d0b0209 100644
 --- a/net/minecraft/world/level/ServerExplosion.java
 +++ b/net/minecraft/world/level/ServerExplosion.java
 @@ -361,6 +361,38 @@ public class ServerExplosion implements Explosion {

@@ -5,10 +5,10 @@ Subject: [PATCH] Store Entity Data/State
 
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 5e48d84c5ab335975f6533472aec1e1789375bbf..597a776ef357fb1a12722ed64bf09bfbc6619265 100644
+index 63813792c1ae5a27cb42a0acb2c64d1a1e712a05..e37c8b3a4f00dfc6fde1e1fb05cd0bc0cc48377a 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -540,6 +540,21 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -541,6 +541,21 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          return flags;
      }
      // Sakura end - load chunks on movement

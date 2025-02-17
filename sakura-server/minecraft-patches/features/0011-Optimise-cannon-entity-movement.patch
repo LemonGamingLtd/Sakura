@@ -5,10 +5,10 @@ Subject: [PATCH] Optimise cannon entity movement
 
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 8ef66c8b9fae500049b778232ca4016092a9a9b3..2a73d2b49fff20abd282dd7f4ca0b4ee81f5a676 100644
+index 272801f1280da06d8e5894d7a3aedd432dfd0911..a1e65255f23ec2e3b2e3dfd9092fc16638493d92 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -1179,7 +1179,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1180,7 +1180,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
              Vec3 vec3 = this.collide(movement);
              double d = vec3.lengthSqr();
              if (d > 1.0E-7 || movement.lengthSqr() - d < 1.0E-7) {
@@ -17,7 +17,7 @@ index 8ef66c8b9fae500049b778232ca4016092a9a9b3..2a73d2b49fff20abd282dd7f4ca0b4ee
                      BlockHitResult blockHitResult = this.level()
                          .clip(
                              new ClipContext(this.position(), this.position().add(vec3), ClipContext.Block.FALLDAMAGE_RESETTING, ClipContext.Fluid.WATER, this)
-@@ -1481,6 +1481,131 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1482,6 +1482,131 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          return distance;
      }
  

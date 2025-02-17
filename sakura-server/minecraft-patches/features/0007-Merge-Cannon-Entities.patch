@@ -5,7 +5,7 @@ Subject: [PATCH] Merge Cannon Entities
 
 
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 0604b5075122494ec82b4e1b458645958b93c806..8fec4a46a9cf13d832306bd87a4fe17be79bef86 100644
+index f2c0cd46a64fbc3fc7e6cb77acac353bb84d4073..dc0896f0b857451d6468589e8b44b1b22fa895d0 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -697,6 +697,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
@@ -41,10 +41,10 @@ index 0604b5075122494ec82b4e1b458645958b93c806..8fec4a46a9cf13d832306bd87a4fe17b
                                      this.guardEntityTick(this::tickNonPassenger, entity);
                                      profilerFiller.pop();
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 597a776ef357fb1a12722ed64bf09bfbc6619265..8ef66c8b9fae500049b778232ca4016092a9a9b3 100644
+index e37c8b3a4f00dfc6fde1e1fb05cd0bc0cc48377a..272801f1280da06d8e5894d7a3aedd432dfd0911 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -555,6 +555,24 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -556,6 +556,24 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          return to.entityState() != null && to.entityState().comparePositionAndMotion(this);
      }
      // Sakura end - store entity data/state
@@ -69,7 +69,7 @@ index 597a776ef357fb1a12722ed64bf09bfbc6619265..8ef66c8b9fae500049b778232ca40160
  
      public Entity(EntityType<?> entityType, Level level) {
          this.type = entityType;
-@@ -4956,6 +4974,11 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4957,6 +4975,11 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          if (this.removalReason != Entity.RemovalReason.UNLOADED_TO_CHUNK) { this.getPassengers().forEach(Entity::stopRiding); } // Paper - rewrite chunk system
          this.levelCallback.onRemove(removalReason);
          this.onRemoval(removalReason);

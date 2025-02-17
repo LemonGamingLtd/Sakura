@@ -51,10 +51,10 @@ index 8f12a4df5d63ecd11e6e615d910b6e3f6dde5f3c..56beffa0c5cdb0d6a4836a0ee496bd63
      public static <T> TicketType<T> create(String name, Comparator<T> comparator) {
          return new TicketType<>(name, comparator, 0L);
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index d0107d42212ddff92b5637205417e98ac76dfd69..2208f8c2176451eb65eeba05d47703f58e5d3e29 100644
+index 789a64f13185b8d761e290e931ed31f8c04c6255..9bdf3f54198c345e2091835af56b730d6aa4a7ec 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -526,6 +526,20 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -527,6 +527,20 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
      public boolean isPrimedTNT;
      public boolean isFallingBlock;
      // Sakura end - client visibility settings
@@ -75,7 +75,7 @@ index d0107d42212ddff92b5637205417e98ac76dfd69..2208f8c2176451eb65eeba05d47703f5
  
      public Entity(EntityType<?> entityType, Level level) {
          this.type = entityType;
-@@ -1465,7 +1479,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1466,7 +1480,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
  
          ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.getCollisionsForBlocksOrWorldBorder(
              this.level, (Entity)(Object)this, initialCollisionBox, potentialCollisionsVoxel, potentialCollisionsBB,
@@ -84,7 +84,7 @@ index d0107d42212ddff92b5637205417e98ac76dfd69..2208f8c2176451eb65eeba05d47703f5
          );
          potentialCollisionsBB.addAll(entityAABBs);
          final Vec3 collided = ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.performCollisions(movement, currentBox, potentialCollisionsVoxel, potentialCollisionsBB);
-@@ -4957,13 +4971,14 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4958,13 +4972,14 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
      @Override
      public boolean shouldBeSaved() {
          return (this.removalReason == null || this.removalReason.shouldSave())
