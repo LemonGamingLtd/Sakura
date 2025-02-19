@@ -13,8 +13,8 @@ public record RedstoneNetworkSource(WorldConfiguration.Misc.RedstoneImplementati
                                     BlockPos position, @Nullable Orientation orientation,
                                     int updateDepth, int newPower, int oldPower) {
 
-    public static RedstoneNetworkSource createNetworkSource(Level level, BlockPos pos, @Nullable Orientation orientation, int newPower, int oldPower) {
-        LocalValueConfig localConfig = level.localConfig().config(pos);
+    public static RedstoneNetworkSource createNetworkSource(Level level, LocalValueConfig localConfig, BlockPos pos,
+                                                            @Nullable Orientation orientation, int newPower, int oldPower) {
         WorldConfiguration.Misc.RedstoneImplementation redstoneImplementation = localConfig.redstoneImplementation;
         int updateDepth = level.neighborUpdater.getUpdateDepth();
         return new RedstoneNetworkSource(redstoneImplementation, pos, orientation, updateDepth, newPower, oldPower);
