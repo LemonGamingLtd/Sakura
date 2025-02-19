@@ -57,7 +57,7 @@
 +                            && (this.level().sakuraConfig().players.combat.legacyCombatMechanics || !this.isSprinting()); // Sakura - legacy combat mechanics
                          flag2 = flag2 && !this.level().paperConfig().entities.behavior.disablePlayerCrits; // Paper - Toggleable player crits
                          if (flag2) {
-                             damageSource = damageSource.critical(true); // Paper start - critical damage API
+                             damageSource = damageSource.critical(); // Paper - critical damage API
 @@ -1292,7 +_,21 @@
                          if (flag4) {
                              float f4 = this.getKnockback(target, damageSource) + (flag1 ? 1.0F : 0.0F);
@@ -90,7 +90,7 @@
                                  float f5 = 1.0F + (float)this.getAttributeValue(Attributes.SWEEPING_DAMAGE_RATIO) * f;
  
                                  for (LivingEntity livingEntity2 : this.level()
-@@ -1331,7 +_,7 @@
+@@ -1333,7 +_,7 @@
                                          }
                                          // CraftBukkit end
                                          livingEntity2.knockback(
@@ -99,7 +99,7 @@
                                              , this, io.papermc.paper.event.entity.EntityKnockbackEvent.Cause.SWEEP_ATTACK // CraftBukkit // Paper - knockback events
                                          );
                                          // CraftBukkit - moved up
-@@ -1421,7 +_,7 @@
+@@ -1423,7 +_,7 @@
                              if (target instanceof LivingEntity) {
                                  float f7 = f3 - ((LivingEntity)target).getHealth();
                                  this.awardStat(Stats.DAMAGE_DEALT, Math.round(f7 * 10.0F));
@@ -108,7 +108,7 @@
                                      int i = (int)(f7 * 0.5);
                                      ((ServerLevel)this.level())
                                          .sendParticles(ParticleTypes.DAMAGE_INDICATOR, target.getX(), target.getY(0.5), target.getZ(), i, 0.1, 0.0, 0.1, 0.2);
-@@ -1824,6 +_,7 @@
+@@ -1826,6 +_,7 @@
  
      // Paper start - send while respecting visibility
      private static void sendSoundEffect(Player fromEntity, double x, double y, double z, SoundEvent soundEffect, SoundSource soundCategory, float volume, float pitch) {
@@ -116,7 +116,7 @@
          fromEntity.level().playSound(fromEntity, x, y, z, soundEffect, soundCategory, volume, pitch); // This will not send the effect to the entity itself
          if (fromEntity instanceof ServerPlayer serverPlayer) {
              serverPlayer.connection.send(new net.minecraft.network.protocol.game.ClientboundSoundPacket(net.minecraft.core.registries.BuiltInRegistries.SOUND_EVENT.wrapAsHolder(soundEffect), soundCategory, x, y, z, volume, pitch, fromEntity.random.nextLong()));
-@@ -2210,7 +_,13 @@
+@@ -2212,7 +_,13 @@
  
      @Override
      public EntityDimensions getDefaultDimensions(Pose pose) {

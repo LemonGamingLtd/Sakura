@@ -41,7 +41,13 @@ public final class GlobalConfiguration extends ConfigurationPart {
 
     public Players players;
     public class Players extends ConfigurationPart {
+        public Combat combat = new Combat();
+        public class Combat extends ConfigurationPart {
+            public boolean blockWithSwords = false;
+        }
+
         public IntOr.Default bucketStackSize = IntOr.Default.USE_DEFAULT;
+        public boolean stackableMilkBuckets = false;
     }
 
     public Environment environment;

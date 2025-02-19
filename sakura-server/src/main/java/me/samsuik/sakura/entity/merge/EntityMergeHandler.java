@@ -43,14 +43,12 @@ public final class EntityMergeHandler {
     }
 
     /**
-     * Called every tick and provided the current server tick to remove any unneeded merge history.
+     * Called every 200 ticks and the tick is used remove any unneeded merge history.
      *
      * @param tick server tick
      */
-    public void expire(int tick) {
-        if (tick % 200 == 0) {
-            this.trackedHistory.expire(tick);
-        }
+    public void expire(long tick) {
+        this.trackedHistory.expire(tick);
     }
 
     /**

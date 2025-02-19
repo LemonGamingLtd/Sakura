@@ -19,6 +19,6 @@ public final class TickExpiry {
     }
 
     public boolean isExpired(long tick) {
-        return this.tick >= tick - this.expiration;
+        return this.tick < tick - this.expiration;
     }
 }

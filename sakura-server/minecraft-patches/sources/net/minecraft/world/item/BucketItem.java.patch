@@ -1,23 +1,5 @@
 --- a/net/minecraft/world/item/BucketItem.java
 +++ b/net/minecraft/world/item/BucketItem.java
-@@ -112,6 +_,17 @@
-         return !player.hasInfiniteMaterials() ? new ItemStack(Items.BUCKET) : bucketStack;
-     }
- 
-+    // Sakura start - modify bucket stack size
-+    @Override
-+    public void verifyComponentsAfterLoad(ItemStack stack) {
-+        me.samsuik.sakura.configuration.GlobalConfiguration config = me.samsuik.sakura.configuration.GlobalConfiguration.get();
-+        int customItemSize = config == null || !config.players.bucketStackSize.isDefined() ? -1 : config.players.bucketStackSize.intValue();
-+        if (customItemSize > 0 && customItemSize < 100) {
-+            stack.set(net.minecraft.core.component.DataComponents.MAX_STACK_SIZE, customItemSize);
-+        }
-+    }
-+    // Sakura end - modify bucket stack size
-+
-     @Override
-     public void checkExtraContent(@Nullable Player player, Level level, ItemStack containerStack, BlockPos pos) {
-     }
 @@ -147,7 +_,7 @@
              // CraftBukkit end
              if (!flag) {

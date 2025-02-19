@@ -1,5 +1,14 @@
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
+@@ -118,7 +_,7 @@
+     public final List<TickingBlockEntity> blockEntityTickers = Lists.newArrayList(); // Paper - public
+     public final NeighborUpdater neighborUpdater;
+     private final List<TickingBlockEntity> pendingBlockEntityTickers = Lists.newArrayList();
+-    private boolean tickingBlockEntities;
++    public boolean tickingBlockEntities;
+     public final Thread thread;
+     private final boolean isDebug;
+     private int skyDarken;
 @@ -168,6 +_,18 @@
          return this.paperConfig;
      }
@@ -11,8 +20,8 @@
 +    }
 +    // Sakura end - sakura configuration files
 +    // Sakura start - local config and property storage
-+    private final me.samsuik.sakura.local.config.LocalConfigManager localConfig = new me.samsuik.sakura.local.config.LocalConfigManager(this);
-+    public final me.samsuik.sakura.local.config.LocalConfigManager localConfig() {
++    private final me.samsuik.sakura.configuration.local.LocalConfigManager localConfig = new me.samsuik.sakura.configuration.local.LocalConfigManager(this);
++    public final me.samsuik.sakura.configuration.local.LocalConfigManager localConfig() {
 +        return this.localConfig;
 +    }
 +    // Sakura end - local config and property storage
