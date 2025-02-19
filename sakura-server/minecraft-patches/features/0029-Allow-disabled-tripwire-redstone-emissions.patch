@@ -1,11 +1,11 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Nahuel Dolores <contact@nahu.me>
-Date: Wed, 12 Feb 2025 18:16:00 +0100
+Date: Wed, 19 Feb 2025 10:34:54 +0100
 Subject: [PATCH] Allow disabled tripwire redstone emissions
 
 
 diff --git a/net/minecraft/world/level/block/TripWireBlock.java b/net/minecraft/world/level/block/TripWireBlock.java
-index e3f3f127907b43a2cef3e1dbff555422b4a551d9..f6844892cf81f98e861259c551e56da9a322e56c 100644
+index e3f3f127907b43a2cef3e1dbff555422b4a551d9..a9d2c8f225c66e4eb22a18f9044854941f50aaf7 100644
 --- a/net/minecraft/world/level/block/TripWireBlock.java
 +++ b/net/minecraft/world/level/block/TripWireBlock.java
 @@ -127,7 +127,7 @@ public class TripWireBlock extends Block {
@@ -40,12 +40,12 @@ index e3f3f127907b43a2cef3e1dbff555422b4a551d9..f6844892cf81f98e861259c551e56da9
          if (flag != poweredValue) {
              blockState = blockState.setValue(POWERED, Boolean.valueOf(flag));
 -            level.setBlock(pos, blockState, 3);
-+            //level.setBlock(pos, blockState, 3);
++            //level.setBlock(pos, blockState, 3); // Citrus
              this.updateSource(level, pos, blockState);
          }
  
 diff --git a/net/minecraft/world/level/block/TripWireHookBlock.java b/net/minecraft/world/level/block/TripWireHookBlock.java
-index dd2ceb8fd24281a6dd06084145f387cff55c6cc9..560b59fdecd57654bc7ebac580ba6a78cfc7aeef 100644
+index ec3fe8e40c7ccb04d3e35cd70bb933a3c852fd20..30751da5801d2acec519630807b8144758c0e8a3 100644
 --- a/net/minecraft/world/level/block/TripWireHookBlock.java
 +++ b/net/minecraft/world/level/block/TripWireHookBlock.java
 @@ -220,7 +220,7 @@ public class TripWireHookBlock extends Block {
@@ -54,6 +54,6 @@ index dd2ceb8fd24281a6dd06084145f387cff55c6cc9..560b59fdecd57654bc7ebac580ba6a78
                          BlockState blockState3 = level.getBlockState(blockPos1);
 -                        if (blockState3.is(Blocks.TRIPWIRE) || blockState3.is(Blocks.TRIPWIRE_HOOK)) {
 +                        if (/*blockState3.is(Blocks.TRIPWIRE) ||*/ blockState3.is(Blocks.TRIPWIRE_HOOK)) { // Citrus
-                             level.setBlock(blockPos1, blockState2.trySetValue(ATTACHED, Boolean.valueOf(flag2)), 3);
+                             if (!io.papermc.paper.configuration.GlobalConfiguration.get().blockUpdates.disableTripwireUpdates || !blockState3.is(Blocks.TRIPWIRE)) level.setBlock(blockPos1, blockState2.trySetValue(ATTACHED, Boolean.valueOf(flag2)), 3); // Paper - prevent tripwire from updating
                          }
                      }
