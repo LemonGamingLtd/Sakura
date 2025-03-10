@@ -78,7 +78,7 @@ index 8f9f759885a9cda57ae7d665ec309a57e12969fd..e096463443639e9eef5311d7154f6d2a
                  if (flag && !player.getBukkitEntity().canSee(this.entity.getBukkitEntity())) { // Paper - only consider hits
                      flag = false;
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index ca41cfe5f36b5820238df4ec4d2c749668b750f1..f2c0cd46a64fbc3fc7e6cb77acac353bb84d4073 100644
+index 86792b4573ca12f0b106c3322a0d2678b2634e2a..d22d5252ee7b8932e03a5ebe3ea1b45d26cb5227 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -569,6 +569,21 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
@@ -195,10 +195,10 @@ index e71c1a564e5d4ac43460f89879ff709ee685706f..7d2fe5df38db1d492ae65aa729592002
          }
      }
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 660f9d44739909150635beaa2082e85dfde915c4..648d9219cd496b1793198d5914665c346449b22e 100644
+index 1205307b7d2336fa6c5395a65be6643228c49d72..b21783ba632fac676889dbc9be48e65026b27607 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -3192,6 +3192,7 @@ public class ServerGamePacketListenerImpl
+@@ -3203,6 +3203,7 @@ public class ServerGamePacketListenerImpl
  
                          event.setCancelled(cancelled);
                          AbstractContainerMenu oldContainer = this.player.containerMenu; // SPIGOT-1224
@@ -207,7 +207,7 @@ index 660f9d44739909150635beaa2082e85dfde915c4..648d9219cd496b1793198d5914665c34
                          if (this.player.containerMenu != oldContainer) {
                              return;
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 362c9516850fa20719a234309d2416fde5e5b324..789a64f13185b8d761e290e931ed31f8c04c6255 100644
+index 30c330cfa6d675eb409b96725248d34474013867..f911d552e5d76c1af29c9abae083fe68cb051749 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -523,6 +523,10 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess

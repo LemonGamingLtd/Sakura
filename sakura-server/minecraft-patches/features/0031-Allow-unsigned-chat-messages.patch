@@ -1,0 +1,83 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Nahuel Dolores <contact@nahu.me>
+Date: Mon, 10 Mar 2025 11:41:06 +0100
+Subject: [PATCH] Allow unsigned chat messages
+
+
+diff --git a/net/minecraft/network/chat/SignedMessageChain.java b/net/minecraft/network/chat/SignedMessageChain.java
+index f6eed34b2fd72ab74cc9dc4b99ca184d512c0a66..5b5c2390779b4314ee24ca60b89abbf0cb2309c9 100644
+--- a/net/minecraft/network/chat/SignedMessageChain.java
++++ b/net/minecraft/network/chat/SignedMessageChain.java
+@@ -52,8 +52,11 @@ public class SignedMessageChain {
+                         SignedMessageChain.this.lastTimeStamp = body.timeStamp();
+                         PlayerChatMessage playerChatMessage = new PlayerChatMessage(signedMessageLink, signature, body, null, FilterMask.PASS_THROUGH);
+                         if (!playerChatMessage.verify(signatureValidator)) {
+-                            this.setChainBroken();
+-                            throw new SignedMessageChain.DecodeException(SignedMessageChain.DecodeException.INVALID_SIGNATURE);
++                            // Citrus start - Allow unsigned chat messages
++                            //this.setChainBroken();
++                            //throw new SignedMessageChain.DecodeException(SignedMessageChain.DecodeException.INVALID_SIGNATURE);
++                            return playerChatMessage;
++                            // Citrus end - Allow unsigned chat messages
+                         } else {
+                             if (playerChatMessage.hasExpiredServer(Instant.now())) {
+                                 SignedMessageChain.LOGGER.warn("Received expired chat: '{}'. Is the client/server system time unsynchronized?", body.content());
+diff --git a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
+index 7d2fe5df38db1d492ae65aa72959200221cf32d5..91dcd4e02feb7e35e66cbf2632e9a44fb4df9103 100644
+--- a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
++++ b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
+@@ -292,10 +292,21 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
+     }
+ 
+     public void send(Packet<?> packet) {
++        // Citrus start - Allow unsigned chat messages
++        if (packet instanceof net.minecraft.network.protocol.game.ClientboundPlayerChatPacket chat) {
++            packet = new net.minecraft.network.protocol.game.ClientboundSystemChatPacket(chat.chatType().decorate(chat.unsignedContent() != null ? chat.unsignedContent() : Component.literal(chat.body().content())), false);
++        }
++        // Citrus end - Allow unsigned chat messages
+         this.send(packet, null);
+     }
+ 
+     public void send(Packet<?> packet, @Nullable PacketSendListener listener) {
++        // Citrus start - Allow unsigned chat messages
++        if (packet instanceof net.minecraft.network.protocol.game.ClientboundPlayerChatPacket chat && listener != null) {
++            this.send(chat);
++            return;
++        }
++        // Citrus end - Allow unsigned chat messages
+         // CraftBukkit start
+         if (packet == null || this.processedDisconnect) { // Spigot
+             return;
+diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
+index b21783ba632fac676889dbc9be48e65026b27607..a93fe0d7111fe6a5ffc55c86e472d52a7ef8a61d 100644
+--- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
++++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
+@@ -2666,10 +2666,11 @@ public class ServerGamePacketListenerImpl
+                 this.lastSeenMessages.addPending(messageSignature);
+                 i = this.lastSeenMessages.trackedMessagesCount();
+             }
+-
+-            if (i > 4096) {
+-                this.disconnectAsync(Component.translatable("multiplayer.disconnect.too_many_pending_chats"), org.bukkit.event.player.PlayerKickEvent.Cause.TOO_MANY_PENDING_CHATS); // Paper - kick event cause & add proper async disconnect
+-            }
++            // Citrus start - Allow unsigned chat messages
++            //if (i > 4096) {
++            //    this.disconnectAsync(Component.translatable("multiplayer.disconnect.too_many_pending_chats"), org.bukkit.event.player.PlayerKickEvent.Cause.TOO_MANY_PENDING_CHATS); // Paper - kick event cause & add proper async disconnect
++            //}
++            // Citrus end - Allow unsigned chat messages
+         }
+     }
+ 
+diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
+index 5a4960fdbd97d830ac79845697eea9372c48a13b..c8e8f8bb59f0237f19d92339220cf32eb1ccb7df 100644
+--- a/net/minecraft/server/players/PlayerList.java
++++ b/net/minecraft/server/players/PlayerList.java
+@@ -1281,7 +1281,7 @@ public abstract class PlayerList {
+     }
+ 
+     public boolean verifyChatTrusted(PlayerChatMessage message) { // Paper - private -> public
+-        return message.hasSignature() && !message.hasExpiredServer(Instant.now());
++        return true; // message.hasSignature() && !message.hasExpiredServer(Instant.now()); // Citrus - Allow unsigned chat messages
+     }
+ 
+     // CraftBukkit start
