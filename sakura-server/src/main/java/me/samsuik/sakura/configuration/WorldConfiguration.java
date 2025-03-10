@@ -98,6 +98,7 @@ public final class WorldConfiguration extends ConfigurationPart {
             public boolean explosionsHurtPlayers = true;
             public boolean explosionsDropItems = true;
             public boolean useBlockCacheAcrossExplosions = false;
+            public boolean breakBlocksWhenOutsideTheWorldBorder = true;
         }
 
         public Mechanics mechanics = new Mechanics();
@@ -215,6 +216,7 @@ public final class WorldConfiguration extends ConfigurationPart {
     public class Environment extends ConfigurationPart {
         public boolean allowWaterInTheNether = false;
         public boolean disableFastNetherLava = false;
+        public boolean disableFluidsFlowingThroughTheWorldBorder = false;
 
         public BlockGeneration blockGeneration = new BlockGeneration();
         public class BlockGeneration extends ConfigurationPart {

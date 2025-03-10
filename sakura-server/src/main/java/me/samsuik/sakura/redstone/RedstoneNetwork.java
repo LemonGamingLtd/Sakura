@@ -1,5 +1,6 @@
 package me.samsuik.sakura.redstone;
 
+import io.papermc.paper.configuration.WorldConfiguration;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import it.unimi.dsi.fastutil.objects.*;
 import me.samsuik.sakura.utils.TickExpiry;
@@ -41,11 +42,17 @@ public final class RedstoneNetwork {
         return newBlock.getBlock() != oldBlock.getBlock();
     }
 
+    public List<BlockPos> getWirePositions() {
+        return this.wireUpdates.stream()
+            .map(RedstoneWireUpdate::getPosition)
+            .toList();
+    }
+
     public TickExpiry getExpiry() {
         return this.expiry;
     }
 
-    private boolean isRegistered() {
+    public boolean isRegistered() {
         return !this.listeners.isEmpty();
     }
 
@@ -71,8 +78,9 @@ public final class RedstoneNetwork {
         }
     }
 
-    public boolean prepareAndRegister(Level level) {
+    public boolean prepareAndRegisterListeners(Level level, RedstoneNetworkSource networkSource) {
         Object2ObjectLinkedOpenHashMap<BlockPos, RedstoneWireUpdate> processedWires = new Object2ObjectLinkedOpenHashMap<>();
+        boolean skipWireUpdates = networkSource.redstoneImplementation() != WorldConfiguration.Misc.RedstoneImplementation.VANILLA;
         for (RedstoneWireUpdate wireUpdate : this.wireUpdates.reversed()) {
             BlockPos wirePos = wireUpdate.getPosition();
             //noinspection ConstantValue
@@ -82,7 +90,7 @@ public final class RedstoneNetwork {
                 if (state.is(Blocks.PISTON_HEAD)) {
                     return false;
                 }
-            } else if (this.originalWirePower.get(wirePos).firstPower() != wireUpdate.getPower()) {
+            } else if (skipWireUpdates && this.originalWirePower.get(wirePos).firstPower() != wireUpdate.getPower()) {
                 // Filter out wires updates that are not the first and last update
                 // This significantly reduces the amount of updates when unpowering
                 wireUpdate.skipWireUpdate();
