@@ -132,10 +132,10 @@ index 86792b4573ca12f0b106c3322a0d2678b2634e2a..d22d5252ee7b8932e03a5ebe3ea1b45d
          }
  
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 4bf7e288b9e9643ac161fcf017d0194419290a54..8a27d202854e083d9c29abcd8486fc760a7bddd8 100644
+index d5dd3f5d4f38ed7281d896275012e3a6697cce9c..ab38dbe13d1dd0c9cb7a4fac223f4b523d550b17 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -424,6 +424,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -431,6 +431,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
      }
      // Paper end - rewrite chunk system
      public double trackingRangeModifier = 1.0; // Sakura - entity tracking range modifier
@@ -195,7 +195,7 @@ index e71c1a564e5d4ac43460f89879ff709ee685706f..7d2fe5df38db1d492ae65aa729592002
          }
      }
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 1205307b7d2336fa6c5395a65be6643228c49d72..b21783ba632fac676889dbc9be48e65026b27607 100644
+index b4a284a0617167fd12e9d9414b17f86c169ba563..ef9b227a622790663f7a68eadbe2c4feee681134 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -3203,6 +3203,7 @@ public class ServerGamePacketListenerImpl
