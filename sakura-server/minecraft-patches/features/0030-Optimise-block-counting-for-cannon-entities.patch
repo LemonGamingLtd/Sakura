@@ -5,14 +5,14 @@ Subject: [PATCH] Optimise block counting for cannon entities
 
 
 diff --git a/ca/spottedleaf/moonrise/patches/collisions/CollisionUtil.java b/ca/spottedleaf/moonrise/patches/collisions/CollisionUtil.java
-index 0de9f3d0fb5abbb86bcb9bd2546cea198d105d88..92b4914577b500e2114e9160f0af8d46d5096672 100644
+index 0de9f3d0fb5abbb86bcb9bd2546cea198d105d88..b3bb1f88d22f3e3c696f11648d1020c2d91f048e 100644
 --- a/ca/spottedleaf/moonrise/patches/collisions/CollisionUtil.java
 +++ b/ca/spottedleaf/moonrise/patches/collisions/CollisionUtil.java
 @@ -1943,6 +1943,7 @@ public final class CollisionUtil {
          final BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos();
          final CollisionContext collisionShape = new LazyEntityCollisionContext(entity);
          final boolean useEntityCollisionShape = LazyEntityCollisionContext.useEntityCollisionShape(world, entity);
-+        final boolean cannonEntity = entity.isFallingBlock || entity.isPrimedTNT; // Sakura - optimise block counting for cannon entities
++        final boolean cannonEntity = entity != null && (entity.isFallingBlock || entity.isPrimedTNT); // Sakura - optimise block counting for cannon entities
  
          // special cases:
          if (minBlockY > maxBlockY) {

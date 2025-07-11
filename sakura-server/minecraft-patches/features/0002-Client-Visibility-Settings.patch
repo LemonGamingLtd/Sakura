@@ -144,7 +144,7 @@ index 7b341b8c65ebab8e352252df2b47f40ce3c0db4f..5c812e81a74d8f1df8a1a7ac98f84f44
      public ServerPlayer(MinecraftServer server, ServerLevel level, GameProfile gameProfile, ClientInformation clientInformation) {
          super(level, gameProfile);
 diff --git a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-index 2e7c4c74818befd25e296b58ef9f20319544c2fb..5c661e0eadcde02f2c5f00c86651a50fe68171ad 100644
+index 2e7c4c74818befd25e296b58ef9f20319544c2fb..63d49e333a384a0fd62f777a2265fdd3c84d5968 100644
 --- a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 @@ -57,6 +57,21 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
@@ -174,7 +174,7 @@ index 2e7c4c74818befd25e296b58ef9f20319544c2fb..5c661e0eadcde02f2c5f00c86651a50f
              serverGamePacketListener.player.compassTarget = org.bukkit.craftbukkit.util.CraftLocation.toBukkit(defaultSpawnPositionPacket.getPos(), serverGamePacketListener.getCraftPlayer().getWorld());
          }
 +        // Sakura start - client visibility settings
-+        if (this.connection.getPlayer().visibilitySettings.playerModified()) {
++        if (this.connection.getPlayer() != null && this.connection.getPlayer().visibilitySettings.playerModified()) {
 +            packet = this.recreatePacket(packet);
 +            if (packet == null) return;
 +        }
@@ -195,7 +195,7 @@ index 2e7c4c74818befd25e296b58ef9f20319544c2fb..5c661e0eadcde02f2c5f00c86651a50f
          }
      }
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index ef9a0cbf75fb79d289d1d788ba0e5f181e3cdddd..661046c8c0f6d6116a8b785820f4bcfbda7f43b4 100644
+index 3bb431da22aaf4ed1965aa9bc89732b25b1e3648..1c4e4b95edae75c212e071e656cf36c007a1dce9 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -3202,6 +3202,7 @@ public class ServerGamePacketListenerImpl
