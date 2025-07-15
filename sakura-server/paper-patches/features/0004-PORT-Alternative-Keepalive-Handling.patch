@@ -1,0 +1,18 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: William Blake Galbreath <blake.galbreath@gmail.com>
+Date: Tue, 15 Jul 2025 10:19:22 +0200
+Subject: [PATCH] PORT: Alternative Keepalive Handling
+
+
+diff --git a/src/main/java/io/papermc/paper/configuration/GlobalConfiguration.java b/src/main/java/io/papermc/paper/configuration/GlobalConfiguration.java
+index c5a491acfe4b93bfa8fd21861edbaf464a178bf3..51a154e51204b1ed9c4f577e849b32af50bf52f1 100644
+--- a/src/main/java/io/papermc/paper/configuration/GlobalConfiguration.java
++++ b/src/main/java/io/papermc/paper/configuration/GlobalConfiguration.java
+@@ -168,6 +168,7 @@ public class GlobalConfiguration extends ConfigurationPart {
+     public UnsupportedSettings unsupportedSettings;
+ 
+     public class UnsupportedSettings extends ConfigurationPart {
++        public boolean useAlternateKeepAlive = true; // Purpur - Alternative Keepalive Handling
+         @Comment("This setting allows for exploits related to end portals, for example sand duping")
+         public boolean allowUnsafeEndPortalTeleportation = false;
+         @Comment("This setting controls the ability to enable dupes related to tripwires.")
