@@ -5,7 +5,7 @@ Subject: [PATCH] Optimise block counting for cannon entities
 
 
 diff --git a/ca/spottedleaf/moonrise/patches/collisions/CollisionUtil.java b/ca/spottedleaf/moonrise/patches/collisions/CollisionUtil.java
-index 0de9f3d0fb5abbb86bcb9bd2546cea198d105d88..b3bb1f88d22f3e3c696f11648d1020c2d91f048e 100644
+index 696c97361041d8585aa2a0ab6070fcee461f78d5..ad0af4d70a2aa6b748cfc81869938a1fd0341443 100644
 --- a/ca/spottedleaf/moonrise/patches/collisions/CollisionUtil.java
 +++ b/ca/spottedleaf/moonrise/patches/collisions/CollisionUtil.java
 @@ -1943,6 +1943,7 @@ public final class CollisionUtil {
@@ -16,7 +16,7 @@ index 0de9f3d0fb5abbb86bcb9bd2546cea198d105d88..b3bb1f88d22f3e3c696f11648d1020c2
  
          // special cases:
          if (minBlockY > maxBlockY) {
-@@ -2003,15 +2004,19 @@ public final class CollisionUtil {
+@@ -2002,15 +2003,19 @@ public final class CollisionUtil {
  
                      final boolean hasSpecial = !fullBlocks && ((BlockCountingChunkSection)section).moonrise$hasSpecialCollidingBlocks(); // Sakura - collide with non-solid blocks
                      final int sectionAdjust = !hasSpecial ? 1 : 0;

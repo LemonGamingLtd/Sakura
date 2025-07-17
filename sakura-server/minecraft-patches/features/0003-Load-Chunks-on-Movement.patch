@@ -5,7 +5,7 @@ Subject: [PATCH] Load Chunks on Movement
 
 
 diff --git a/ca/spottedleaf/moonrise/patches/collisions/CollisionUtil.java b/ca/spottedleaf/moonrise/patches/collisions/CollisionUtil.java
-index 01cd38bba2deb6cf65c82b4e4ec352a2998fd339..548e3dc8e5fee004483b40a59e2502ba8b93e674 100644
+index 01cd38bba2deb6cf65c82b4e4ec352a2998fd339..9324db58c1ea99c6b662c411d6c97753edf70086 100644
 --- a/ca/spottedleaf/moonrise/patches/collisions/CollisionUtil.java
 +++ b/ca/spottedleaf/moonrise/patches/collisions/CollisionUtil.java
 @@ -1885,6 +1885,7 @@ public final class CollisionUtil {
@@ -24,14 +24,13 @@ index 01cd38bba2deb6cf65c82b4e4ec352a2998fd339..548e3dc8e5fee004483b40a59e2502ba
          final ChunkSource chunkSource = world.getChunkSource();
  
          for (int currChunkZ = minChunkZ; currChunkZ <= maxChunkZ; ++currChunkZ) {
-@@ -1954,6 +1956,13 @@ public final class CollisionUtil {
+@@ -1954,6 +1956,12 @@ public final class CollisionUtil {
                      continue;
                  }
  
 +                // Sakura start - load chunks on movement
 +                if (addTicket && chunk.movementTicketNeedsUpdate() && chunkSource instanceof net.minecraft.server.level.ServerChunkCache chunkCache) {
-+                    final long chunkKey = ca.spottedleaf.moonrise.common.util.CoordinateUtils.getChunkKey(currChunkX, currChunkZ);
-+                    chunkCache.chunkMap.getDistanceManager().moonrise$getChunkHolderManager().addTicketAtLevel(net.minecraft.server.level.TicketType.ENTITY_MOVEMENT, currChunkX, currChunkZ, 31, chunkKey);
++                    chunkCache.chunkMap.getDistanceManager().moonrise$getChunkHolderManager().addTicketAtLevel(net.minecraft.server.level.TicketType.ENTITY_MOVEMENT, currChunkX, currChunkZ, 31, null);
 +                    chunk.updatedMovementTicket();
 +                }
 +                // Sakura end - load chunks on movement
