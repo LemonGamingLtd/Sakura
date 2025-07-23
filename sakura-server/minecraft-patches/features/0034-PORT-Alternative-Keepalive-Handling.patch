@@ -5,7 +5,7 @@ Subject: [PATCH] PORT: Alternative Keepalive Handling
 
 
 diff --git a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-index 2fe3c13ec112094a48ea43beae54e07e549bb333..2bfdb2ad6aef4a0ddc8cae88add9e4969568ce6f 100644
+index 57478a154fcf4f17c4ef970b9b5bc8e8c6ec902d..57596611d2f501f539759e837851c8c243ded74d 100644
 --- a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 @@ -39,10 +39,11 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
@@ -32,7 +32,7 @@ index 2fe3c13ec112094a48ea43beae54e07e549bb333..2bfdb2ad6aef4a0ddc8cae88add9e496
      // Paper start - retain certain values
      public @Nullable String playerBrand;
      public final java.util.Set<String> pluginMessagerChannels;
-@@ -113,6 +118,18 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
+@@ -158,6 +163,18 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
          // Paper start - improve keepalives
          long now = System.nanoTime();
          io.papermc.paper.util.KeepAlive.PendingKeepAlive pending = this.keepAlive.pendingKeepAlives.peek();
@@ -51,7 +51,7 @@ index 2fe3c13ec112094a48ea43beae54e07e549bb333..2bfdb2ad6aef4a0ddc8cae88add9e496
          if (pending != null && pending.challengeId() == packet.getId()) {
              this.keepAlive.pendingKeepAlives.remove(pending);
  
-@@ -187,6 +204,11 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
+@@ -232,6 +249,11 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
                  return;
              }
  
@@ -63,7 +63,7 @@ index 2fe3c13ec112094a48ea43beae54e07e549bb333..2bfdb2ad6aef4a0ddc8cae88add9e496
              if (identifier.equals(MINECRAFT_BRAND)) {
                  this.playerBrand = new net.minecraft.network.FriendlyByteBuf(io.netty.buffer.Unpooled.wrappedBuffer(data)).readUtf(256);
              }
-@@ -266,6 +288,23 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
+@@ -317,6 +339,23 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
          Profiler.get().push("keepAlive");
          long millis = Util.getMillis();
          // Paper start - improve keepalives

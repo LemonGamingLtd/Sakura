@@ -23,10 +23,10 @@ index f6eed34b2fd72ab74cc9dc4b99ca184d512c0a66..5b5c2390779b4314ee24ca60b89abbf0
                              if (playerChatMessage.hasExpiredServer(Instant.now())) {
                                  SignedMessageChain.LOGGER.warn("Received expired chat: '{}'. Is the client/server system time unsynchronized?", body.content());
 diff --git a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-index 5c661e0eadcde02f2c5f00c86651a50fe68171ad..7c8cb15139c54db40ade1c510cb501bbaefd45bb 100644
+index c1c432b5732b1e85aca5597be75e0149a333de0d..57478a154fcf4f17c4ef970b9b5bc8e8c6ec902d 100644
 --- a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-@@ -310,10 +310,21 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
+@@ -361,10 +361,21 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
      }
  
      public void send(Packet<?> packet) {
@@ -49,10 +49,10 @@ index 5c661e0eadcde02f2c5f00c86651a50fe68171ad..7c8cb15139c54db40ade1c510cb501bb
          if (packet == null || this.processedDisconnect) { // Spigot
              return;
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 661046c8c0f6d6116a8b785820f4bcfbda7f43b4..b15dfb6023e90adc77c28324af3ef73c1fac8f9e 100644
+index ce8ea023bbf09178507f324634c11353cf204c8c..32fef4fa6bba78158f3c653f3344b4e0195318d6 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -2687,9 +2687,11 @@ public class ServerGamePacketListenerImpl
+@@ -2699,9 +2699,11 @@ public class ServerGamePacketListenerImpl
                  i = this.lastSeenMessages.trackedMessagesCount();
              }
  
@@ -68,7 +68,7 @@ index 661046c8c0f6d6116a8b785820f4bcfbda7f43b4..b15dfb6023e90adc77c28324af3ef73c
          }
          // Paper end - Ensure that client receives chat packets in the same order that we add into the message signature cache
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
-index dea72819f2933e5a806bb3a0603e4ebdf7f99456..73a739fc0316413839dea0ad327f104fd4ccbb40 100644
+index 2c2015bf19d5b30e945118661b7a9b474a1bddc8..a8a5f9e91e621e21fc968f7d6ed0ecbb8f3db800 100644
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
 @@ -1281,7 +1281,7 @@ public abstract class PlayerList {
