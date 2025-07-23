@@ -4,6 +4,37 @@ Date: Tue, 21 Sep 2021 23:54:25 +0100
 Subject: [PATCH] Client Visibility Settings
 
 
+diff --git a/net/minecraft/network/protocol/game/ClientboundLevelChunkPacketData.java b/net/minecraft/network/protocol/game/ClientboundLevelChunkPacketData.java
+index 9f6d7c5dc0e591488a8a3763d8a1f1b3671d5299..0f5383dcec940db15205afbb65f1f8aa5899edf4 100644
+--- a/net/minecraft/network/protocol/game/ClientboundLevelChunkPacketData.java
++++ b/net/minecraft/network/protocol/game/ClientboundLevelChunkPacketData.java
+@@ -31,7 +31,7 @@ public class ClientboundLevelChunkPacketData {
+     private static final int TWO_MEGABYTES = 2097152;
+     private final Map<Heightmap.Types, long[]> heightmaps;
+     private final byte[] buffer;
+-    private final List<ClientboundLevelChunkPacketData.BlockEntityInfo> blockEntitiesData;
++    public final List<ClientboundLevelChunkPacketData.BlockEntityInfo> blockEntitiesData; // Sakura - client visibility settings; private -> public; ATs for some reason don't work here
+     // Paper start - Handle oversized block entities in chunks
+     private final java.util.List<net.minecraft.network.protocol.Packet<?>> extraPackets = new java.util.ArrayList<>();
+     private static final int BLOCK_ENTITY_LIMIT = Integer.getInteger("Paper.excessiveTELimit", 750);
+@@ -153,7 +153,7 @@ public class ClientboundLevelChunkPacketData {
+         return this.heightmaps;
+     }
+ 
+-    static class BlockEntityInfo {
++    public static class BlockEntityInfo { // Sakura - client visibility settings; package-protected -> public; ATs for some reason don't work here
+         public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundLevelChunkPacketData.BlockEntityInfo> STREAM_CODEC = StreamCodec.ofMember(
+             ClientboundLevelChunkPacketData.BlockEntityInfo::write, ClientboundLevelChunkPacketData.BlockEntityInfo::new
+         );
+@@ -162,7 +162,7 @@ public class ClientboundLevelChunkPacketData {
+         );
+         final int packedXZ;
+         final int y;
+-        final BlockEntityType<?> type;
++        public final BlockEntityType<?> type; // Sakura - client visibility settings; private -> public; ATs for some reason don't work here
+         @Nullable
+         final CompoundTag tag;
+ 
 diff --git a/net/minecraft/server/level/ChunkMap.java b/net/minecraft/server/level/ChunkMap.java
 index df822f0e7c358d74737c749d6ba61ec31846a569..a88184f63f3cb539569942c5c982193973183984 100644
 --- a/net/minecraft/server/level/ChunkMap.java
@@ -132,7 +163,7 @@ index 03a157f6c96b0f39effa24ae278eeac689c83ee8..5f38281763419123a0611cbb34d9a02a
          }
  
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 7b341b8c65ebab8e352252df2b47f40ce3c0db4f..5c812e81a74d8f1df8a1a7ac98f84f44aec264c3 100644
+index f3723436b65f64866af695209983b0ca4ad4f716..a7d71e5bd99a02aa156e1301dc5169e2c35f046d 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
 @@ -460,6 +460,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
@@ -144,70 +175,97 @@ index 7b341b8c65ebab8e352252df2b47f40ce3c0db4f..5c812e81a74d8f1df8a1a7ac98f84f44
      public ServerPlayer(MinecraftServer server, ServerLevel level, GameProfile gameProfile, ClientInformation clientInformation) {
          super(level, gameProfile);
 diff --git a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-index 2e7c4c74818befd25e296b58ef9f20319544c2fb..63d49e333a384a0fd62f777a2265fdd3c84d5968 100644
+index 08c59d603fca038fc2dde36384eea1b6c971e659..c1c432b5732b1e85aca5597be75e0149a333de0d 100644
 --- a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-@@ -57,6 +57,21 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
+@@ -57,6 +57,60 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
      public @Nullable String playerBrand;
      public final java.util.Set<String> pluginMessagerChannels;
      // Paper end - retain certain values
 +    // Sakura start - client visibility settings
-+    private @Nullable Packet<?> recreatePacket(final Packet<?> packet) {
-+        final me.samsuik.sakura.player.visibility.VisibilitySettings settings = this.connection.getPlayer().visibilitySettings;
-+        if (packet instanceof net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket bedPacket) {
-+            if (settings.isToggled(me.samsuik.sakura.player.visibility.VisibilityTypes.SPAWNERS) && bedPacket.getType() == net.minecraft.world.level.block.entity.BlockEntityType.MOB_SPAWNER) {
-+                return null;
-+            }
-+        } else if (packet instanceof net.minecraft.network.protocol.game.ClientboundBlockEventPacket bePacket) {
-+            if (settings.isToggled(me.samsuik.sakura.player.visibility.VisibilityTypes.PISTONS) && bePacket.getBlock() instanceof net.minecraft.world.level.block.piston.PistonBaseBlock) {
-+                return null;
++    private boolean filterExtraPackets(final Packet<?> packet, final net.minecraft.server.level.ServerPlayer player) {
++        final me.samsuik.sakura.player.visibility.VisibilitySettings settings = player.visibilitySettings;
++        if (settings.isToggled(me.samsuik.sakura.player.visibility.VisibilityTypes.SPAWNERS)) {
++            if (packet instanceof net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket bedPacket) {
++                return bedPacket.getType() == net.minecraft.world.level.block.entity.BlockEntityType.MOB_SPAWNER;
 +            }
 +        }
-+        return packet;
++        return false;
++    }
++
++    private boolean filterOrModifyPacket(final Packet<?> packet, final net.minecraft.server.level.ServerPlayer player) {
++        final me.samsuik.sakura.player.visibility.VisibilitySettings settings = player.visibilitySettings;
++        final java.util.List<Packet<?>> extraPackets = packet.getExtraPackets();
++        if (extraPackets != null) {
++            // block entity data is sent as an extra packet
++            extraPackets.removeIf(extraPacket -> this.filterExtraPackets(extraPacket, player));
++        }
++
++        if (settings.isToggled(me.samsuik.sakura.player.visibility.VisibilityTypes.SPAWNERS)) {
++            net.minecraft.network.protocol.game.ClientboundLevelChunkPacketData chunkData = null;
++
++            if (packet instanceof net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket chunkPacket) {
++                chunkData = chunkPacket.getChunkData();
++            } else if (packet instanceof net.minecraft.network.protocol.game.ClientboundLevelChunkPacketData chunkPacket) {
++                chunkData = chunkPacket;
++            }
++
++            if (chunkData != null) {
++                chunkData.blockEntitiesData.removeIf(blockEntityInfo -> blockEntityInfo.type == net.minecraft.world.level.block.entity.BlockEntityType.MOB_SPAWNER);
++            }
++
++            if (packet instanceof net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket bedPacket && bedPacket.getType() == net.minecraft.world.level.block.entity.BlockEntityType.MOB_SPAWNER) {
++                return true;
++            }
++        }
++
++        if (packet instanceof net.minecraft.network.protocol.game.ClientboundBlockEventPacket bePacket) {
++            if (settings.isToggled(me.samsuik.sakura.player.visibility.VisibilityTypes.PISTONS)) {
++                return bePacket.getBlock() instanceof net.minecraft.world.level.block.piston.PistonBaseBlock;
++            }
++        }
++        
++        return false;
++    }
++
++    private net.minecraft.server.level.ServerPlayer getPlayer() {
++        if (this instanceof ServerGamePacketListenerImpl gamePacketListener) {
++            return gamePacketListener.getPlayer();
++        } else {
++            return this.connection.getPlayer();
++        }
 +    }
 +    // Sakura end - client visibility settings
  
      public ServerCommonPacketListenerImpl(MinecraftServer server, Connection connection, CommonListenerCookie cookie) {
          this.server = server;
-@@ -305,6 +320,12 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
+@@ -317,6 +371,12 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
          } else if (packet instanceof net.minecraft.network.protocol.game.ClientboundSetDefaultSpawnPositionPacket defaultSpawnPositionPacket && this instanceof ServerGamePacketListenerImpl serverGamePacketListener) {
              serverGamePacketListener.player.compassTarget = org.bukkit.craftbukkit.util.CraftLocation.toBukkit(defaultSpawnPositionPacket.getPos(), serverGamePacketListener.getCraftPlayer().getWorld());
          }
 +        // Sakura start - client visibility settings
-+        if (this.connection.getPlayer() != null && this.connection.getPlayer().visibilitySettings.playerModified()) {
-+            packet = this.recreatePacket(packet);
-+            if (packet == null) return;
++        final net.minecraft.server.level.ServerPlayer player = this.getPlayer();
++        if (player != null && player.visibilitySettings.playerModified() && this.filterOrModifyPacket(packet, player)) {
++            return;
 +        }
 +        // Sakura end - client visibility settings
          // CraftBukkit end
          if (packet.isTerminal()) {
              this.close();
-@@ -317,7 +338,10 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
-         } catch (Throwable var7) {
-             CrashReport crashReport = CrashReport.forThrowable(var7, "Sending packet");
-             CrashReportCategory crashReportCategory = crashReport.addCategory("Packet being sent");
--            crashReportCategory.setDetail("Packet class", () -> packet.getClass().getCanonicalName());
-+            // Sakura start - client visibility settings; packet has to be effectively final
-+            final Packet<?> packetFinal = packet;
-+            crashReportCategory.setDetail("Packet class", () -> packetFinal.getClass().getCanonicalName());
-+            // Sakura end - client visibility settings; packet has to be effectively final
-             throw new ReportedException(crashReport);
-         }
-     }
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 3bb431da22aaf4ed1965aa9bc89732b25b1e3648..1c4e4b95edae75c212e071e656cf36c007a1dce9 100644
+index 5bba860a5f913d3a83c1d469f0f4854b6e063a49..ce8ea023bbf09178507f324634c11353cf204c8c 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -3202,6 +3202,7 @@ public class ServerGamePacketListenerImpl
+@@ -3204,6 +3204,7 @@ public class ServerGamePacketListenerImpl
  
                          event.setCancelled(cancelled);
                          net.minecraft.world.inventory.AbstractContainerMenu oldContainer = this.player.containerMenu; // SPIGOT-1224
 +                        me.samsuik.sakura.player.gui.FeatureGui.clickEvent(event); // Sakura - client visibility settings
                          this.cserver.getPluginManager().callEvent(event);
                          if (this.player.containerMenu != oldContainer) {
-                             return;
+                             this.player.containerMenu.resumeRemoteUpdates();
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 46461fae4d4472bfdae75d12ac9cdaecafef848e..057ed507b8f8d6c45a8a49458d087d892ec29d8a 100644
+index d0727a05addee3e13fc65c2a2337565288f7cf98..ef6f91f35d8725fa3df81b23d86adc900a5df5ce 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -533,6 +533,10 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
