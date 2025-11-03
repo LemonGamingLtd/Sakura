@@ -1,11 +1,11 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Nahuel Dolores <contact@nahu.me>
-Date: Wed, 2 Jul 2025 17:05:18 +0200
+Date: Mon, 3 Nov 2025 15:17:57 +0100
 Subject: [PATCH] Allow disabled tripwire redstone emissions
 
 
 diff --git a/net/minecraft/world/level/block/TripWireBlock.java b/net/minecraft/world/level/block/TripWireBlock.java
-index c8f793d1cdeef7e3e0d5fceb45a4507d542e4b33..7688c9378f24f17091f24a19533262b854440831 100644
+index 9d005c3db8f0c784cdd7217e7b110daa703a9cf3..88b8aa2f299831b7c44e27556510a5212d70ac46 100644
 --- a/net/minecraft/world/level/block/TripWireBlock.java
 +++ b/net/minecraft/world/level/block/TripWireBlock.java
 @@ -128,7 +128,7 @@ public class TripWireBlock extends Block {
@@ -20,11 +20,11 @@ index c8f793d1cdeef7e3e0d5fceb45a4507d542e4b33..7688c9378f24f17091f24a19533262b8
 @@ -154,7 +154,7 @@ public class TripWireBlock extends Block {
  
      @Override
-     protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity, InsideBlockEffectApplier effectApplier) {
+     protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity, InsideBlockEffectApplier effectApplier, boolean pastEdges) {
 -        if (io.papermc.paper.configuration.GlobalConfiguration.get().blockUpdates.disableTripwireUpdates) return; // Paper - prevent tripwires from detecting collision
 +        //if (io.papermc.paper.configuration.GlobalConfiguration.get().blockUpdates.disableTripwireUpdates) return; // Paper - prevent tripwires from detecting collision // Citrus
          if (!new io.papermc.paper.event.entity.EntityInsideBlockEvent(entity.getBukkitEntity(), org.bukkit.craftbukkit.block.CraftBlock.at(level, pos)).callEvent()) { return; } // Paper - Add EntityInsideBlockEvent
-         if (!level.isClientSide) {
+         if (!level.isClientSide()) {
              if (!state.getValue(POWERED)) {
 @@ -165,7 +165,7 @@ public class TripWireBlock extends Block {
  
@@ -39,13 +39,13 @@ index c8f793d1cdeef7e3e0d5fceb45a4507d542e4b33..7688c9378f24f17091f24a19533262b8
  
          if (flag != poweredValue) {
              blockState = blockState.setValue(POWERED, flag);
--            level.setBlock(pos, blockState, 3);
-+            //level.setBlock(pos, blockState, 3); // Citrus
+-            level.setBlock(pos, blockState, Block.UPDATE_ALL);
++            //level.setBlock(pos, blockState, Block.UPDATE_ALL); // Citrus
              this.updateSource(level, pos, blockState);
          }
  
 diff --git a/net/minecraft/world/level/block/TripWireHookBlock.java b/net/minecraft/world/level/block/TripWireHookBlock.java
-index 5e2576a8b90de8a829c6136cc384f3fe5a49603c..b4909c9f90216c26d7cfd053c66ed8c2d9e55b32 100644
+index b4ee0485467301cf5e1659cd27efe50362375d59..37783120247a2ae916450c083c5904b4f2e02611 100644
 --- a/net/minecraft/world/level/block/TripWireHookBlock.java
 +++ b/net/minecraft/world/level/block/TripWireHookBlock.java
 @@ -206,7 +206,7 @@ public class TripWireHookBlock extends Block {

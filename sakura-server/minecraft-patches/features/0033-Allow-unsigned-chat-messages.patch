@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Nahuel Dolores <contact@nahu.me>
-Date: Wed, 2 Jul 2025 17:07:57 +0200
+Date: Mon, 3 Nov 2025 15:22:17 +0100
 Subject: [PATCH] Allow unsigned chat messages
 
 
@@ -23,10 +23,10 @@ index f6eed34b2fd72ab74cc9dc4b99ca184d512c0a66..5b5c2390779b4314ee24ca60b89abbf0
                              if (playerChatMessage.hasExpiredServer(Instant.now())) {
                                  SignedMessageChain.LOGGER.warn("Received expired chat: '{}'. Is the client/server system time unsynchronized?", body.content());
 diff --git a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-index a63ef61b0f20165153cd9363677ccfece929983a..c62d08d9f662e3e172a920e0b5a9d44df5668a90 100644
+index fd08d04c13a4064c658e0aad436b48831316129b..b66ccde56e7247f4ad6b76ed07f7c68eb28964d8 100644
 --- a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-@@ -361,10 +361,21 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
+@@ -362,10 +362,21 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
      }
  
      public void send(Packet<?> packet) {
@@ -38,9 +38,9 @@ index a63ef61b0f20165153cd9363677ccfece929983a..c62d08d9f662e3e172a920e0b5a9d44d
          this.send(packet, null);
      }
  
-     public void send(Packet<?> packet, @Nullable ChannelFutureListener channelFutureListener) {
+     public void send(Packet<?> packet, @Nullable ChannelFutureListener sendListener) {
 +        // Citrus start - Allow unsigned chat messages
-+        if (packet instanceof net.minecraft.network.protocol.game.ClientboundPlayerChatPacket chat && channelFutureListener != null) {
++        if (packet instanceof net.minecraft.network.protocol.game.ClientboundPlayerChatPacket chat && sendListener != null) {
 +            this.send(chat);
 +            return;
 +        }
@@ -49,10 +49,10 @@ index a63ef61b0f20165153cd9363677ccfece929983a..c62d08d9f662e3e172a920e0b5a9d44d
          if (packet == null || this.processedDisconnect) { // Spigot
              return;
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 21134883bea2553a870ef0df32c47430aa056cef..b93bcfebb549a89324302577386d2f0365618d34 100644
+index 2c1539826e14698d65a519e2474cbb3a41ed24fa..2cc637c6d9cec8e917afcce304cdd7aaa825d84f 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -2699,9 +2699,11 @@ public class ServerGamePacketListenerImpl
+@@ -2707,9 +2707,11 @@ public class ServerGamePacketListenerImpl
                  i = this.lastSeenMessages.trackedMessagesCount();
              }
  
@@ -68,15 +68,15 @@ index 21134883bea2553a870ef0df32c47430aa056cef..b93bcfebb549a89324302577386d2f03
          }
          // Paper end - Ensure that client receives chat packets in the same order that we add into the message signature cache
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
-index e1fd699b33832c0f01b14023db7cc2b9d6797227..fc75532afab3c23160f3c68e24c94885b985c658 100644
+index cc5d1e8007e2ea32605bd68d0a73683e8fb6886e..c654310aba122258efdec061b8857afa1a96fe48 100644
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
-@@ -1279,7 +1279,7 @@ public abstract class PlayerList {
+@@ -1151,7 +1151,7 @@ public abstract class PlayerList {
      }
  
      public boolean verifyChatTrusted(PlayerChatMessage message) {
 -        return message.hasSignature() && !message.hasExpiredServer(Instant.now());
-+        return true; // message.hasSignature() && !message.hasExpiredServer(Instant.now()); // Citrus - Allow unsigned chat messages
++        return true; //message.hasSignature() && !message.hasExpiredServer(Instant.now()); // Citrus - Allow unsigned chat messages
      }
  
      // CraftBukkit start
