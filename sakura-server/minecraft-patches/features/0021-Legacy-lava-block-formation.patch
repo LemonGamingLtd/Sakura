@@ -5,52 +5,73 @@ Subject: [PATCH] Legacy lava block formation
 
 
 diff --git a/net/minecraft/world/level/block/LiquidBlock.java b/net/minecraft/world/level/block/LiquidBlock.java
-index 1e8574d7900ffde16c2e1ee9f92a77c47c85af61..e9895a986dffd2ca170916b3e11f88bf36adae50 100644
+index 802128ea74a6a5250762dd8501352dda7f18543d..682b9108c70ff2dc963a5574f05f1c5d124354c6 100644
 --- a/net/minecraft/world/level/block/LiquidBlock.java
 +++ b/net/minecraft/world/level/block/LiquidBlock.java
-@@ -199,7 +199,14 @@ public class LiquidBlock extends Block implements BucketPickup {
+@@ -204,7 +204,14 @@ public class LiquidBlock extends Block implements BucketPickup {
+                     // Sakura start - configure server mechanics
                      final FluidState fluidState = state.getFluidState();
                      final Block block = fluidState.isSource() ? Blocks.OBSIDIAN : Blocks.COBBLESTONE;
-                     if (block == Blocks.COBBLESTONE) {
--                        final me.samsuik.sakura.physics.PhysicsVersion physics = level.localConfig().config(pos).physicsVersion;
-+                        // Sakura start - legacy lava block formation
-+                        final me.samsuik.sakura.physics.PhysicsVersion physics;
-+                        if (level.sakuraConfig().environment.blockGeneration.legacyBlockFormation) {
-+                            physics = me.samsuik.sakura.physics.PhysicsVersion.v1_12;
-+                        } else {
-+                            physics = level.localConfig().config(pos).physicsVersion;
-+                        }
-+                        // Sakura end - legacy lava block formation
- 
-                         // SANITY: In legacy a patch by paper removes the fluid level condition from vanilla.
-                         if (physics.before(1_16_0) && !physics.isLegacy() &&
+-                    final me.samsuik.sakura.mechanics.MinecraftMechanicsTarget mechanicsTarget = level.localConfig().at(pos).mechanicsTarget;
++                    // Sakura start - legacy lava block formation
++                    final me.samsuik.sakura.mechanics.MinecraftMechanicsTarget mechanicsTarget;
++                    if (level.sakuraConfig().environment.blockGeneration.legacyBlockFormation) {
++                        mechanicsTarget = me.samsuik.sakura.mechanics.MinecraftMechanicsTarget.legacy();
++                    } else {
++                        mechanicsTarget = level.localConfig().at(pos).mechanicsTarget;
++                    }
++                    // Sakura end - legacy lava block formation
+                     if (block == Blocks.COBBLESTONE && !me.samsuik.sakura.mechanics.LegacyBlockFormation.canLiquidFormBlock(level, pos, fluidState, mechanicsTarget)) {
+                         return true;
+                     }
 diff --git a/net/minecraft/world/level/material/LavaFluid.java b/net/minecraft/world/level/material/LavaFluid.java
-index 34a40cf00c4337acd716358f7767aa81a936f1dc..ac052ccb2bfbd8a824b8f8d2ce8d55d8214b5fa9 100644
+index d413d4999f265f88a50133811735237902843e55..6eb6a3dd77a554c2b938b59a905a73b750880563 100644
 --- a/net/minecraft/world/level/material/LavaFluid.java
 +++ b/net/minecraft/world/level/material/LavaFluid.java
-@@ -186,7 +186,8 @@ public abstract class LavaFluid extends FlowingFluid {
-     public boolean canBeReplacedWith(FluidState fluidState, BlockGetter blockReader, BlockPos pos, Fluid fluid, Direction direction) {
-         // Sakura start - configure cannon physics
-         return fluidState.getHeight(blockReader, pos) >= 0.44444445F && fluid.is(FluidTags.WATER)
--            && blockReader instanceof Level level && level.localConfig().config(pos).physicsVersion.afterOrEqual(1_13_0);
-+            && blockReader instanceof Level level && level.localConfig().config(pos).physicsVersion.afterOrEqual(1_13_0)
-+            && !level.sakuraConfig().environment.blockGeneration.legacyBlockFormation; // Sakura - legacy lava block formation
-         // Sakura end - configure cannon physics
-     }
+@@ -187,9 +187,16 @@ public abstract class LavaFluid extends FlowingFluid {
  
+     @Override
+     public boolean canBeReplacedWith(FluidState fluidState, BlockGetter level, BlockPos pos, Fluid fluid, Direction direction) {
+-        // Sakura start - configure server mechanics
+-        if (level instanceof ServerLevel serverLevel && serverLevel.localConfig().at(pos).mechanicsTarget.before(me.samsuik.sakura.mechanics.MechanicVersion.v1_13)) {
+-            return false;
++        // Sakura start - configure server mechanics & legacy lava block formation
++        if (level instanceof ServerLevel serverLevel) {
++            if (serverLevel.localConfig().at(pos).mechanicsTarget.before(me.samsuik.sakura.mechanics.MechanicVersion.v1_13)) {
++                return false;
++            }
++
++            if (serverLevel.sakuraConfig().environment.blockGeneration.legacyBlockFormation) {
++                return false;
++            }
++            // Sakura end - legacy lava block formation
+         }
+         // Sakura end - configure server mechanics
+         return fluidState.getHeight(level, pos) >= 0.44444445F && fluid.is(FluidTags.WATER);
 diff --git a/net/minecraft/world/level/material/WaterFluid.java b/net/minecraft/world/level/material/WaterFluid.java
-index 62a51972df8edd1cc7f892376ba6e37eba1a301a..c8ebf065b250cc44fddd47c8622fb2110f2bfc0e 100644
+index 82b7e176e61e71006be8632c42daae64d89cf11c..5d533125e8eeaa944fada7ff1ac1fa0a45581d55 100644
 --- a/net/minecraft/world/level/material/WaterFluid.java
 +++ b/net/minecraft/world/level/material/WaterFluid.java
-@@ -128,7 +128,10 @@ public abstract class WaterFluid extends FlowingFluid {
-         if (direction == Direction.DOWN && !fluid.is(FluidTags.WATER) || !(blockReader instanceof Level level)) {
-             return true;
-         }
--        return fluid.is(FluidTags.LAVA) && level.localConfig().config(pos).physicsVersion.before(1_13_0);
-+        // Sakura start - legacy lava block formation
-+        return fluid.is(FluidTags.LAVA) && (level.localConfig().config(pos).physicsVersion.before(1_13_0)
-+                || level.sakuraConfig().environment.blockGeneration.legacyBlockFormation);
-+        // Sakura end - legacy lava block formation
-         // Sakura end - configure cannon physics
-     }
+@@ -124,10 +124,18 @@ public abstract class WaterFluid extends FlowingFluid {
  
+     @Override
+     public boolean canBeReplacedWith(FluidState fluidState, BlockGetter level, BlockPos pos, Fluid fluid, Direction direction) {
+-        // Sakura start - configure server mechanics
+-        final boolean canReplace = direction == Direction.DOWN
+-            || level instanceof ServerLevel serverLevel
+-            && serverLevel.localConfig().at(pos).mechanicsTarget.before(me.samsuik.sakura.mechanics.MechanicVersion.v1_13);
++        // Sakura start - configure server mechanics & legacy lava block formation
++        boolean canReplace = false;
++        if (direction == Direction.DOWN) {
++            canReplace = true;
++        } else if (level instanceof ServerLevel serverLevel) {
++            if (serverLevel.localConfig().at(pos).mechanicsTarget.before(me.samsuik.sakura.mechanics.MechanicVersion.v1_13)) {
++                canReplace = true;
++            } else if (serverLevel.sakuraConfig().environment.blockGeneration.legacyBlockFormation) {
++                canReplace = true;
++            }
++        }
++        // Sakura end - legacy lava block formation
+         // Before 1.13 lava could replace water
+         return canReplace && !fluid.is(FluidTags.WATER);
+         // Sakura end - configure server mechanics

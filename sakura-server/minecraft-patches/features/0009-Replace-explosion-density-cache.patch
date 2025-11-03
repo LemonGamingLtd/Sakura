@@ -5,34 +5,34 @@ Subject: [PATCH] Replace explosion density cache
 
 
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 5ddfbddbef13b58bf509e4c60bbd72cde2a7f59d..39cf9a8af79ce4c3f1d47eaf7cf3205199b35eb6 100644
+index a42a0672d56e32baaa594c9c1b9db0e7487e7d59..60fc3ff0b7ed04a2f71d14658783d150dd92a680 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -692,6 +692,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -717,6 +717,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
          this.getCraftServer().addWorld(this.getWorld()); // CraftBukkit
-         this.levelTickScheduler.registerNewTask(this.explosionPositions::clear, 0); // Sakura - client visibility settings
-         this.levelTickScheduler.registerNewTask(this.mergeHandler::expire, 200); // Sakura - merge cannon entities
-+        this.levelTickScheduler.registerNewTask(this.densityCache::invalidate, 0); // Sakura - explosion density cache
+         this.levelTickScheduler.repeatingTask(this.explosionPositions::clear, 0); // Sakura - client visibility settings
+         this.levelTickScheduler.repeatingTask(this.mergeHandler::expire, 200); // Sakura - merge cannon entities
++        this.levelTickScheduler.repeatingTask(this.densityCache::expire, 0); // Sakura - explosion density cache
      }
  
      // Paper start
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index 19788e29f796efd7b1fe79c398c5532eb99add58..c24f09cf9959310353bd0fc5a5ff7498c6ea47a0 100644
+index e7ca94521052d45bf42f614b9600f607dd9941fb..3abf59c6f672e71509bc41e9b30964cf9c2c7e6c 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
-@@ -829,6 +829,7 @@ public abstract class Level implements LevelAccessor, UUIDLookup<Entity>, AutoCl
+@@ -835,6 +835,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
      public final me.samsuik.sakura.listener.BlockChangeTracker blockChangeTracker = new me.samsuik.sakura.listener.BlockChangeTracker(this);
      // Sakura end - track block changes and tick scheduler
      public final me.samsuik.sakura.entity.merge.EntityMergeHandler mergeHandler = new me.samsuik.sakura.entity.merge.EntityMergeHandler(); // Sakura - merge cannon entities
-+    public final me.samsuik.sakura.explosion.density.BlockDensityCache densityCache = new me.samsuik.sakura.explosion.density.BlockDensityCache(); // Sakura - explosion density cache
++    public final me.samsuik.sakura.explosion.density.BlockDensityCache densityCache = new me.samsuik.sakura.explosion.density.BlockDensityCache(this); // Sakura - optimise explosion density cache
  
      protected Level(
          WritableLevelData levelData,
 diff --git a/net/minecraft/world/level/ServerExplosion.java b/net/minecraft/world/level/ServerExplosion.java
-index 1e9b92454edae054c6c3c50dc844c8fc3689f6f8..37721d49fbb5c8914866be4a2bde29a64e3f172e 100644
+index d93a6ed05a09655704e70a7d7ea75ac44e5942e1..950ac55b64ae86a22cfdad6746460283cd6d35aa 100644
 --- a/net/minecraft/world/level/ServerExplosion.java
 +++ b/net/minecraft/world/level/ServerExplosion.java
-@@ -294,7 +294,12 @@ public class ServerExplosion implements Explosion {
+@@ -296,7 +296,12 @@ public class ServerExplosion implements Explosion {
                              Math.fma(dz, diffZ, offZ)
                      );
  
@@ -46,7 +46,7 @@ index 1e9b92454edae054c6c3c50dc844c8fc3689f6f8..37721d49fbb5c8914866be4a2bde29a6
                          ++missedRays;
                      }
                  }
-@@ -385,8 +390,16 @@ public class ServerExplosion implements Explosion {
+@@ -354,8 +359,16 @@ public class ServerExplosion implements Explosion {
                          double d9 = Mth.lerp(d6, boundingBox.minY, boundingBox.maxY);
                          double d10 = Mth.lerp(d7, boundingBox.minZ, boundingBox.maxZ);
                          Vec3 vec3 = new Vec3(d8 + d3, d9, d10 + d4);
@@ -65,7 +65,7 @@ index 1e9b92454edae054c6c3c50dc844c8fc3689f6f8..37721d49fbb5c8914866be4a2bde29a6
                              i++;
                          }
  
-@@ -682,6 +695,11 @@ public class ServerExplosion implements Explosion {
+@@ -597,6 +610,11 @@ public class ServerExplosion implements Explosion {
              return;
          }
          // CraftBukkit end
@@ -77,7 +77,7 @@ index 1e9b92454edae054c6c3c50dc844c8fc3689f6f8..37721d49fbb5c8914866be4a2bde29a6
  
          for (BlockPos blockPos : blocks) {
              // CraftBukkit start - TNTPrimeEvent
-@@ -848,14 +866,12 @@ public class ServerExplosion implements Explosion {
+@@ -765,14 +783,12 @@ public class ServerExplosion implements Explosion {
  
      // Paper start - Optimize explosions
      protected float getBlockDensity(Vec3 vec3d, Entity entity) {
@@ -88,7 +88,7 @@ index 1e9b92454edae054c6c3c50dc844c8fc3689f6f8..37721d49fbb5c8914866be4a2bde29a6
 -        Float blockDensity = this.level.explosionDensityCache.get(key);
 -        if (blockDensity == null) {
 +        // Sakura start - replace density cache
-+        float blockDensity = this.level.densityCache.getDensity(vec3d, entity);
++        float blockDensity = this.level.densityCache.getBlockDensity(vec3d, entity);
 +        if (blockDensity == me.samsuik.sakura.explosion.density.BlockDensityCache.UNKNOWN_DENSITY) {
              blockDensity = this.getSeenFraction(vec3d, entity, this.directMappedBlockCache, this.mutablePos); // Paper - collision optimisations
 -            this.level.explosionDensityCache.put(key, blockDensity);
@@ -98,7 +98,7 @@ index 1e9b92454edae054c6c3c50dc844c8fc3689f6f8..37721d49fbb5c8914866be4a2bde29a6
  
          return blockDensity;
 diff --git a/net/minecraft/world/level/block/BasePressurePlateBlock.java b/net/minecraft/world/level/block/BasePressurePlateBlock.java
-index 96c977df11c660ccb9a9b32e61c865084e3776ce..dc110835679dbfcb232c58c91ddac343c85ee3ab 100644
+index 6e6d5deea89be952f9ab2743340a165ed114827a..2af0ea3bda6688ac51124129f0e463c38c667376 100644
 --- a/net/minecraft/world/level/block/BasePressurePlateBlock.java
 +++ b/net/minecraft/world/level/block/BasePressurePlateBlock.java
 @@ -107,6 +107,11 @@ public abstract class BasePressurePlateBlock extends Block {
@@ -110,11 +110,11 @@ index 96c977df11c660ccb9a9b32e61c865084e3776ce..dc110835679dbfcb232c58c91ddac343
 +                level.densityCache.invalidate();
 +            }
 +            // Sakura end - explosion density cache
-             level.setBlock(pos, blockState, 2);
+             level.setBlock(pos, blockState, Block.UPDATE_CLIENTS);
              this.updateNeighbours(level, pos);
              level.setBlocksDirty(pos, state, blockState);
 diff --git a/net/minecraft/world/level/block/TripWireHookBlock.java b/net/minecraft/world/level/block/TripWireHookBlock.java
-index 8a3a8b0fdf9545a41501dc992c6982d9c8ce7b66..5e2576a8b90de8a829c6136cc384f3fe5a49603c 100644
+index 9d53b18c530f19c333dbf3e3ef8beeb8c5c49418..b4ee0485467301cf5e1659cd27efe50362375d59 100644
 --- a/net/minecraft/world/level/block/TripWireHookBlock.java
 +++ b/net/minecraft/world/level/block/TripWireHookBlock.java
 @@ -168,6 +168,11 @@ public class TripWireHookBlock extends Block {
@@ -126,11 +126,11 @@ index 8a3a8b0fdf9545a41501dc992c6982d9c8ce7b66..5e2576a8b90de8a829c6136cc384f3fe
 +                    level.densityCache.invalidate();
 +                }
 +                // Sakura end - explosion density cache
-                 level.setBlock(blockPosx, blockState1.setValue(FACING, opposite), 3);
+                 level.setBlock(blockPosx, blockState1.setValue(FACING, opposite), Block.UPDATE_ALL);
                  notifyNeighbors(block, level, blockPosx, opposite);
                  emitState(level, blockPosx, flag2, flag3, flag, flag1);
 diff --git a/net/minecraft/world/phys/AABB.java b/net/minecraft/world/phys/AABB.java
-index 84f3073444ae9e11e5d11224d6af6474ced925e2..281366d8b256a2414e20872c0cb54c9d08501887 100644
+index cffb3b7d480f72cdb9ed535f362fa60f30597523..c2aa62ad0485f02ba0e65a9cf882e2cdf7be460b 100644
 --- a/net/minecraft/world/phys/AABB.java
 +++ b/net/minecraft/world/phys/AABB.java
 @@ -19,6 +19,30 @@ public class AABB {
@@ -138,25 +138,25 @@ index 84f3073444ae9e11e5d11224d6af6474ced925e2..281366d8b256a2414e20872c0cb54c9d
      public final double maxZ;
  
 +    // Sakura start - explosion density cache
-+    public final boolean isAABBInBounds(AABB bb) {
-+        return this.minX <= bb.minX && this.maxX >= bb.maxX
-+            && this.minY <= bb.minY && this.maxY >= bb.maxY
-+            && this.minZ <= bb.minZ && this.maxZ >= bb.maxZ;
++    public final boolean containsInclusive(final AABB other) {
++        return this.minX <= other.minX && this.maxX >= other.maxX
++            && this.minY <= other.minY && this.maxY >= other.maxY
++            && this.minZ <= other.minZ && this.maxZ >= other.maxZ;
 +    }
 +
-+    public final boolean isVec3InBounds(Vec3 p) {
-+        return this.minX <= p.x && this.maxX >= p.x
-+            && this.minY <= p.y && this.maxY >= p.y
-+            && this.minZ <= p.z && this.maxZ >= p.z;
++    public final boolean containsInclusive(final Vec3 pos) {
++        return this.minX <= pos.x && this.maxX >= pos.x
++            && this.minY <= pos.y && this.maxY >= pos.y
++            && this.minZ <= pos.z && this.maxZ >= pos.z;
 +    }
 +
-+    public final AABB expand(Vec3 pos) {
-+        double minX = Math.min(this.minX, pos.x);
-+        double minY = Math.min(this.minY, pos.y);
-+        double minZ = Math.min(this.minZ, pos.z);
-+        double maxX = Math.max(this.maxX, pos.x);
-+        double maxY = Math.max(this.maxY, pos.y);
-+        double maxZ = Math.max(this.maxZ, pos.z);
++    public final AABB expand(final Vec3 pos) {
++        final double minX = Math.min(this.minX, pos.x);
++        final double minY = Math.min(this.minY, pos.y);
++        final double minZ = Math.min(this.minZ, pos.z);
++        final double maxX = Math.max(this.maxX, pos.x);
++        final double maxY = Math.max(this.maxY, pos.y);
++        final double maxZ = Math.max(this.maxZ, pos.z);
 +        return new AABB(minX, minY, minZ, maxX, maxY, maxZ);
 +    }
 +    // Sakura end - explosion density cache

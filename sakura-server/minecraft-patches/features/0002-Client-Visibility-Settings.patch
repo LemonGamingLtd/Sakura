@@ -5,7 +5,7 @@ Subject: [PATCH] Client Visibility Settings
 
 
 diff --git a/net/minecraft/network/protocol/game/ClientboundLevelChunkPacketData.java b/net/minecraft/network/protocol/game/ClientboundLevelChunkPacketData.java
-index 9f6d7c5dc0e591488a8a3763d8a1f1b3671d5299..0f5383dcec940db15205afbb65f1f8aa5899edf4 100644
+index 33ca4c2110673dee34b66c8d05ee83c4df828f2e..af31a3b9d0308e84c675e570ca7229a6171a0b7b 100644
 --- a/net/minecraft/network/protocol/game/ClientboundLevelChunkPacketData.java
 +++ b/net/minecraft/network/protocol/game/ClientboundLevelChunkPacketData.java
 @@ -31,7 +31,7 @@ public class ClientboundLevelChunkPacketData {
@@ -36,7 +36,7 @@ index 9f6d7c5dc0e591488a8a3763d8a1f1b3671d5299..0f5383dcec940db15205afbb65f1f8aa
          final CompoundTag tag;
  
 diff --git a/net/minecraft/server/level/ChunkMap.java b/net/minecraft/server/level/ChunkMap.java
-index df822f0e7c358d74737c749d6ba61ec31846a569..a88184f63f3cb539569942c5c982193973183984 100644
+index 07f44bb61487671dd7df4524e7c65e101a1fc5b5..cf2b2794a2979d206ae9348498e4d8fadc16bc66 100644
 --- a/net/minecraft/server/level/ChunkMap.java
 +++ b/net/minecraft/server/level/ChunkMap.java
 @@ -173,6 +173,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
@@ -47,7 +47,7 @@ index df822f0e7c358d74737c749d6ba61ec31846a569..a88184f63f3cb539569942c5c9821939
  
      public ChunkMap(
          ServerLevel level,
-@@ -237,6 +238,10 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+@@ -235,6 +236,10 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
          );
          this.setServerViewDistance(serverViewDistance);
          this.worldGenContext = new WorldGenContext(level, generator, structureManager, this.lightEngine, null, this::setChunkUnsaved); // Paper - rewrite chunk system
@@ -58,7 +58,7 @@ index df822f0e7c358d74737c749d6ba61ec31846a569..a88184f63f3cb539569942c5c9821939
      }
  
      private void setChunkUnsaved(ChunkPos chunkPos) {
-@@ -1016,6 +1021,8 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+@@ -1024,6 +1029,8 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
                  tracker.serverEntity.sendChanges();
              }
          }
@@ -67,7 +67,7 @@ index df822f0e7c358d74737c749d6ba61ec31846a569..a88184f63f3cb539569942c5c9821939
      }
      // Paper end - optimise entity tracker
  
-@@ -1226,6 +1233,32 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+@@ -1263,6 +1270,32 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
              return !this.seenBy.isEmpty();
          }
          // Paper end - optimise entity tracker
@@ -78,13 +78,12 @@ index df822f0e7c358d74737c749d6ba61ec31846a569..a88184f63f3cb539569942c5c9821939
 +            if (!settings.playerModified() || !(entity.isPrimedTNT || entity.isFallingBlock)) {
 +                return true;
 +            }
-+            final me.samsuik.sakura.player.visibility.VisibilityType type;
-+            if (entity.isPrimedTNT) {
-+                type = me.samsuik.sakura.player.visibility.VisibilityTypes.TNT;
-+            } else {
-+                type = me.samsuik.sakura.player.visibility.VisibilityTypes.SAND;
-+            }
++
++            final me.samsuik.sakura.player.visibility.VisibilityType type = entity.isPrimedTNT
++                ? me.samsuik.sakura.player.visibility.VisibilityTypes.TNT
++                : me.samsuik.sakura.player.visibility.VisibilityTypes.SAND;
 +            final me.samsuik.sakura.player.visibility.VisibilityState state = settings.get(type);
++
 +            if (state == me.samsuik.sakura.player.visibility.VisibilityState.MINIMAL) {
 +                final long key = entity.blockPosition().asLong() ^ entity.getType().hashCode();
 +                final long visibleEntity = ChunkMap.this.minimalEntities.get(key);
@@ -94,13 +93,14 @@ index df822f0e7c358d74737c749d6ba61ec31846a569..a88184f63f3cb539569942c5c9821939
 +                    ChunkMap.this.minimalEntities.put(key, entity.getId());
 +                }
 +            }
++
 +            return state != me.samsuik.sakura.player.visibility.VisibilityState.OFF;
 +        }
 +        // Sakura end - client visibility settings; entity visibility
  
          public TrackedEntity(final Entity entity, final int range, final int updateInterval, final boolean trackDelta) {
-             this.serverEntity = new ServerEntity(ChunkMap.this.level, entity, updateInterval, trackDelta, this::broadcast, this::broadcastIgnorePlayers, this.seenBy); // Paper
-@@ -1304,6 +1337,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+             this.serverEntity = new ServerEntity(ChunkMap.this.level, entity, updateInterval, trackDelta, this, this.seenBy); // Paper
+@@ -1347,6 +1380,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
                  }
                  flag = flag && this.entity.broadcastToPlayer(player) && ChunkMap.this.isChunkTracked(player, this.entity.chunkPosition().x, this.entity.chunkPosition().z);
                  // Paper end - Configurable entity tracking range by Y
@@ -109,10 +109,10 @@ index df822f0e7c358d74737c749d6ba61ec31846a569..a88184f63f3cb539569942c5c9821939
                  if (flag && !player.getBukkitEntity().canSee(this.entity.getBukkitEntity())) { // Paper - only consider hits
                      flag = false;
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 03a157f6c96b0f39effa24ae278eeac689c83ee8..5f38281763419123a0611cbb34d9a02a0e0302ea 100644
+index 0a470f95e6c5399b92bf06f3c37fe31d9667acea..ca98972697fe2961402bea4cfb0cf86ea80a92f0 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -564,6 +564,21 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -591,6 +591,22 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
          this.playerTickingChunks.remove((LevelChunk)chunkHolder.getCurrentChunk());
      }
      // Paper end - chunk tick iteration
@@ -128,45 +128,48 @@ index 03a157f6c96b0f39effa24ae278eeac689c83ee8..5f38281763419123a0611cbb34d9a02a
 +            final long encodedPosition = blockPosition.asLong();
 +            return this.explosionPositions.add(encodedPosition);
 +        }
++
 +        return true;
 +    }
 +    // Sakura end - client visibility settings
  
      public ServerLevel(
          MinecraftServer server,
-@@ -675,6 +690,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -699,6 +715,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
          this.chunkDataController = new ca.spottedleaf.moonrise.patches.chunk_system.io.datacontroller.ChunkDataController((ServerLevel)(Object)this, this.chunkTaskScheduler);
          // Paper end - rewrite chunk system
          this.getCraftServer().addWorld(this.getWorld()); // CraftBukkit
-+        this.levelTickScheduler.registerNewTask(this.explosionPositions::clear, 0); // Sakura - client visibility settings
++        this.levelTickScheduler.repeatingTask(this.explosionPositions::clear, 0); // Sakura - client visibility settings
      }
  
      // Paper start
-@@ -1898,7 +1914,18 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
+@@ -1938,7 +1955,20 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
          for (ServerPlayer serverPlayer : this.players) {
              if (serverPlayer.distanceToSqr(vec3) < 4096.0) {
                  Optional<Vec3> optional = Optional.ofNullable(serverExplosion.getHitPlayers().get(serverPlayer));
--                serverPlayer.connection.send(new ClientboundExplodePacket(vec3, optional, particleOptions, explosionSound));
+-                serverPlayer.connection.send(new ClientboundExplodePacket(vec3, radius, i, optional, particleOptions, explosionSound, blockParticles));
 +                // Sakura start - client visibility settings; let players toggle explosion particles
 +                ParticleOptions particle = particleOptions;
 +                Vec3 position = vec3;
-+                // In 1.22 and later this should be replaced with sending the motion through a PlayerPositionPacket.
-+                // The problem here is SetEntityMotion is capped to 3.9 b/pt and the only other alternate mean was
-+                // implemented in 1.21.3. I believe it's best to just wait on this issue and deal with this hack.
 +                if (!this.checkExplosionVisibility(vec3, serverPlayer)) {
-+                    position = new Vec3(0.0, -1024.0, 0.0);
-+                    particle = net.minecraft.core.particles.ParticleTypes.SMOKE;
++                    // todo: send knockback through PlayerPositionPacket
++                    if (this.paperConfig().environment.disableExplosionKnockback) {
++                        continue;
++                    } else {
++                        position = new Vec3(0.0, -1024.0, 0.0);
++                        particle = net.minecraft.core.particles.ParticleTypes.SMOKE;
++                    }
 +                }
-+                serverPlayer.connection.send(new ClientboundExplodePacket(position, optional, particle, explosionSound));
++                serverPlayer.connection.send(new ClientboundExplodePacket(position, radius, i, optional, particle, explosionSound, blockParticles));
 +                // Sakura end - client visibility settings; let players toggle explosion particles
              }
          }
  
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index eccd082f86d7b1f6d76d7bebab294527007b1f9a..3b750861b2039283028c2890593b4922f6b7d93e 100644
+index ae5a2712796a1dd7ac3e3259d4111f01db31c219..3b2b22d709ec924a03134e0118541462a4d966d4 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -460,6 +460,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -474,6 +474,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
          return this.viewDistanceHolder;
      }
      // Paper end - rewrite chunk system
@@ -175,10 +178,10 @@ index eccd082f86d7b1f6d76d7bebab294527007b1f9a..3b750861b2039283028c2890593b4922
      public ServerPlayer(MinecraftServer server, ServerLevel level, GameProfile gameProfile, ClientInformation clientInformation) {
          super(level, gameProfile);
 diff --git a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-index 08c59d603fca038fc2dde36384eea1b6c971e659..c1c432b5732b1e85aca5597be75e0149a333de0d 100644
+index c6db2c96db96453daaf49779f588f75f7c3d3d60..fd08d04c13a4064c658e0aad436b48831316129b 100644
 --- a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-@@ -57,6 +57,60 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
+@@ -58,6 +58,60 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
      public @Nullable String playerBrand;
      public final java.util.Set<String> pluginMessagerChannels;
      // Paper end - retain certain values
@@ -190,6 +193,7 @@ index 08c59d603fca038fc2dde36384eea1b6c971e659..c1c432b5732b1e85aca5597be75e0149
 +                return bedPacket.getType() == net.minecraft.world.level.block.entity.BlockEntityType.MOB_SPAWNER;
 +            }
 +        }
++
 +        return false;
 +    }
 +
@@ -203,7 +207,6 @@ index 08c59d603fca038fc2dde36384eea1b6c971e659..c1c432b5732b1e85aca5597be75e0149
 +
 +        if (settings.isToggled(me.samsuik.sakura.player.visibility.VisibilityTypes.SPAWNERS)) {
 +            net.minecraft.network.protocol.game.ClientboundLevelChunkPacketData chunkData = null;
-+
 +            if (packet instanceof net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket chunkPacket) {
 +                chunkData = chunkPacket.getChunkData();
 +            } else if (packet instanceof net.minecraft.network.protocol.game.ClientboundLevelChunkPacketData chunkPacket) {
@@ -239,9 +242,9 @@ index 08c59d603fca038fc2dde36384eea1b6c971e659..c1c432b5732b1e85aca5597be75e0149
  
      public ServerCommonPacketListenerImpl(MinecraftServer server, Connection connection, CommonListenerCookie cookie) {
          this.server = server;
-@@ -317,6 +371,12 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
+@@ -318,6 +372,12 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
          } else if (packet instanceof net.minecraft.network.protocol.game.ClientboundSetDefaultSpawnPositionPacket defaultSpawnPositionPacket && this instanceof ServerGamePacketListenerImpl serverGamePacketListener) {
-             serverGamePacketListener.player.compassTarget = org.bukkit.craftbukkit.util.CraftLocation.toBukkit(defaultSpawnPositionPacket.getPos(), serverGamePacketListener.getCraftPlayer().getWorld());
+             serverGamePacketListener.player.compassTarget = org.bukkit.craftbukkit.util.CraftLocation.toBukkit(defaultSpawnPositionPacket.respawnData().pos(), serverGamePacketListener.getPlayer().level());
          }
 +        // Sakura start - client visibility settings
 +        final net.minecraft.server.level.ServerPlayer player = this.getPlayer();
@@ -253,10 +256,10 @@ index 08c59d603fca038fc2dde36384eea1b6c971e659..c1c432b5732b1e85aca5597be75e0149
          if (packet.isTerminal()) {
              this.close();
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index ca13dd72f173be6714965c506f2d48dcd3c9e569..21134883bea2553a870ef0df32c47430aa056cef 100644
+index ef7d44ea1c1582bbf1d544819825778c414fe40d..2c1539826e14698d65a519e2474cbb3a41ed24fa 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -3205,6 +3205,7 @@ public class ServerGamePacketListenerImpl
+@@ -3222,6 +3222,7 @@ public class ServerGamePacketListenerImpl
  
                          event.setCancelled(cancelled);
                          net.minecraft.world.inventory.AbstractContainerMenu oldContainer = this.player.containerMenu; // SPIGOT-1224
@@ -265,10 +268,10 @@ index ca13dd72f173be6714965c506f2d48dcd3c9e569..21134883bea2553a870ef0df32c47430
                          if (this.player.containerMenu != oldContainer) {
                              this.player.containerMenu.resumeRemoteUpdates();
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 8b261c3f216e7483039d8279a75977dfb679b453..10da5ea212dcc0db2e7846c7b3207e549e9acae8 100644
+index 51f970f8e5fcb984e3a62e2322a794ba03325938..5f105b12ab407e6360e23a9aab2b502ced01c996 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -533,6 +533,10 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -534,6 +534,10 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
      }
      // Paper end - optimise entity tracker
      public boolean pushedByFluid = true; // Sakura - entity pushed by fluid api
@@ -277,14 +280,14 @@ index 8b261c3f216e7483039d8279a75977dfb679b453..10da5ea212dcc0db2e7846c7b3207e54
 +    public boolean isFallingBlock;
 +    // Sakura end - client visibility settings
  
-     public Entity(EntityType<?> entityType, Level level) {
-         this.type = entityType;
+     public Entity(EntityType<?> type, Level level) {
+         this.type = type;
 diff --git a/net/minecraft/world/entity/item/FallingBlockEntity.java b/net/minecraft/world/entity/item/FallingBlockEntity.java
-index ae1f7a8b9cc6db4dd8dd3d6593a952166d35cc68..f7663d07a71582c332b38871211e648cffcf13c2 100644
+index 8003dc1c4ecc9b69d92cf0441fe41e3ef8df49c2..85bebec21261e71b82a0b9c02e1c5edd8bd4cde6 100644
 --- a/net/minecraft/world/entity/item/FallingBlockEntity.java
 +++ b/net/minecraft/world/entity/item/FallingBlockEntity.java
 @@ -79,6 +79,7 @@ public class FallingBlockEntity extends Entity {
-         super(entityType, level);
+         super(type, level);
          this.dropItem = level.sakuraConfig().cannons.sand.dropItems; // Sakura - configure falling blocks dropping items
          this.heightParity = level.sakuraConfig().cannons.mechanics.fallingBlockParity; // Sakura - configure cannon mechanics
 +        this.isFallingBlock = true; // Sakura - client visibility settings
@@ -292,12 +295,12 @@ index ae1f7a8b9cc6db4dd8dd3d6593a952166d35cc68..f7663d07a71582c332b38871211e648c
  
      public FallingBlockEntity(Level level, double x, double y, double z, BlockState state) {
 diff --git a/net/minecraft/world/entity/item/PrimedTnt.java b/net/minecraft/world/entity/item/PrimedTnt.java
-index dc9c8bdc81dec07a8e457431bbd35a54236b03ef..8755c76b679adcacbdd8e2faec363745fd583e48 100644
+index 18162042ee54e54bc4539a7a01a1fc88cc9b3f3a..71071899443fdb02beb0321f271430c732178e26 100644
 --- a/net/minecraft/world/entity/item/PrimedTnt.java
 +++ b/net/minecraft/world/entity/item/PrimedTnt.java
 @@ -63,6 +63,7 @@ public class PrimedTnt extends Entity implements TraceableEntity {
-     public PrimedTnt(EntityType<? extends PrimedTnt> entityType, Level level) {
-         super(entityType, level);
+     public PrimedTnt(EntityType<? extends PrimedTnt> type, Level level) {
+         super(type, level);
          this.blocksBuilding = true;
 +        this.isPrimedTNT = true; // Sakura - client visibility settings
      }

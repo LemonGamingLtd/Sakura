@@ -5,10 +5,10 @@ Subject: [PATCH] Store Entity Data/State
 
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index ce39193b14b43c215930cde7c311f88f756b0b81..f8b1b6850013b70218aa2eefe9371774a45a6033 100644
+index 1b7019c1564fb9fe8f48c3f0983a2c64ea0aa4a5..b6d65c9ce0fc3c5a27e6de40c3ce26f75bf77426 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -551,6 +551,21 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -551,6 +551,21 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
          return flags;
      }
      // Sakura end - load chunks on movement
@@ -23,22 +23,22 @@ index ce39193b14b43c215930cde7c311f88f756b0b81..f8b1b6850013b70218aa2eefe9371774
 +        return this.entityState;
 +    }
 +
-+    public final boolean compareState(Entity to) {
++    public final boolean compareState(final Entity to) {
 +        return to.entityState() != null && to.entityState().comparePositionAndMotion(this);
 +    }
 +    // Sakura end - store entity data/state
  
-     public Entity(EntityType<?> entityType, Level level) {
-         this.type = entityType;
+     public Entity(EntityType<?> type, Level level) {
+         this.type = type;
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index 7aa8d68800cdec91f24f015f9b2d56e969a7be17..2fa0725a2b41517e1589e540999118f5c355e899 100644
+index 7cbb9af035092cf2764913c565a3a9398f09e747..c51231f40c31b153ac463e31656584e6c70d5a78 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
-@@ -1498,6 +1498,7 @@ public abstract class Level implements LevelAccessor, UUIDLookup<Entity>, AutoCl
+@@ -1449,6 +1449,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
  
-     public <T extends Entity> void guardEntityTick(Consumer<T> consumerEntity, T entity) {
+     public <T extends Entity> void guardEntityTick(Consumer<T> action, T entity) {
          try {
 +            entity.storeEntityState(); // Sakura - store entity data/state
-             consumerEntity.accept(entity);
+             action.accept(entity);
          } catch (Throwable var6) {
              // Paper start - Prevent block entity and entity crashes

@@ -5,21 +5,21 @@ Subject: [PATCH] Configurable left shooting and adjusting limits
 
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 13b7652cd95b4411927d1e041b246d063fa80fae..ee7da44161fee45ce3de26d7e990eab3a3f5ff6e 100644
+index 31d300e912a5892b08cc6e800039a79b4569754c..406b50d9930b787432d3fd9f9b704401e06a3948 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -644,6 +644,46 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -614,6 +614,47 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
          return Math.max(x, z) >= this.travelDistanceLimit;
      }
      // Sakura end - entity travel distance limits
 +    // Sakura start - configurable left shooting and adjusting limits
 +    protected final void limitLeftShooting() {
-+        Vec3 movement = this.getDeltaMovement();
-+        int threshold = this.level.sakuraConfig().cannons.restrictions.leftShootingThreshold.or(-1);
++        final Vec3 movement = this.getDeltaMovement();
++        final int threshold = this.level.sakuraConfig().cannons.restrictions.leftShootingThreshold.or(-1);
 +        if (threshold > 0 && (movement.x != 0.0 || movement.z != 0.0) && this.origin != null) {
-+            double travelledX = Math.abs(this.getX() - this.origin.x());
-+            double travelledZ = Math.abs(this.getZ() - this.origin.z());
-+            boolean xSmaller = travelledX < travelledZ; // intended
++            final double travelledX = Math.abs(this.getX() - this.origin.x());
++            final double travelledZ = Math.abs(this.getZ() - this.origin.z());
++            final boolean xSmaller = travelledX < travelledZ; // intended // todo is it?
 +
 +            // Once entities have travelled past the threshold changing direction is restricted.
 +            if (xSmaller && travelledX > threshold) {
@@ -30,8 +30,8 @@ index 13b7652cd95b4411927d1e041b246d063fa80fae..ee7da44161fee45ce3de26d7e990eab3
 +        }
 +    }
 +
-+    private void limitAdjustMovement(AABB currBoundingBox, double dir, boolean xAdjust, List<VoxelShape> shapes) {
-+        int adjustDistance = this.level.sakuraConfig().cannons.restrictions.maxAdjustDistance.or(-1);
++    private void limitAdjustMovement(final AABB currBoundingBox, final double dir, final boolean xAdjust, final List<VoxelShape> shapes) {
++        final int adjustDistance = this.level.sakuraConfig().cannons.restrictions.maxAdjustDistance.or(-1);
 +        if (adjustDistance > 0 && Math.abs(dir) > adjustDistance) {
 +            double minX = Double.NEGATIVE_INFINITY;
 +            double minZ = Double.NEGATIVE_INFINITY;
@@ -44,7 +44,8 @@ index 13b7652cd95b4411927d1e041b246d063fa80fae..ee7da44161fee45ce3de26d7e990eab3
 +                minZ = Math.floor(currBoundingBox.minZ) - adjustDistance;
 +                maxZ = Math.floor(currBoundingBox.maxZ) + adjustDistance + 1;
 +            }
-+            VoxelShape safeSpace = Shapes.box(
++
++            final VoxelShape safeSpace = Shapes.box(
 +                minX, Double.NEGATIVE_INFINITY, minZ,
 +                maxX, Double.POSITIVE_INFINITY, maxZ
 +            );
@@ -53,9 +54,9 @@ index 13b7652cd95b4411927d1e041b246d063fa80fae..ee7da44161fee45ce3de26d7e990eab3
 +    }
 +    // Sakura end - configurable left shooting and adjusting limits
  
-     public Entity(EntityType<?> entityType, Level level) {
-         this.type = entityType;
-@@ -1656,6 +1696,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+     public Entity(EntityType<?> type, Level level) {
+         this.type = type;
+@@ -1654,6 +1695,7 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
          }
  
          if (xSmaller && z != 0.0) {
@@ -63,7 +64,7 @@ index 13b7652cd95b4411927d1e041b246d063fa80fae..ee7da44161fee45ce3de26d7e990eab3
              z = this.scanZ(currBoundingBox, z, voxelList, bbList);
              if (z != 0.0) {
                  currBoundingBox = ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.offsetZ(currBoundingBox, z);
-@@ -1663,6 +1704,11 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -1661,6 +1703,11 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
          }
  
          if (x != 0.0) {
@@ -76,11 +77,11 @@ index 13b7652cd95b4411927d1e041b246d063fa80fae..ee7da44161fee45ce3de26d7e990eab3
              if (x != 0.0) {
                  currBoundingBox = ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.offsetX(currBoundingBox, x);
 diff --git a/net/minecraft/world/entity/item/FallingBlockEntity.java b/net/minecraft/world/entity/item/FallingBlockEntity.java
-index fb3f28ee3b018462f2274e997d540029560df8d0..5a6e3769e3d9349927db1986256b3947ef30962e 100644
+index 46d7f001d299ed6bb7987fe3c06c9cd1651bda80..802e890e743e85be9cc28798b12ba0e61ccabcc5 100644
 --- a/net/minecraft/world/entity/item/FallingBlockEntity.java
 +++ b/net/minecraft/world/entity/item/FallingBlockEntity.java
-@@ -288,6 +288,7 @@ public class FallingBlockEntity extends Entity implements me.samsuik.sakura.enti
-             // Sakura end - configure cannon physics
+@@ -269,6 +269,7 @@ public class FallingBlockEntity extends Entity implements me.samsuik.sakura.enti
+             // Sakura end - configure server mechanics
              this.time++;
              this.applyGravity();
 +            this.limitLeftShooting(); // Sakura - configurable left shooting and adjusting limits
