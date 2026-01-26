@@ -5,10 +5,10 @@ Subject: [PATCH] Allow unsigned chat messages
 
 
 diff --git a/net/minecraft/network/chat/SignedMessageChain.java b/net/minecraft/network/chat/SignedMessageChain.java
-index f6eed34b2fd72ab74cc9dc4b99ca184d512c0a66..5b5c2390779b4314ee24ca60b89abbf0cb2309c9 100644
+index 67b2f87f8424c5642010b3d9852b55c40d4947e1..9f6829ab8cf6544868e12f7c34c5a2ffd85204b8 100644
 --- a/net/minecraft/network/chat/SignedMessageChain.java
 +++ b/net/minecraft/network/chat/SignedMessageChain.java
-@@ -52,8 +52,11 @@ public class SignedMessageChain {
+@@ -51,8 +51,11 @@ public class SignedMessageChain {
                          SignedMessageChain.this.lastTimeStamp = body.timeStamp();
                          PlayerChatMessage playerChatMessage = new PlayerChatMessage(signedMessageLink, signature, body, null, FilterMask.PASS_THROUGH);
                          if (!playerChatMessage.verify(signatureValidator)) {
@@ -23,7 +23,7 @@ index f6eed34b2fd72ab74cc9dc4b99ca184d512c0a66..5b5c2390779b4314ee24ca60b89abbf0
                              if (playerChatMessage.hasExpiredServer(Instant.now())) {
                                  SignedMessageChain.LOGGER.warn("Received expired chat: '{}'. Is the client/server system time unsynchronized?", body.content());
 diff --git a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-index fd08d04c13a4064c658e0aad436b48831316129b..b66ccde56e7247f4ad6b76ed07f7c68eb28964d8 100644
+index 38ce5974207e3cd49986aa911b2e52aeaac84733..d7e0311a9c28ff6e17215ce29a098169ce541779 100644
 --- a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 @@ -362,10 +362,21 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
@@ -49,10 +49,10 @@ index fd08d04c13a4064c658e0aad436b48831316129b..b66ccde56e7247f4ad6b76ed07f7c68e
          if (packet == null || this.processedDisconnect) { // Spigot
              return;
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 2c1539826e14698d65a519e2474cbb3a41ed24fa..2cc637c6d9cec8e917afcce304cdd7aaa825d84f 100644
+index 2fcf85b1f5678b564ee75d470f26c6d7acf09299..64bc0cc9838b85e6475386b55b88fa76a741a3f1 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -2707,9 +2707,11 @@ public class ServerGamePacketListenerImpl
+@@ -2759,9 +2759,11 @@ public class ServerGamePacketListenerImpl
                  i = this.lastSeenMessages.trackedMessagesCount();
              }
  
@@ -68,10 +68,10 @@ index 2c1539826e14698d65a519e2474cbb3a41ed24fa..2cc637c6d9cec8e917afcce304cdd7aa
          }
          // Paper end - Ensure that client receives chat packets in the same order that we add into the message signature cache
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
-index cc5d1e8007e2ea32605bd68d0a73683e8fb6886e..c654310aba122258efdec061b8857afa1a96fe48 100644
+index 989ac565c47a70c7947cb7315d0f5c2cfecd0363..8a04d3e7f12490627fe3fac522acdf0d47a7664f 100644
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
-@@ -1151,7 +1151,7 @@ public abstract class PlayerList {
+@@ -1153,7 +1153,7 @@ public abstract class PlayerList {
      }
  
      public boolean verifyChatTrusted(PlayerChatMessage message) {
