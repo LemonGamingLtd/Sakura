@@ -1,12 +1,12 @@
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
-@@ -288,6 +_,42 @@
-     public boolean silentDeath = false; // Paper - mark entity as dying silently for cancellable death event
+@@ -291,6 +_,43 @@
      public net.kyori.adventure.util.TriState frictionState = net.kyori.adventure.util.TriState.NOT_SET; // Paper - Friction API
+     public int invulnerableDuration = LivingEntity.INVULNERABLE_DURATION; // Paper - configurable invulnerable duration
      // CraftBukkit end
-+    // Sakura start - legacy combat mechanics
-+    private static final ResourceLocation LEGACY_COMBAT_MODIFIER_ID = ResourceLocation.fromNamespaceAndPath("sakura", "legacy_combat");
-+    private static final AttributeModifier LEGACY_ATTACK_SPEED_MODIFIER = new AttributeModifier(LEGACY_COMBAT_MODIFIER_ID, 100.0, AttributeModifier.Operation.ADD_VALUE);
++    // Sakura start - legacy combat mechanics & attack damage override
++    private static final Identifier ATTACK_OVERRIDE_MODIFIER_ID = Identifier.fromNamespaceAndPath("sakura", "attack_override");
++    private static final AttributeModifier LEGACY_ATTACK_SPEED_MODIFIER = new AttributeModifier(ATTACK_OVERRIDE_MODIFIER_ID, 100.0, AttributeModifier.Operation.ADD_VALUE);
 +
 +    private void updateAttackSpeedModifier() {
 +        final AttributeInstance attackSpeed = this.getAttribute(Attributes.ATTACK_SPEED);
@@ -19,31 +19,32 @@
 +        }
 +    }
 +
-+    protected final float getAttackDamageFromAttributes() {
++    public final float getAttackDamageFromAttributes() {
 +        final AttributeInstance attackDamage = this.getAttribute(Attributes.ATTACK_DAMAGE);
-+        AttributeModifier legacyModifier = null;
-+        if (this.level().sakuraConfig().players.combat.legacyCombatMechanics) {
-+            final ItemStack heldItem = this.lastEquipmentItems.get(EquipmentSlot.MAINHAND);
-+            final double attackDifference = me.samsuik.sakura.player.combat.CombatUtil.getLegacyAttackDifference(heldItem);
-+            legacyModifier = new AttributeModifier(LEGACY_COMBAT_MODIFIER_ID, attackDifference, AttributeModifier.Operation.ADD_VALUE);
++        AttributeModifier attackOverrideModifier = null;
++
++        final ItemStack heldItem = this.lastEquipmentItems.get(EquipmentSlot.MAINHAND);
++        final double modifiedDamage = me.samsuik.sakura.player.combat.CombatUtil.getModifiedAttackDamage(this.level(), heldItem);
++        if (modifiedDamage != 0.0) {
++            attackOverrideModifier = new AttributeModifier(ATTACK_OVERRIDE_MODIFIER_ID, modifiedDamage, AttributeModifier.Operation.ADD_VALUE);
 +        }
 +
 +        final double damage;
-+        if (attackDamage == null || legacyModifier == null) {
++        if (attackDamage == null || attackOverrideModifier == null) {
 +            damage = this.getAttributeValue(Attributes.ATTACK_DAMAGE);
 +        } else {
-+            attackDamage.addTransientModifier(legacyModifier);
++            attackDamage.addTransientModifier(attackOverrideModifier);
 +            damage = this.getAttributeValue(Attributes.ATTACK_DAMAGE);
-+            attackDamage.removeModifier(legacyModifier);
++            attackDamage.removeModifier(attackOverrideModifier);
 +        }
 +
 +        return (float) damage;
 +    }
-+    // Sakura end - legacy combat mechanics
++    // Sakura end - legacy combat mechanics & attack damage override
  
      protected LivingEntity(EntityType<? extends LivingEntity> type, Level level) {
          super(type, level);
-@@ -1521,7 +_,7 @@
+@@ -1533,7 +_,7 @@
                      }
                      // Paper end - Check distance in entity interactions
  
@@ -52,7 +53,7 @@
                      if (!flag) {
                          this.indicateDamage(d, d1);
                      }
-@@ -1623,6 +_,11 @@
+@@ -1635,6 +_,11 @@
              if (itemBlockingWith == null) {
                  return false;
              } else {
@@ -64,7 +65,7 @@
                  BlocksAttacks blocksAttacks = itemBlockingWith.get(DataComponents.BLOCKS_ATTACKS);
                  if (blocksAttacks != null && !blocksAttacks.bypassedBy().map(damageSource::is).orElse(false)) {
                      if (damageSource.getDirectEntity() instanceof AbstractArrow abstractArrow && abstractArrow.getPierceLevel() > 0) {
-@@ -1649,6 +_,12 @@
+@@ -1661,6 +_,12 @@
              acos = (float) Math.PI;
          }
  
@@ -77,7 +78,7 @@
          BlocksAttacks blocksAttacks = this.getItemBlockingWith().get(DataComponents.BLOCKS_ATTACKS);
          return blocksAttacks.resolveBlockedDamage(damageSource, damageAmount, acos);
      }
-@@ -1716,7 +_,7 @@
+@@ -1727,7 +_,7 @@
      }
  
      protected void blockedByItem(LivingEntity entity) {
@@ -86,7 +87,7 @@
      }
  
      private boolean checkTotemDeathProtection(DamageSource damageSource) {
-@@ -1879,6 +_,12 @@
+@@ -1890,6 +_,12 @@
  
              // Paper start
              if (this.dead) { // Paper
@@ -99,16 +100,16 @@
                  this.level().broadcastEntityEvent(this, EntityEvent.DEATH);
  
              this.setPose(Pose.DYING);
-@@ -2076,7 +_,7 @@
+@@ -2087,7 +_,7 @@
      }
  
      public void knockback(double strength, double x, double z, @Nullable Entity attacker, io.papermc.paper.event.entity.EntityKnockbackEvent.Cause eventCause) { // Paper - knockback events
 -        strength *= 1.0 - this.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE);
 +        strength *= 1.0 - this.getAttributeValue(Attributes.KNOCKBACK_RESISTANCE) * this.level().sakuraConfig().players.knockback.knockbackResistanceModifier; // Sakura - configure entity knockback
          if (true || !(strength <= 0.0)) { // CraftBukkit - Call event even when force is 0
-             // this.hasImpulse = true; // CraftBukkit - Move down
+             // this.needsSync = true; // CraftBukkit - Move down
              Vec3 deltaMovement = this.getDeltaMovement();
-@@ -2087,10 +_,18 @@
+@@ -2098,10 +_,18 @@
              }
  
              Vec3 vec3 = new Vec3(x, 0.0, z).normalize().scale(strength);
@@ -128,7 +129,7 @@
                  deltaMovement.z / 2.0 - vec3.z
              );
              Vec3 diff = finalVelocity.subtract(deltaMovement);
-@@ -2235,8 +_,14 @@
+@@ -2252,8 +_,14 @@
          }
      }
  
@@ -144,7 +145,7 @@
              return 0;
          } else {
              double d = this.calculateFallPower(fallDistance);
-@@ -2294,9 +_,21 @@
+@@ -2311,9 +_,21 @@
      protected float getDamageAfterArmorAbsorb(DamageSource damageSource, float damageAmount) {
          if (!damageSource.is(DamageTypeTags.BYPASSES_ARMOR)) {
              // this.hurtArmor(damageSource, damageAmount); // CraftBukkit - actuallyHurt(DamageSource, float, EntityDamageEvent) for damage handling
@@ -166,7 +167,7 @@
          }
  
          return damageAmount;
-@@ -2476,6 +_,12 @@
+@@ -2493,6 +_,12 @@
                  armorDamage += (float) event.getDamage(DamageModifier.BLOCKING);
                  armorDamage += (float) event.getDamage(DamageModifier.FREEZING);
                  armorDamage += (float) event.getDamage(DamageModifier.HARD_HAT);
@@ -179,7 +180,7 @@
                  this.hurtArmor(damageSource, armorDamage);
              }
  
-@@ -3424,6 +_,11 @@
+@@ -3554,6 +_,11 @@
                      if (this.level() instanceof ServerLevel serverLevel) {
                          EnchantmentHelper.runLocationChangedEffects(serverLevel, itemBySlot, this, equipmentSlot1);
                      }
@@ -191,7 +192,7 @@
                  }
              }
  
-@@ -3624,7 +_,7 @@
+@@ -3754,7 +_,7 @@
              }
          }
          // Paper end - Add EntityMoveEvent
@@ -200,7 +201,7 @@
              this.hurtServer(serverLevel, this.damageSources().drown(), 1.0F);
          }
      }
-@@ -4208,6 +_,13 @@
+@@ -4340,6 +_,13 @@
          if (!this.isUsingItem()) {
              return null;
          } else {
