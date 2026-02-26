@@ -49,10 +49,10 @@ index 38ce5974207e3cd49986aa911b2e52aeaac84733..d7e0311a9c28ff6e17215ce29a098169
          if (packet == null || this.processedDisconnect) { // Spigot
              return;
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 2fcf85b1f5678b564ee75d470f26c6d7acf09299..64bc0cc9838b85e6475386b55b88fa76a741a3f1 100644
+index 86c90b3ba588e46462ebc8aa74bdbe116cedf1ee..a9b95aba2853f47b9d854ff98427a23cdc19650d 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -2759,9 +2759,11 @@ public class ServerGamePacketListenerImpl
+@@ -2760,9 +2760,11 @@ public class ServerGamePacketListenerImpl
                  i = this.lastSeenMessages.trackedMessagesCount();
              }
  
