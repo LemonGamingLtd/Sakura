@@ -4,23 +4,22 @@ Date: Sun, 29 Mar 2026 20:25:30 +0100
 Subject: [PATCH] Introduce limit on instant block falling
 
 
-diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 61ca9eb6ca945947e8b84b992c91ec54a5bec054..82f5255aef3303254b64c8ebb21e27b3277833b7 100644
---- a/net/minecraft/server/level/ServerLevel.java
-+++ b/net/minecraft/server/level/ServerLevel.java
-@@ -730,6 +730,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
-         this.levelTickScheduler.repeatingTask(this.densityCache::expire, 0); // Sakura - explosion density cache
-         this.levelTickScheduler.repeatingTask(this.dispenseRelocationHandler::clear, 0); // Sakura - configure server mechanics
-         this.levelTickScheduler.repeatingTask(this.redstoneWireCache::expire, 300); // Sakura - cache vanilla and eigencraft wires
-+        this.levelTickScheduler.repeatingTask(this.fallingBlockColumnLimits::clear, 0); // Sakura - limit instant block falling
+diff --git a/me/samsuik/sakura/scheduler/ScheduleSakuraTasks.java b/me/samsuik/sakura/scheduler/ScheduleSakuraTasks.java
+index 7d2df500c90e0451ec2cf117f44413b3593fdd62..fef94d0a0cce8c0ca0a0a73e7328e26f206e50e7 100644
+--- a/me/samsuik/sakura/scheduler/ScheduleSakuraTasks.java
++++ b/me/samsuik/sakura/scheduler/ScheduleSakuraTasks.java
+@@ -12,5 +12,6 @@ public final class ScheduleSakuraTasks {
+         scheduler.endless((tick, level, cb) -> level.mergeHandler.expire(tick), 200); // Sakura - merge cannon entities
+         scheduler.endless((tick, level, cb) -> level.densityCache.expire(tick), 0); // Sakura - explosion density cache
+         scheduler.endless((tick, level, cb) -> level.dispenseRelocationHandler.clear(), 0); // Sakura - configure server mechanics
++        scheduler.endless((tick, level, cb) -> level.fallingBlockColumnLimits.clear(), 0); // Sakura - limit instant block falling
      }
- 
-     // Paper start
+ }
 diff --git a/net/minecraft/world/entity/item/FallingBlockEntity.java b/net/minecraft/world/entity/item/FallingBlockEntity.java
-index 1bfcfafbed583cffc85462615da85ac0c58b250f..1ab605d936cd81ed647ea15d1106c797af06317e 100644
+index 955946251bd99b3f338c349a40d5facdd2f4c857..0e076e8987b6c74508ead458dc76899623640a77 100644
 --- a/net/minecraft/world/entity/item/FallingBlockEntity.java
 +++ b/net/minecraft/world/entity/item/FallingBlockEntity.java
-@@ -203,6 +203,13 @@ public class FallingBlockEntity extends Entity implements me.samsuik.sakura.enti
+@@ -204,6 +204,13 @@ public class FallingBlockEntity extends Entity implements me.samsuik.sakura.enti
              state.hasProperty(BlockStateProperties.WATERLOGGED) ? state.setValue(BlockStateProperties.WATERLOGGED, false) : state
          );
          if (!org.bukkit.craftbukkit.event.CraftEventFactory.callEntityChangeBlockEvent(fallingBlockEntity, pos, state.getFluidState().createLegacyBlock())) return fallingBlockEntity; // CraftBukkit
@@ -35,13 +34,13 @@ index 1bfcfafbed583cffc85462615da85ac0c58b250f..1ab605d936cd81ed647ea15d1106c797
          if (fallingBlockEntity.mechanicsTarget.atLeast(me.samsuik.sakura.mechanics.MechanicVersion.v1_18_2)) {
              level.setBlock(pos, state.getFluidState().createLegacyBlock(), Block.UPDATE_ALL);
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index 716f87d36d1b310ea19bfae9dbe7c195993934f4..0e2cc7635d47b46952de1c701410f0d9026a26d5 100644
+index ac3a6d9de3bcfb8f5c6b6e45885ecc9a95bec96c..51c4ea09e9c04d74386b8d8af9236d86f6130336 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
-@@ -843,6 +843,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+@@ -848,6 +848,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
      public final me.samsuik.sakura.explosion.durable.DurableBlockManager durabilityManager = new me.samsuik.sakura.explosion.durable.DurableBlockManager(); // Sakura - explosion durable blocks
      public final me.samsuik.sakura.entity.dispensing.DispenseRelocationHandler dispenseRelocationHandler = new me.samsuik.sakura.entity.dispensing.DispenseRelocationHandler(this); // Sakura - configure server mechanics
-     public final me.samsuik.sakura.redstone.cache.RedstoneWireCache redstoneWireCache = new me.samsuik.sakura.redstone.cache.RedstoneWireCache(this); // Sakura - cache vanilla and eigencraft wires
+     public final me.samsuik.sakura.redstone.RedstoneWireCache redstoneWireCache = new me.samsuik.sakura.redstone.RedstoneWireCache(); // Sakura - cache vanilla and eigencraft wires
 +    public final me.samsuik.sakura.entity.FallingBlockColumnLimits fallingBlockColumnLimits = new me.samsuik.sakura.entity.FallingBlockColumnLimits(); // Sakura - limit instant block falling
  
      protected Level(

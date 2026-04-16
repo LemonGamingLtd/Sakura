@@ -5,7 +5,7 @@ Subject: [PATCH] Configure cannon physics
 
 
 diff --git a/ca/spottedleaf/moonrise/patches/collisions/CollisionUtil.java b/ca/spottedleaf/moonrise/patches/collisions/CollisionUtil.java
-index 535cee71d3b286387e1e7c2cad5faeb32d27b68b..d591a09ba202c22e79268d3ef40a2c93ec193130 100644
+index c093f2295d6a0e1880897fe66bdcd64649aa667e..ce13de98e45782a7042e6f232431605a64adb668 100644
 --- a/ca/spottedleaf/moonrise/patches/collisions/CollisionUtil.java
 +++ b/ca/spottedleaf/moonrise/patches/collisions/CollisionUtil.java
 @@ -1774,6 +1774,13 @@ public final class CollisionUtil {
@@ -88,6 +88,17 @@ index 535cee71d3b286387e1e7c2cad5faeb32d27b68b..d591a09ba202c22e79268d3ef40a2c93
                      final int sectionAdjust = !hasSpecial ? 1 : 0;
  
                      final PalettedContainer<BlockState> blocks = section.states;
+diff --git a/me/samsuik/sakura/scheduler/ScheduleSakuraTasks.java b/me/samsuik/sakura/scheduler/ScheduleSakuraTasks.java
+index 4c456c2d1b42ecfcecb22ba2bf3819cab68206b8..7d2df500c90e0451ec2cf117f44413b3593fdd62 100644
+--- a/me/samsuik/sakura/scheduler/ScheduleSakuraTasks.java
++++ b/me/samsuik/sakura/scheduler/ScheduleSakuraTasks.java
+@@ -11,5 +11,6 @@ public final class ScheduleSakuraTasks {
+         scheduler.endless((tick, level, cb) -> level.explosionPositions.clear(), 0); // Sakura - client visibility settings
+         scheduler.endless((tick, level, cb) -> level.mergeHandler.expire(tick), 200); // Sakura - merge cannon entities
+         scheduler.endless((tick, level, cb) -> level.densityCache.expire(tick), 0); // Sakura - explosion density cache
++        scheduler.endless((tick, level, cb) -> level.dispenseRelocationHandler.clear(), 0); // Sakura - configure server mechanics
+     }
+ }
 diff --git a/net/minecraft/core/dispenser/DispenseItemBehavior.java b/net/minecraft/core/dispenser/DispenseItemBehavior.java
 index bfefb5031544caa59230f0073e8880c2b39ebf4d..4b4255eec2b57593e6ee2f0d9c70c2572f0e35df 100644
 --- a/net/minecraft/core/dispenser/DispenseItemBehavior.java
@@ -115,20 +126,8 @@ index bfefb5031544caa59230f0073e8880c2b39ebf4d..4b4255eec2b57593e6ee2f0d9c70c257
                      PrimedTnt primedTnt = new PrimedTnt(serverLevel, event.getVelocity().getX(), event.getVelocity().getY(), event.getVelocity().getZ(), null);
                      // CraftBukkit end
                      serverLevel.addFreshEntity(primedTnt);
-diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index a41cfcee9b1884708fc7b5f606e80f04b22f70af..50b208a705e27cc5cc3a0adc251bfd31d37b22fd 100644
---- a/net/minecraft/server/level/ServerLevel.java
-+++ b/net/minecraft/server/level/ServerLevel.java
-@@ -728,6 +728,7 @@ public class ServerLevel extends Level implements ServerEntityGetter, WorldGenLe
-         this.levelTickScheduler.repeatingTask(this.explosionPositions::clear, 0); // Sakura - client visibility settings
-         this.levelTickScheduler.repeatingTask(this.mergeHandler::expire, 200); // Sakura - merge cannon entities
-         this.levelTickScheduler.repeatingTask(this.densityCache::expire, 0); // Sakura - explosion density cache
-+        this.levelTickScheduler.repeatingTask(this.dispenseRelocationHandler::clear, 0); // Sakura - configure server mechanics
-     }
- 
-     // Paper start
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 30c8991f1c37b891e2b38856e2902f60e6526835..7a0949926b6514099626c4b9a91e45e9bcbcda19 100644
+index 90cf5a7b106396d21998cace4281df758a14eba6..aa6b7a19cc0fefb39a00f1d8edd49b18e4b801c3 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -588,6 +588,13 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
@@ -228,7 +227,7 @@ index 30c8991f1c37b891e2b38856e2902f60e6526835..7a0949926b6514099626c4b9a91e45e9
                      this.setDeltaMovement(flag ? 0.0 : deltaMovement.x, deltaMovement.y, flag1 ? 0.0 : deltaMovement.z);
                  }
  
-@@ -1350,7 +1378,7 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+@@ -1354,7 +1382,7 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
          this.finalMovementsThisTick.clear();
          this.finalMovementsThisTick.addAll(this.movementThisTick);
          this.movementThisTick.clear();
@@ -237,7 +236,7 @@ index 30c8991f1c37b891e2b38856e2902f60e6526835..7a0949926b6514099626c4b9a91e45e9
              this.finalMovementsThisTick.add(new Entity.Movement(this.oldPosition(), this.position()));
          } else if (this.finalMovementsThisTick.getLast().to.distanceToSqr(this.position()) > 9.9999994E-11F) {
              this.finalMovementsThisTick.add(new Entity.Movement(this.finalMovementsThisTick.getLast().to, this.position()));
-@@ -1586,7 +1614,7 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+@@ -1590,7 +1618,7 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
          final List<AABB> potentialCollisionsBB = new it.unimi.dsi.fastutil.objects.ObjectArrayList<>(4);
          final AABB currBoundingBox = this.getBoundingBox();
  
@@ -246,7 +245,7 @@ index 30c8991f1c37b891e2b38856e2902f60e6526835..7a0949926b6514099626c4b9a91e45e9
              return this.collideAxisScan(movement, currBoundingBox, potentialCollisionsVoxel, potentialCollisionsBB);
          } else {
              return this.collideCube(movement, currBoundingBox, potentialCollisionsVoxel, potentialCollisionsBB);
-@@ -1605,8 +1633,18 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+@@ -1609,8 +1637,18 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
              bb = currBoundingBox.expandTowards(movement.x, movement.y, movement.z);
          }
  
@@ -267,7 +266,7 @@ index 30c8991f1c37b891e2b38856e2902f60e6526835..7a0949926b6514099626c4b9a91e45e9
      }
  
      private Vec3 collideAxisScan(final Vec3 movement, AABB currBoundingBox, final List<VoxelShape> voxelList, final List<AABB> bbList) {
-@@ -1614,7 +1652,7 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+@@ -1618,7 +1656,7 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
          double y = movement.y;
          double z = movement.z;
  
@@ -276,7 +275,7 @@ index 30c8991f1c37b891e2b38856e2902f60e6526835..7a0949926b6514099626c4b9a91e45e9
  
          if (y != 0.0) {
              y = this.scanY(currBoundingBox, y, voxelList, bbList);
-@@ -1665,7 +1703,12 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+@@ -1669,7 +1707,12 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
  
      private double scanY(final AABB currBoundingBox, double y, final List<VoxelShape> voxelList, final List<AABB> bbList) {
          final AABB scanBox = cutBoundingBoxY(currBoundingBox, y);
@@ -290,7 +289,7 @@ index 30c8991f1c37b891e2b38856e2902f60e6526835..7a0949926b6514099626c4b9a91e45e9
          y = ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.performAABBCollisionsY(currBoundingBox, y, bbList);
          return ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.performVoxelCollisionsY(currBoundingBox, y, voxelList);
      }
-@@ -1736,7 +1779,7 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+@@ -1740,7 +1783,7 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
              ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.COLLISION_FLAG_CHECK_BORDER  | this.getExtraCollisionFlags(), null // Sakura - load chunks on movement
          );
          potentialCollisionsBB.addAll(entityAABBs);
@@ -299,7 +298,7 @@ index 30c8991f1c37b891e2b38856e2902f60e6526835..7a0949926b6514099626c4b9a91e45e9
  
          final boolean collidedX = collided.x != movement.x;
          final boolean collidedY = collided.y != movement.y;
-@@ -1859,25 +1902,37 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+@@ -1863,25 +1906,37 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
      private void checkInsideBlocks(List<Entity.Movement> movements, InsideBlockEffectApplier.StepBasedCollector stepBasedCollector) {
          if (this.isAffectedByBlocks()) {
              LongSet set = this.visitedBlocks;
@@ -342,7 +341,7 @@ index 30c8991f1c37b891e2b38856e2902f60e6526835..7a0949926b6514099626c4b9a91e45e9
                      this.checkInsideBlocks(movement.to(), movement.to(), stepBasedCollector, set, 1);
                  }
              }
-@@ -1887,8 +1942,20 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+@@ -1891,8 +1946,20 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
      }
  
      private int checkInsideBlocks(Vec3 from, Vec3 to, InsideBlockEffectApplier.StepBasedCollector stepBasedCollector, LongSet visited, int maxSteps) {
@@ -365,7 +364,7 @@ index 30c8991f1c37b891e2b38856e2902f60e6526835..7a0949926b6514099626c4b9a91e45e9
          boolean flag1 = this.level instanceof ServerLevel serverLevel
              && serverLevel.getServer().debugSubscribers().hasAnySubscriberFor(DebugSubscriptions.ENTITY_BLOCK_INTERSECTIONS);
          AtomicInteger atomicInteger = new AtomicInteger();
-@@ -1896,6 +1963,7 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+@@ -1900,6 +1967,7 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
              from,
              to,
              aabb,
@@ -373,7 +372,7 @@ index 30c8991f1c37b891e2b38856e2902f60e6526835..7a0949926b6514099626c4b9a91e45e9
              (pos, index) -> {
                  if (!this.isAlive()) {
                      return false;
-@@ -1915,7 +1983,7 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+@@ -1919,7 +1987,7 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
                          boolean flag2 = entityInsideCollisionShape == Shapes.block()
                              || this.collidedWithShapeMovingFrom(from, to, entityInsideCollisionShape.move(new Vec3(pos)).toAabbs());
                          boolean flag3 = this.collidedWithFluid(blockState.getFluidState(), pos, from, to);
@@ -382,7 +381,7 @@ index 30c8991f1c37b891e2b38856e2902f60e6526835..7a0949926b6514099626c4b9a91e45e9
                              if (flag2) {
                                  try {
                                      boolean flag4 = flag || aabb.intersects(pos);
-@@ -1971,6 +2039,7 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+@@ -1975,6 +2043,7 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
      }
  
      public boolean collidedWithShapeMovingFrom(Vec3 from, Vec3 to, List<AABB> boxes) {
@@ -391,10 +390,10 @@ index 30c8991f1c37b891e2b38856e2902f60e6526835..7a0949926b6514099626c4b9a91e45e9
          Vec3 vec3 = to.subtract(from);
          return aabb.collidedAlongVector(vec3, boxes);
 diff --git a/net/minecraft/world/entity/item/FallingBlockEntity.java b/net/minecraft/world/entity/item/FallingBlockEntity.java
-index 3a29066910bd3b068beb56d807abf1b82a3ffa8a..f530dc91e0e4468e01b490c150ed257f4aacc499 100644
+index 59d62722158b9fd663369ed547f302a7253b90db..98f4c7ac7b23c50523d52f183929952108921168 100644
 --- a/net/minecraft/world/entity/item/FallingBlockEntity.java
 +++ b/net/minecraft/world/entity/item/FallingBlockEntity.java
-@@ -129,6 +129,25 @@ public class FallingBlockEntity extends Entity implements me.samsuik.sakura.enti
+@@ -129,6 +129,18 @@ public class FallingBlockEntity extends Entity implements me.samsuik.sakura.enti
          return this.sakura$collide(movement);
      }
      // Sakura end - optimise cannon entity movement
@@ -409,18 +408,11 @@ index 3a29066910bd3b068beb56d807abf1b82a3ffa8a..f530dc91e0e4468e01b490c150ed257f
 +        final double z = this.getZ() - vector.z;
 +        return x * x + y * y + z * z;
 +    }
-+
-+    private BlockPos patchedBlockPosition() {
-+        // Mitigates MC-261789 - falling blocks breaking when landing on a block below y 0
-+        // This fix allows some tech that uses "indirect clipping" to still function.
-+        // L stackers and midairs may still encounter issues if they shoot too high.
-+        return BlockPos.containing(this.getX(), this.getY() + 1.0e-12, this.getZ());
-+    }
 +    // Sakura end - configure server mechanics
  
      public FallingBlockEntity(EntityType<? extends FallingBlockEntity> type, Level level) {
          super(type, level);
-@@ -149,12 +168,16 @@ public class FallingBlockEntity extends Entity implements me.samsuik.sakura.enti
+@@ -149,12 +161,16 @@ public class FallingBlockEntity extends Entity implements me.samsuik.sakura.enti
          this.yo = y;
          this.zo = z;
          this.setStartPos(this.blockPosition());
@@ -438,7 +430,7 @@ index 3a29066910bd3b068beb56d807abf1b82a3ffa8a..f530dc91e0e4468e01b490c150ed257f
      }
      // Sakura end - falling block height parity api
      // Sakura start - falling block stacking restrictions
-@@ -180,7 +203,11 @@ public class FallingBlockEntity extends Entity implements me.samsuik.sakura.enti
+@@ -188,7 +204,11 @@ public class FallingBlockEntity extends Entity implements me.samsuik.sakura.enti
              state.hasProperty(BlockStateProperties.WATERLOGGED) ? state.setValue(BlockStateProperties.WATERLOGGED, false) : state
          );
          if (!org.bukkit.craftbukkit.event.CraftEventFactory.callEntityChangeBlockEvent(fallingBlockEntity, pos, state.getFluidState().createLegacyBlock())) return fallingBlockEntity; // CraftBukkit
@@ -451,7 +443,7 @@ index 3a29066910bd3b068beb56d807abf1b82a3ffa8a..f530dc91e0e4468e01b490c150ed257f
          level.addFreshEntity(fallingBlockEntity);
          return fallingBlockEntity;
      }
-@@ -224,7 +251,7 @@ public class FallingBlockEntity extends Entity implements me.samsuik.sakura.enti
+@@ -232,7 +252,7 @@ public class FallingBlockEntity extends Entity implements me.samsuik.sakura.enti
  
      @Override
      protected double getDefaultGravity() {
@@ -460,7 +452,7 @@ index 3a29066910bd3b068beb56d807abf1b82a3ffa8a..f530dc91e0e4468e01b490c150ed257f
      }
  
      @Override
-@@ -233,6 +260,12 @@ public class FallingBlockEntity extends Entity implements me.samsuik.sakura.enti
+@@ -241,6 +261,12 @@ public class FallingBlockEntity extends Entity implements me.samsuik.sakura.enti
              this.discard(org.bukkit.event.entity.EntityRemoveEvent.Cause.DESPAWN); // CraftBukkit - add Bukkit remove cause
          } else {
              Block block = this.blockState.getBlock();
@@ -473,7 +465,7 @@ index 3a29066910bd3b068beb56d807abf1b82a3ffa8a..f530dc91e0e4468e01b490c150ed257f
              this.time++;
              this.applyGravity();
              this.move(MoverType.SELF, this.getDeltaMovement());
-@@ -247,8 +280,15 @@ public class FallingBlockEntity extends Entity implements me.samsuik.sakura.enti
+@@ -255,9 +281,14 @@ public class FallingBlockEntity extends Entity implements me.samsuik.sakura.enti
              }
              // Paper end - Configurable falling blocks height nerf
              this.handlePortal();
@@ -481,16 +473,15 @@ index 3a29066910bd3b068beb56d807abf1b82a3ffa8a..f530dc91e0e4468e01b490c150ed257f
 +            if (mechanicsTarget.before(me.samsuik.sakura.mechanics.MechanicVersion.v1_12)) {
 +                this.setDeltaMovement(this.getDeltaMovement().scale(0.98F));
 +            }
++            // Sakura end - configure server mechanics
              if (this.level() instanceof ServerLevel serverLevel && (this.isAlive() || this.forceTickAfterTeleportToDuplicate)) {
--                BlockPos blockPos = this.blockPosition();
-+                BlockPos blockPos = mechanicsTarget.before(me.samsuik.sakura.mechanics.MechanicVersion.v1_17)
-+                    ? this.patchedBlockPosition() // Mitigate MC-261789
-+                    : this.blockPosition();
-+                // Sakura end - configure server mechanics
-                 boolean flag = this.level().sakuraConfig().cannons.sand.concreteSolidifyInWater && this.blockState.getBlock() instanceof ConcretePowderBlock; // Sakura - configure concrete solidifying in water
-                 boolean flag1 = flag && this.level().getFluidState(blockPos).is(FluidTags.WATER);
-                 double d = this.getDeltaMovement().lengthSqr();
-@@ -275,8 +315,13 @@ public class FallingBlockEntity extends Entity implements me.samsuik.sakura.enti
+                 // Sakura start - fix falling block floating point errors
+-                BlockPos blockPos = serverLevel.sakuraConfig().cannons.mechanics.fallingBlockFloatingPointFix
++                BlockPos blockPos = serverLevel.sakuraConfig().cannons.mechanics.fallingBlockFloatingPointFix || mechanicsTarget.before(me.samsuik.sakura.mechanics.MechanicVersion.v1_17) // Sakura - configure server mechanics
+                     ? this.patchedBlockPosition()
+                     : this.blockPosition();
+                 // Sakura end - fix falling block floating point errors
+@@ -287,8 +318,13 @@ public class FallingBlockEntity extends Entity implements me.samsuik.sakura.enti
                      }
                  } else {
                      BlockState blockState = this.level().getBlockState(blockPos);
@@ -506,7 +497,7 @@ index 3a29066910bd3b068beb56d807abf1b82a3ffa8a..f530dc91e0e4468e01b490c150ed257f
                          if (!this.cancelDrop) {
                              boolean canBeReplaced = blockState.canBeReplaced(
                                  new DirectionalPlaceContext(this.level(), blockPos, Direction.DOWN, ItemStack.EMPTY, Direction.UP)
-@@ -348,7 +393,14 @@ public class FallingBlockEntity extends Entity implements me.samsuik.sakura.enti
+@@ -360,7 +396,14 @@ public class FallingBlockEntity extends Entity implements me.samsuik.sakura.enti
                  }
              }
  
@@ -523,7 +514,7 @@ index 3a29066910bd3b068beb56d807abf1b82a3ffa8a..f530dc91e0e4468e01b490c150ed257f
      }
  
 diff --git a/net/minecraft/world/entity/item/PrimedTnt.java b/net/minecraft/world/entity/item/PrimedTnt.java
-index 63c289a15b95e89d7066d0fdd61e6eed246f0311..1a28b537f13eca936a6d25095c8f7602903d6af6 100644
+index 0770d039654001e0d155e605859f9620aa84edc0..ffd3e1eb34b4d5f0c473bcc58e0a1520eac2b9b8 100644
 --- a/net/minecraft/world/entity/item/PrimedTnt.java
 +++ b/net/minecraft/world/entity/item/PrimedTnt.java
 @@ -87,6 +87,23 @@ public class PrimedTnt extends Entity implements TraceableEntity, me.samsuik.sak
@@ -688,10 +679,10 @@ index 8a21910fe7ed61c903c4f36fced63b179ace4577..2e873467b219e7d8e6daf055cc87e624
                  return false;
              } else {
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index 49a481c9d1af76e1eafa7239267cce6e3f3b828b..65978af848ab2f9678e892ee11ca02a8e53f20a0 100644
+index f70b439d9c0b9b696c77c1197ed11516cca5f53e..f6379de90f2eb8b9405543c7d337958fa8d9526d 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
-@@ -836,6 +836,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+@@ -841,6 +841,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
      public final me.samsuik.sakura.entity.merge.EntityMergeHandler mergeHandler = new me.samsuik.sakura.entity.merge.EntityMergeHandler(); // Sakura - merge cannon entities
      public final me.samsuik.sakura.explosion.density.BlockDensityCache densityCache = new me.samsuik.sakura.explosion.density.BlockDensityCache(this); // Sakura - optimise explosion density cache
      public final me.samsuik.sakura.explosion.durable.DurableBlockManager durabilityManager = new me.samsuik.sakura.explosion.durable.DurableBlockManager(); // Sakura - explosion durable blocks
@@ -700,7 +691,7 @@ index 49a481c9d1af76e1eafa7239267cce6e3f3b828b..65978af848ab2f9678e892ee11ca02a8
      protected Level(
          WritableLevelData levelData,
 diff --git a/net/minecraft/world/level/ServerExplosion.java b/net/minecraft/world/level/ServerExplosion.java
-index bef20728913c7fd1fda3241f26ac9177c9f941d4..65f66b0e7a349be2cdec41da9f63c8c5f64bf634 100644
+index 8ea5493059c3156d86c0a89f691cf8a326bb72c7..bcbbffb7f52523ccd320dd9bd958dbefe2b88992 100644
 --- a/net/minecraft/world/level/ServerExplosion.java
 +++ b/net/minecraft/world/level/ServerExplosion.java
 @@ -378,6 +378,37 @@ public class ServerExplosion implements Explosion {
