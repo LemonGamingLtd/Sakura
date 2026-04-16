@@ -45,7 +45,7 @@ index 9d005c3db8f0c784cdd7217e7b110daa703a9cf3..e95baeca9ecd180ad09cb6deb92c75e5
          }
  
 diff --git a/net/minecraft/world/level/block/TripWireHookBlock.java b/net/minecraft/world/level/block/TripWireHookBlock.java
-index 28869577e480318b5ef469a0b4180b25ddfb627f..a51f2dc4b972dbd8a8e1fe3f282c8c14902e1c6c 100644
+index 894f5893e60a1a77c7311d9a3cb88515357bfffd..8633bb8d8ba035b036367ea2136ec940356509be 100644
 --- a/net/minecraft/world/level/block/TripWireHookBlock.java
 +++ b/net/minecraft/world/level/block/TripWireHookBlock.java
 @@ -205,7 +205,7 @@ public class TripWireHookBlock extends Block {
