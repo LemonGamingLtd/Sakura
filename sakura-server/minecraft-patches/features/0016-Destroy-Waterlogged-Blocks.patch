@@ -5,10 +5,10 @@ Subject: [PATCH] Destroy Waterlogged Blocks
 
 
 diff --git a/net/minecraft/world/level/ServerExplosion.java b/net/minecraft/world/level/ServerExplosion.java
-index 976ebf4c62d1cc96f2e147c2240a5886d6b022ed..16575c1222b28f7809db39d320848153e3b97044 100644
+index c859e17c0125f5a8bb4cc938f39f3c9f77c55678..35e787d257c78e922831ef5fbc906340a34e0dd2 100644
 --- a/net/minecraft/world/level/ServerExplosion.java
 +++ b/net/minecraft/world/level/ServerExplosion.java
-@@ -368,6 +368,11 @@ public class ServerExplosion implements Explosion {
+@@ -360,6 +360,11 @@ public class ServerExplosion implements Explosion {
              if (material != null && material.replaceBlastResistance() && pos.getY() > this.level.getMinY()) {
                  return Optional.of(material.resistance());
              }

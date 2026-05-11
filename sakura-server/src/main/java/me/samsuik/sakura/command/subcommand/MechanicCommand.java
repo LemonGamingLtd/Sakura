@@ -1,4 +1,4 @@
-package me.samsuik.sakura.command.subcommands;
+package me.samsuik.sakura.command.subcommand;
 
 import me.samsuik.sakura.command.PlayerOnlySubCommand;
 import me.samsuik.sakura.configuration.GlobalConfiguration;
@@ -42,7 +42,7 @@ public final class MechanicCommand extends PlayerOnlySubCommand {
     @Override
     public void execute(final Player player, final String[] args) {
         final Location location = player.getLocation();
-        final BlockPos blockPos = CraftLocation.toBlockPosition(location);
+        final BlockPos blockPos = CraftLocation.toBlockPos(location);
         final CraftWorld craftWorld = ((CraftWorld) location.getWorld());
         final ServerLevel serverLevel = craftWorld.getHandle();
         final CachedLocalConfiguration config = craftWorld.getHandle().localConfig().at(blockPos);

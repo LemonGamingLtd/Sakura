@@ -5,10 +5,10 @@ Subject: [PATCH] Protect scaffolding from creepers
 
 
 diff --git a/net/minecraft/world/level/ServerExplosion.java b/net/minecraft/world/level/ServerExplosion.java
-index 8317c1d8ede33a1de115c5597a439f30284c8b86..a185d44ef797663d5007c9084117ca6933ba46be 100644
+index 470240a41c17d47d2baecc6e0cf7f6d628742ae4..d3df0419aa8b05a1b4fd074f84d82d5e311ae8e5 100644
 --- a/net/minecraft/world/level/ServerExplosion.java
 +++ b/net/minecraft/world/level/ServerExplosion.java
-@@ -378,6 +378,11 @@ public class ServerExplosion implements Explosion {
+@@ -370,6 +370,11 @@ public class ServerExplosion implements Explosion {
                  return Optional.of(ZERO_RESISTANCE);
              }
              // Sakura end - allow explosions to destroy lava

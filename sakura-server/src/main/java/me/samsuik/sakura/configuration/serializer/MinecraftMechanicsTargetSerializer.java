@@ -2,6 +2,7 @@ package me.samsuik.sakura.configuration.serializer;
 
 import me.samsuik.sakura.mechanics.MechanicVersion;
 import me.samsuik.sakura.mechanics.MinecraftMechanicsTarget;
+import me.samsuik.sakura.mechanics.MinecraftVersionEncoding;
 import me.samsuik.sakura.mechanics.ServerType;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.jspecify.annotations.NullMarked;
@@ -21,13 +22,8 @@ public final class MinecraftMechanicsTargetSerializer implements TypeSerializer<
     public MinecraftMechanicsTarget deserialize(final Type type, final ConfigurationNode root) throws SerializationException {
         final String mechanicVersion = root.node(MECHANIC_VERSION).getString();
         final String serverType = root.node(SERVER_TYPE).getString();
-        final MinecraftMechanicsTarget mechanicsTarget = MinecraftMechanicsTarget.fromString("%s+%s".formatted(mechanicVersion, serverType));
 
-        if (mechanicsTarget == null) {
-            throw new IllegalArgumentException("Unable to deserialize MinecraftMechanicsTarget (" + mechanicVersion + ", " + serverType + ")");
-        }
-
-        return mechanicsTarget;
+        return MinecraftMechanicsTarget.fromString("%s+%s".formatted(mechanicVersion, serverType));
     }
 
     @Override
