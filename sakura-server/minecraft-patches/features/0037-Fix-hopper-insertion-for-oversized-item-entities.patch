@@ -1,0 +1,32 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: g0dzcsgo <xdfelgen@gmail.com>
+Date: Fri, 15 May 2026 14:37:00 +0200
+Subject: [PATCH] Fix hopper insertion for oversized item entities
+
+
+diff --git a/net/minecraft/world/level/block/entity/HopperBlockEntity.java b/net/minecraft/world/level/block/entity/HopperBlockEntity.java
+--- a/net/minecraft/world/level/block/entity/HopperBlockEntity.java
++++ b/net/minecraft/world/level/block/entity/HopperBlockEntity.java
+@@ -779,18 +779,19 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+             if (item.isEmpty()) {
+                 // Spigot start - SPIGOT-6693, SimpleContainer#setItem
+                 ItemStack leftover = ItemStack.EMPTY; // Paper - Make hoppers respect inventory max stack size
+-                if (!stack.isEmpty() && stack.getCount() > destination.getMaxStackSize()) {
++                int maxStackSize = destination.getMaxStackSize(stack); // Sakura - account for stack-specific inventory limits
++                if (!stack.isEmpty() && stack.getCount() > maxStackSize) {
+                     leftover = stack; // Paper - Make hoppers respect inventory max stack size
+-                    stack = stack.split(destination.getMaxStackSize());
++                    stack = stack.split(maxStackSize); // Sakura - account for stack-specific inventory limits
+                 }
+                 // Spigot end
+                 ignoreBlockEntityUpdates = true; // Paper - Perf: Optimize Hoppers
+                 destination.setItem(slot, stack);
+                 ignoreBlockEntityUpdates = false; // Paper - Perf: Optimize Hoppers
+                 stack = leftover; // Paper - Make hoppers respect inventory max stack size
+                 flag = true;
+             } else if (canMergeItems(item, stack)) {
+-                int i = Math.min(stack.getMaxStackSize(), destination.getMaxStackSize()) - item.getCount(); // Paper - Make hoppers respect inventory max stack size
++                int i = Math.min(stack.getMaxStackSize(), destination.getMaxStackSize(item)) - item.getCount(); // Paper - Make hoppers respect inventory max stack size // Sakura - account for stack-specific inventory limits
+                 int min = Math.min(stack.getCount(), i);
+                 stack.shrink(min);
+                 item.grow(min);

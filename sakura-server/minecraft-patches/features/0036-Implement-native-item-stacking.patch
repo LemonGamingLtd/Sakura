@@ -1,0 +1,86 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: g0dzcsgo <xdfelgen@gmail.com>
+Date: Fri, 15 May 2026 10:51:00 +0200
+Subject: [PATCH] Implement native item stacking
+
+
+diff --git a/net/minecraft/world/entity/item/ItemEntity.java b/net/minecraft/world/entity/item/ItemEntity.java
+--- a/net/minecraft/world/entity/item/ItemEntity.java
++++ b/net/minecraft/world/entity/item/ItemEntity.java
+@@ -244,7 +244,7 @@ public class ItemEntity extends Entity implements TraceableEntity {
+ 
+     private void mergeWithNeighbours() {
+         if (this.isMergable()) {
+-            double radius = this.level().spigotConfig.itemMerge; // Spigot
++            double radius = getMergeRadius(this.level()); // Spigot // Sakura - Native item stacking
+             for (ItemEntity itemEntity : this.level()
+                 .getEntitiesOfClass(ItemEntity.class, this.getBoundingBox().inflate(radius, this.level().paperConfig().entities.behavior.onlyMergeItemsHorizontally ? 0 : radius - 0.5D, radius), neighbour -> neighbour != this && neighbour.isMergable())) { // Spigot // Paper - configuration to only merge items horizontally
+                 if (itemEntity.isMergable()) {
+@@ -267,7 +267,7 @@ public class ItemEntity extends Entity implements TraceableEntity {
+ 
+     private boolean isMergable() {
+         ItemStack item = this.getItem();
+-        return this.isAlive() && this.pickupDelay != 32767 && this.age != -32768 && this.age < this.despawnRate && item.getCount() < item.getMaxStackSize(); // Paper - Alternative item-despawn-rate
++        return this.isAlive() && this.pickupDelay != 32767 && this.age != -32768 && this.age < this.despawnRate && item.getCount() < getMaxStackSize(item); // Paper - Alternative item-despawn-rate // Sakura - Native item stacking
+     }
+ 
+     private void tryToMerge(ItemEntity itemEntity) {
+@@ -283,19 +283,19 @@ public class ItemEntity extends Entity implements TraceableEntity {
+     }
+ 
+     public static boolean areMergable(ItemStack destinationStack, ItemStack originStack) {
+-        return originStack.getCount() + destinationStack.getCount() <= originStack.getMaxStackSize()
++        return originStack.getCount() + destinationStack.getCount() <= getMaxStackSize(originStack) // Sakura - Native item stacking
+             && ItemStack.isSameItemSameComponents(destinationStack, originStack);
+     }
+ 
+     public static ItemStack merge(ItemStack destinationStack, ItemStack originStack, int amount) {
+-        int min = Math.min(Math.min(destinationStack.getMaxStackSize(), amount) - destinationStack.getCount(), originStack.getCount());
++        int min = Math.min(Math.min(getMaxStackSize(destinationStack), amount) - destinationStack.getCount(), originStack.getCount()); // Sakura - Native item stacking
+         ItemStack itemStack = destinationStack.copyWithCount(destinationStack.getCount() + min);
+         originStack.shrink(min);
+         return itemStack;
+     }
+ 
+     private static void merge(ItemEntity destinationEntity, ItemStack destinationStack, ItemStack originStack) {
+-        ItemStack itemStack = merge(destinationStack, originStack, 64);
++        ItemStack itemStack = merge(destinationStack, originStack, getMaxStackSize(destinationStack)); // Sakura - Native item stacking
+         destinationEntity.setItem(itemStack);
+     }
+ 
+@@ -307,12 +307,34 @@ public class ItemEntity extends Entity implements TraceableEntity {
+         // CraftBukkit end
+         merge(destinationEntity, destinationStack, originStack);
+         destinationEntity.pickupDelay = Math.max(destinationEntity.pickupDelay, originEntity.pickupDelay);
+-        destinationEntity.age = Math.min(destinationEntity.age, originEntity.age);
++        destinationEntity.age = resetsDespawnTimerOnMerge() ? 0 : Math.min(destinationEntity.age, originEntity.age); // Sakura - Native item stacking
+         if (originStack.isEmpty()) {
+             originEntity.discard(org.bukkit.event.entity.EntityRemoveEvent.Cause.MERGE); // CraftBukkit - add Bukkit remove cause
+         }
+     }
+ 
++    // Sakura start - Native item stacking
++    private static double getMergeRadius(Level level) {
++        me.samsuik.sakura.configuration.GlobalConfiguration.ItemStacking itemStacking = me.samsuik.sakura.configuration.GlobalConfiguration.get().itemStacking;
++        return itemStacking.enabled ? itemStacking.mergeRadius : level.spigotConfig.itemMerge;
++    }
++
++    private static int getMaxStackSize(ItemStack itemStack) {
++        int vanillaMaxStackSize = itemStack.getMaxStackSize();
++        if (vanillaMaxStackSize <= 1) {
++            return vanillaMaxStackSize;
++        }
++
++        me.samsuik.sakura.configuration.GlobalConfiguration.ItemStacking itemStacking = me.samsuik.sakura.configuration.GlobalConfiguration.get().itemStacking;
++        return itemStacking.enabled ? Math.max(vanillaMaxStackSize, itemStacking.maxStackSize) : vanillaMaxStackSize;
++    }
++
++    private static boolean resetsDespawnTimerOnMerge() {
++        me.samsuik.sakura.configuration.GlobalConfiguration.ItemStacking itemStacking = me.samsuik.sakura.configuration.GlobalConfiguration.get().itemStacking;
++        return itemStacking.enabled && itemStacking.resetDespawnTimerOnMerge;
++    }
++    // Sakura end - Native item stacking
++
+     @Override
+     public boolean fireImmune() {
+         return !this.getItem().canBeHurtBy(this.damageSources().inFire()) || super.fireImmune();
