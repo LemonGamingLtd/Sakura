@@ -45,10 +45,10 @@ index 83823edc4a943e006e3237ecb9198a571a681873..70a92f0c9e0ca757ef0143c657f4f854
          }
  
 diff --git a/net/minecraft/world/level/block/TripWireHookBlock.java b/net/minecraft/world/level/block/TripWireHookBlock.java
-index 2125418779dbeff02813f328d3cc84093d214f05..2194b116a72f9988e0ecbbde7f8e62b60e449ece 100644
+index 31f8b7225ae5804ed66e7b17862ee56ac6ae5237..9ab4a2a570e3ac398843bfc384bddaa91a913bd9 100644
 --- a/net/minecraft/world/level/block/TripWireHookBlock.java
 +++ b/net/minecraft/world/level/block/TripWireHookBlock.java
-@@ -216,7 +216,7 @@ public class TripWireHookBlock extends Block {
+@@ -201,7 +201,7 @@ public class TripWireHookBlock extends Block {
                      BlockState wireData = wireStates[i];
                      if (wireData != null) {
                          BlockState testPosState = level.getBlockState(testPosx);
