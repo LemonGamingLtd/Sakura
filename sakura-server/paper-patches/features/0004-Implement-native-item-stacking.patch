@@ -1,0 +1,26 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: g0dzcsgo <xdfelgen@gmail.com>
+Date: Wed, 20 May 2026 12:10:21 +0200
+Subject: [PATCH] Implement native item stacking
+
+
+diff --git a/src/main/java/io/papermc/paper/configuration/GlobalConfiguration.java b/src/main/java/io/papermc/paper/configuration/GlobalConfiguration.java
+index 232bc5e8b7cbb528b96f8048ba683705cddc436e..2bde81a15c9e529f576e780d7b7bcd544ecb4bfd 100644
+--- a/src/main/java/io/papermc/paper/configuration/GlobalConfiguration.java
++++ b/src/main/java/io/papermc/paper/configuration/GlobalConfiguration.java
+@@ -394,4 +394,15 @@ public class GlobalConfiguration extends ConfigurationPart {
+     public class UpdateChecker extends ConfigurationPart {
+         public boolean enabled = true;
+     }
++    // Citrus start - Native item stacking
++    public ItemStacking itemStacking;
++        public class ItemStacking extends ConfigurationPart {
++        public boolean enabled = false;
++        @Constraints.Min(1)
++        public int maxStackSize = 1024;
++        @Constraints.Min(0)
++        public double mergeRadius = 2.5D;
++        public boolean resetDespawnTimerOnMerge = true;
++    }
++    // Citrus end - Native item stacking
+ }

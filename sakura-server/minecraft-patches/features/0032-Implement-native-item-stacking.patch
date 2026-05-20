@@ -1,0 +1,110 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: g0dzcsgo <xdfelgen@gmail.com>
+Date: Wed, 20 May 2026 12:10:21 +0200
+Subject: [PATCH] Implement native item stacking
+
+
+diff --git a/net/minecraft/world/entity/item/ItemEntity.java b/net/minecraft/world/entity/item/ItemEntity.java
+index db37b0329f334c981554fd37a5b06fa8640ca3a6..e65d065562d693e9df72977c2bf837f0732847af 100644
+--- a/net/minecraft/world/entity/item/ItemEntity.java
++++ b/net/minecraft/world/entity/item/ItemEntity.java
+@@ -253,7 +253,7 @@ public class ItemEntity extends Entity implements TraceableEntity {
+ 
+     private void mergeWithNeighbours() {
+         if (this.isMergable()) {
+-            double radius = this.level().spigotConfig.itemMerge; // Spigot
++            double radius = getMergeRadius(this.level()); // Spigot // Citrus - Native item stacking
+             for (ItemEntity entity : this.level()
+                 .getEntitiesOfClass(ItemEntity.class, this.getBoundingBox().inflate(radius, this.level().paperConfig().entities.behavior.onlyMergeItemsHorizontally ? 0 : radius - 0.5D, radius), other -> other != this && other.isMergable())) { // Spigot // Paper - configuration to only merge items horizontally
+                 if (entity.isMergable()) {
+@@ -276,7 +276,7 @@ public class ItemEntity extends Entity implements TraceableEntity {
+ 
+     private boolean isMergable() {
+         ItemStack item = this.getItem();
+-        return this.isAlive() && this.pickupDelay != 32767 && this.age != -32768 && this.age < this.despawnRate && item.getCount() < item.getMaxStackSize(); // Paper - Alternative item-despawn-rate
++        return this.isAlive() && this.pickupDelay != 32767 && this.age != -32768 && this.age < this.despawnRate && item.getCount() < getMaxStackSize(item); // Paper - Alternative item-despawn-rate // Citrus - Native item stacking
+     }
+ 
+     private void tryToMerge(final ItemEntity other) {
+@@ -292,19 +292,19 @@ public class ItemEntity extends Entity implements TraceableEntity {
+     }
+ 
+     public static boolean areMergable(final ItemStack thisItemStack, final ItemStack otherItemStack) {
+-        return otherItemStack.getCount() + thisItemStack.getCount() <= otherItemStack.getMaxStackSize()
++        return otherItemStack.getCount() + thisItemStack.getCount() <= getMaxStackSize(otherItemStack) // Citrus - Native item stacking
+             && ItemStack.isSameItemSameComponents(thisItemStack, otherItemStack);
+     }
+ 
+     public static ItemStack merge(final ItemStack toStack, final ItemStack fromStack, final int maxCount) {
+-        int delta = Math.min(Math.min(toStack.getMaxStackSize(), maxCount) - toStack.getCount(), fromStack.getCount());
++        int delta = Math.min(Math.min(getMaxStackSize(toStack), maxCount) - toStack.getCount(), fromStack.getCount()); // Citrus - Native item stacking
+         ItemStack newToStack = toStack.copyWithCount(toStack.getCount() + delta);
+         fromStack.shrink(delta);
+         return newToStack;
+     }
+ 
+     private static void merge(final ItemEntity toItem, final ItemStack toStack, final ItemStack fromStack) {
+-        ItemStack newToStack = merge(toStack, fromStack, 64);
++        ItemStack newToStack = merge(toStack, fromStack, getMaxStackSize(toStack)); // Citrus - Native item stacking
+         toItem.setItem(newToStack);
+     }
+ 
+@@ -316,11 +316,31 @@ public class ItemEntity extends Entity implements TraceableEntity {
+         // CraftBukkit end
+         merge(toItem, toStack, fromStack);
+         toItem.pickupDelay = Math.max(toItem.pickupDelay, fromItem.pickupDelay);
+-        toItem.age = Math.min(toItem.age, fromItem.age);
++        toItem.age = resetsDespawnTimerOnMerge() ? 0 : Math.min(toItem.age, fromItem.age); // Citrus - Native item stacking
+         if (fromStack.isEmpty()) {
+             fromItem.discard(org.bukkit.event.entity.EntityRemoveEvent.Cause.MERGE); // CraftBukkit - add Bukkit remove cause
+         }
+     }
++    // Citrus start - Native item stacking
++    private static double getMergeRadius(Level level) {
++        io.papermc.paper.configuration.GlobalConfiguration.ItemStacking itemStacking = io.papermc.paper.configuration.GlobalConfiguration.get().itemStacking;
++        return itemStacking.enabled ? itemStacking.mergeRadius : level.spigotConfig.itemMerge;
++    }
++
++    private static int getMaxStackSize(ItemStack itemStack) {
++        int vanillaMaxStackSize = itemStack.getMaxStackSize();
++        if (vanillaMaxStackSize <= 1) {
++            return vanillaMaxStackSize;
++        }
++        io.papermc.paper.configuration.GlobalConfiguration.ItemStacking itemStacking = io.papermc.paper.configuration.GlobalConfiguration.get().itemStacking;
++        return itemStacking.enabled ? Math.max(vanillaMaxStackSize, itemStacking.maxStackSize) : vanillaMaxStackSize;
++    }
++
++    private static boolean resetsDespawnTimerOnMerge() {
++        io.papermc.paper.configuration.GlobalConfiguration.ItemStacking itemStacking = io.papermc.paper.configuration.GlobalConfiguration.get().itemStacking;
++        return itemStacking.enabled && itemStacking.resetDespawnTimerOnMerge;
++    }
++    // Citrus end - Native item stacking
+ 
+     @Override
+     public boolean fireImmune() {
+diff --git a/net/minecraft/world/level/block/entity/HopperBlockEntity.java b/net/minecraft/world/level/block/entity/HopperBlockEntity.java
+index 70470c86cc840b3314679b5a489b5124db404d96..4eb1e3e1d5e35a98ae04873a8bcb4fa78b7e5e67 100644
+--- a/net/minecraft/world/level/block/entity/HopperBlockEntity.java
++++ b/net/minecraft/world/level/block/entity/HopperBlockEntity.java
+@@ -682,9 +682,10 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+             if (current.isEmpty()) {
+                 // Spigot start - SPIGOT-6693, SimpleContainer#setItem
+                 ItemStack leftover = ItemStack.EMPTY; // Paper - Make hoppers respect inventory max stack size
+-                if (!itemStack.isEmpty() && itemStack.getCount() > container.getMaxStackSize()) {
++                int maxStackSize = container.getMaxStackSize(itemStack); // Citrus - account for stack-specific inventory limits
++                if (!itemStack.isEmpty() && itemStack.getCount() > maxStackSize) { // Citrus - account for stack-specific inventory limits
+                     leftover = itemStack; // Paper - Make hoppers respect inventory max stack size
+-                    itemStack = itemStack.split(container.getMaxStackSize());
++                    itemStack = itemStack.split(maxStackSize); // Citrus - account for stack-specific inventory limits
+                 }
+                 // Spigot end
+                 ignoreBlockEntityUpdates = true; // Paper - Perf: Optimize Hoppers
+@@ -693,7 +694,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+                 itemStack = leftover; // Paper - Make hoppers respect inventory max stack size
+                 success = true;
+             } else if (canMergeItems(current, itemStack)) {
+-                int space = Math.min(itemStack.getMaxStackSize(), container.getMaxStackSize()) - current.getCount(); // Paper - Make hoppers respect inventory max stack size
++                int space = Math.min(itemStack.getMaxStackSize(), container.getMaxStackSize(itemStack)) - itemStack.getCount(); // Paper - Make hoppers respect inventory max stack size // Citrus - account for stack-specific inventory limits
+                 int count = Math.min(itemStack.getCount(), space);
+                 itemStack.shrink(count);
+                 current.grow(count);
