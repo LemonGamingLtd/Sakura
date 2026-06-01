@@ -83,7 +83,7 @@ index db37b0329f334c981554fd37a5b06fa8640ca3a6..e65d065562d693e9df72977c2bf837f0
      @Override
      public boolean fireImmune() {
 diff --git a/net/minecraft/world/level/block/entity/HopperBlockEntity.java b/net/minecraft/world/level/block/entity/HopperBlockEntity.java
-index 70470c86cc840b3314679b5a489b5124db404d96..4eb1e3e1d5e35a98ae04873a8bcb4fa78b7e5e67 100644
+index 70470c86cc840b3314679b5a489b5124db404d96..957aa83e44d4f0c008d259abc8fd471e1c905b21 100644
 --- a/net/minecraft/world/level/block/entity/HopperBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/HopperBlockEntity.java
 @@ -682,9 +682,10 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
@@ -104,7 +104,7 @@ index 70470c86cc840b3314679b5a489b5124db404d96..4eb1e3e1d5e35a98ae04873a8bcb4fa7
                  success = true;
              } else if (canMergeItems(current, itemStack)) {
 -                int space = Math.min(itemStack.getMaxStackSize(), container.getMaxStackSize()) - current.getCount(); // Paper - Make hoppers respect inventory max stack size
-+                int space = Math.min(itemStack.getMaxStackSize(), container.getMaxStackSize(itemStack)) - itemStack.getCount(); // Paper - Make hoppers respect inventory max stack size // Citrus - account for stack-specific inventory limits
++                int space = Math.min(itemStack.getMaxStackSize(), container.getMaxStackSize(itemStack)) - current.getCount(); // Paper - Make hoppers respect inventory max stack size // Citrus - account for stack-specific inventory limits
                  int count = Math.min(itemStack.getCount(), space);
                  itemStack.shrink(count);
                  current.grow(count);
