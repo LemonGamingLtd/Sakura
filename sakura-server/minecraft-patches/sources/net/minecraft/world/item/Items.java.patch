@@ -55,14 +55,14 @@
          Blocks.WARPED_HANGING_SIGN, (b, p) -> new HangingSignItem(b, Blocks.WARPED_WALL_HANGING_SIGN, p), new Item.Properties().stacksTo(16)
      );
 -    public static final Item BUCKET = registerItem("bucket", p -> new BucketItem(Fluids.EMPTY, p), new Item.Properties().stacksTo(16));
-+    public static final Item BUCKET = registerItem("bucket", properties -> new me.samsuik.sakura.player.item.StackableBucketItem(Fluids.EMPTY, properties), new Item.Properties().stacksTo(16)); // Sakura - modify bucket stack size
++    public static final Item BUCKET = registerItem("bucket", properties -> new me.samsuik.sakura.player.item.StackableBucketItem(Fluids.EMPTY, properties), new Item.Properties()); // Sakura - modify bucket stack size
      public static final Item WATER_BUCKET = registerItem(
 -        "water_bucket", p -> new BucketItem(Fluids.WATER, p), new Item.Properties().craftRemainder(BUCKET).stacksTo(1)
-+        "water_bucket", properties -> new me.samsuik.sakura.player.item.StackableBucketItem(Fluids.WATER, properties), new Item.Properties().craftRemainder(BUCKET).stacksTo(1) // Sakura - modify bucket stack size
++        "water_bucket", properties -> new me.samsuik.sakura.player.item.StackableBucketItem(Fluids.WATER, properties), new Item.Properties().craftRemainder(BUCKET) // Sakura - modify bucket stack size
      );
      public static final Item LAVA_BUCKET = registerItem(
 -        "lava_bucket", p -> new BucketItem(Fluids.LAVA, p), new Item.Properties().craftRemainder(BUCKET).stacksTo(1)
-+        "lava_bucket", properties -> new me.samsuik.sakura.player.item.StackableBucketItem(Fluids.LAVA, properties), new Item.Properties().craftRemainder(BUCKET).stacksTo(1) // Sakura - modify bucket stack size
++        "lava_bucket", properties -> new me.samsuik.sakura.player.item.StackableBucketItem(Fluids.LAVA, properties), new Item.Properties().craftRemainder(BUCKET) // Sakura - modify bucket stack size
      );
      public static final Item POWDER_SNOW_BUCKET = registerItem(
          "powder_snow_bucket",
