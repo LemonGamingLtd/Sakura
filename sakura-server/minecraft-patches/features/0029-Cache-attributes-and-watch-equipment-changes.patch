@@ -5,7 +5,7 @@ Subject: [PATCH] Cache attributes and watch equipment changes
 
 
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index 7aa3cd54c48351b78fe67ffe493e1da46c09f9ca..66d78baed4b1903ec2cb4573455bc2c0245289cc 100644
+index 3166bc2af1455d509f5c3ba46fed70924cc11854..63bed7f8b1178bf52c7335784f1a1f041f86e633 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
 @@ -352,6 +352,13 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
@@ -44,7 +44,7 @@ index 7aa3cd54c48351b78fe67ffe493e1da46c09f9ca..66d78baed4b1903ec2cb4573455bc2c0
      }
  
      public float getLuck() {
-@@ -3173,7 +3186,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
+@@ -3176,7 +3189,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
  
      @Override
      protected double getDefaultGravity() {
@@ -53,7 +53,7 @@ index 7aa3cd54c48351b78fe67ffe493e1da46c09f9ca..66d78baed4b1903ec2cb4573455bc2c0
      }
  
      protected double getEffectiveGravity() {
-@@ -3259,7 +3272,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
+@@ -3262,7 +3275,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
      protected void travelInWater(final Vec3 input, final double baseGravity, final boolean isFalling, final double oldY) {
          float slowDown = this.isSprinting() ? 0.9F : this.getWaterSlowDown();
          float speed = 0.02F;
@@ -62,7 +62,7 @@ index 7aa3cd54c48351b78fe67ffe493e1da46c09f9ca..66d78baed4b1903ec2cb4573455bc2c0
          if (!this.onGround()) {
              waterWalker *= 0.5F;
          }
-@@ -3527,7 +3540,12 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
+@@ -3530,7 +3543,12 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
                  }
              }
  
@@ -76,7 +76,7 @@ index 7aa3cd54c48351b78fe67ffe493e1da46c09f9ca..66d78baed4b1903ec2cb4573455bc2c0
              if (this.tickCount % 20 == 0) {
                  this.getCombatTracker().recheckStatus();
              }
-@@ -3801,7 +3819,11 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
+@@ -3805,7 +3823,11 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
              this.lerpHeadSteps--;
          }
  
@@ -89,7 +89,7 @@ index 7aa3cd54c48351b78fe67ffe493e1da46c09f9ca..66d78baed4b1903ec2cb4573455bc2c0
          Vec3 movement = this.getDeltaMovement();
          double dx = movement.x;
          double dy = movement.y;
-@@ -5011,7 +5033,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
+@@ -5008,7 +5030,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
  
      @Override
      public boolean isTransmittingWaypoint() {
@@ -99,7 +99,7 @@ index 7aa3cd54c48351b78fe67ffe493e1da46c09f9ca..66d78baed4b1903ec2cb4573455bc2c0
  
      @Override
 diff --git a/net/minecraft/world/item/enchantment/EnchantmentHelper.java b/net/minecraft/world/item/enchantment/EnchantmentHelper.java
-index d5f749fd0745555fa91e184abea0c40ab873c182..46797f6da25443df804142f1c429ce95c03c2268 100644
+index ed84782f4fcaec8f12ab68641a42ad6e09079875..0cce257948104bc213c66fb040f1613c1e0de5db 100644
 --- a/net/minecraft/world/item/enchantment/EnchantmentHelper.java
 +++ b/net/minecraft/world/item/enchantment/EnchantmentHelper.java
 @@ -157,6 +157,7 @@ public class EnchantmentHelper {

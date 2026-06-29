@@ -1,6 +1,6 @@
 --- a/net/minecraft/world/item/Items.java
 +++ b/net/minecraft/world/item/Items.java
-@@ -1140,7 +_,7 @@
+@@ -1140,37 +_,37 @@
      public static final Item GOLD_INGOT = registerItem("gold_ingot", new Item.Properties().trimMaterial(TrimMaterials.GOLD));
      public static final Item NETHERITE_INGOT = registerItem("netherite_ingot", new Item.Properties().fireResistant().trimMaterial(TrimMaterials.NETHERITE));
      public static final Item NETHERITE_SCRAP = registerItem("netherite_scrap", new Item.Properties().fireResistant());
@@ -9,7 +9,10 @@
      public static final Item WOODEN_SHOVEL = registerItem("wooden_shovel", p -> new ShovelItem(ToolMaterial.WOOD, 1.5F, -3.0F, p));
      public static final Item WOODEN_PICKAXE = registerItem("wooden_pickaxe", new Item.Properties().pickaxe(ToolMaterial.WOOD, 1.0F, -2.8F));
      public static final Item WOODEN_AXE = registerItem("wooden_axe", p -> new AxeItem(ToolMaterial.WOOD, 6.0F, -3.2F, p));
-@@ -1150,27 +_,27 @@
+     public static final Item WOODEN_HOE = registerItem("wooden_hoe", p -> new HoeItem(ToolMaterial.WOOD, 0.0F, -3.0F, p));
+-    public static final Item COPPER_SWORD = registerItem("copper_sword", new Item.Properties().sword(ToolMaterial.COPPER, 3.0F, -2.4F));
++    public static final Item COPPER_SWORD = registerItem("copper_sword", me.samsuik.sakura.player.item.BlockableSwordItem::new, new Item.Properties().sword(ToolMaterial.COPPER, 3.0F, -2.4F)); // Sakura - allow blocking with swords
+     public static final Item COPPER_SHOVEL = registerItem("copper_shovel", p -> new ShovelItem(ToolMaterial.COPPER, 1.5F, -3.0F, p));
      public static final Item COPPER_PICKAXE = registerItem("copper_pickaxe", new Item.Properties().pickaxe(ToolMaterial.COPPER, 1.0F, -2.8F));
      public static final Item COPPER_AXE = registerItem("copper_axe", p -> new AxeItem(ToolMaterial.COPPER, 7.0F, -3.2F, p));
      public static final Item COPPER_HOE = registerItem("copper_hoe", p -> new HoeItem(ToolMaterial.COPPER, -1.0F, -2.0F, p));
@@ -78,3 +81,36 @@
          new Item.Properties().craftRemainder(BUCKET).component(DataComponents.CONSUMABLE, Consumables.MILK_BUCKET).usingConvertsTo(BUCKET).stacksTo(1)
      );
      public static final Item PUFFERFISH_BUCKET = registerItem(
+@@ -1877,25 +_,25 @@
+             .component(DataComponents.BREAK_SOUND, SoundEvents.SHIELD_BREAK)
+     );
+     public static final Item WOODEN_SPEAR = registerItem(
+-        "wooden_spear", new Item.Properties().spear(ToolMaterial.WOOD, 0.65F, 0.7F, 0.75F, 5.0F, 14.0F, 10.0F, 5.1F, 15.0F, 4.6F)
++        "wooden_spear", me.samsuik.sakura.player.item.SpearItem::new, new Item.Properties().spear(ToolMaterial.WOOD, 0.65F, 0.7F, 0.75F, 5.0F, 14.0F, 10.0F, 5.1F, 15.0F, 4.6F) // Sakura - configure spear attack range
+     );
+     public static final Item STONE_SPEAR = registerItem(
+-        "stone_spear", new Item.Properties().spear(ToolMaterial.STONE, 0.75F, 0.82F, 0.7F, 4.5F, 13.0F, 9.0F, 5.1F, 13.75F, 4.6F)
++        "stone_spear", me.samsuik.sakura.player.item.SpearItem::new, new Item.Properties().spear(ToolMaterial.STONE, 0.75F, 0.82F, 0.7F, 4.5F, 13.0F, 9.0F, 5.1F, 13.75F, 4.6F) // Sakura - configure spear attack range
+     );
+     public static final Item COPPER_SPEAR = registerItem(
+-        "copper_spear", new Item.Properties().spear(ToolMaterial.COPPER, 0.85F, 0.82F, 0.65F, 4.0F, 12.0F, 8.25F, 5.1F, 12.5F, 4.6F)
++        "copper_spear", me.samsuik.sakura.player.item.SpearItem::new, new Item.Properties().spear(ToolMaterial.COPPER, 0.85F, 0.82F, 0.65F, 4.0F, 12.0F, 8.25F, 5.1F, 12.5F, 4.6F) // Sakura - configure spear attack range
+     );
+     public static final Item IRON_SPEAR = registerItem(
+-        "iron_spear", new Item.Properties().spear(ToolMaterial.IRON, 0.95F, 0.95F, 0.6F, 2.5F, 11.0F, 6.75F, 5.1F, 11.25F, 4.6F)
++        "iron_spear", me.samsuik.sakura.player.item.SpearItem::new, new Item.Properties().spear(ToolMaterial.IRON, 0.95F, 0.95F, 0.6F, 2.5F, 11.0F, 6.75F, 5.1F, 11.25F, 4.6F) // Sakura - configure spear attack range
+     );
+     public static final Item GOLDEN_SPEAR = registerItem(
+-        "golden_spear", new Item.Properties().spear(ToolMaterial.GOLD, 0.95F, 0.7F, 0.7F, 3.5F, 13.0F, 8.5F, 5.1F, 13.75F, 4.6F)
++        "golden_spear", me.samsuik.sakura.player.item.SpearItem::new, new Item.Properties().spear(ToolMaterial.GOLD, 0.95F, 0.7F, 0.7F, 3.5F, 13.0F, 8.5F, 5.1F, 13.75F, 4.6F) // Sakura - configure spear attack range
+     );
+     public static final Item DIAMOND_SPEAR = registerItem(
+-        "diamond_spear", new Item.Properties().spear(ToolMaterial.DIAMOND, 1.05F, 1.075F, 0.5F, 3.0F, 10.0F, 6.5F, 5.1F, 10.0F, 4.6F)
++        "diamond_spear", me.samsuik.sakura.player.item.SpearItem::new, new Item.Properties().spear(ToolMaterial.DIAMOND, 1.05F, 1.075F, 0.5F, 3.0F, 10.0F, 6.5F, 5.1F, 10.0F, 4.6F) // Sakura - configure spear attack range
+     );
+     public static final Item NETHERITE_SPEAR = registerItem(
+-        "netherite_spear", new Item.Properties().spear(ToolMaterial.NETHERITE, 1.15F, 1.2F, 0.4F, 2.5F, 9.0F, 5.5F, 5.1F, 8.75F, 4.6F).fireResistant()
++        "netherite_spear", me.samsuik.sakura.player.item.SpearItem::new, new Item.Properties().spear(ToolMaterial.NETHERITE, 1.15F, 1.2F, 0.4F, 2.5F, 9.0F, 5.5F, 5.1F, 8.75F, 4.6F).fireResistant() // Sakura - configure spear attack range
+     );
+     public static final Item TOTEM_OF_UNDYING = registerItem(
+         "totem_of_undying",

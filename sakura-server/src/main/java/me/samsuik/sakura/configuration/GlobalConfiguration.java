@@ -1,6 +1,5 @@
 package me.samsuik.sakura.configuration;
 
-import com.mojang.logging.LogUtils;
 import io.papermc.paper.configuration.Configuration;
 import io.papermc.paper.configuration.ConfigurationPart;
 import io.papermc.paper.configuration.type.number.IntOr;
@@ -11,7 +10,6 @@ import net.kyori.adventure.text.minimessage.tag.Tag;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver;
 import org.bukkit.Material;
-import org.slf4j.Logger;
 import org.spongepowered.configurate.objectmapping.meta.Comment;
 import org.spongepowered.configurate.objectmapping.meta.Setting;
 
@@ -72,6 +70,7 @@ public final class GlobalConfiguration extends ConfigurationPart {
         public Combat combat = new Combat();
         public final class Combat extends ConfigurationPart {
             public boolean blockWithSwords = false;
+            public boolean spearsHaveExtraAttackRange = true;
         }
 
         public IntOr.Default bucketStackSize = IntOr.Default.USE_DEFAULT;
