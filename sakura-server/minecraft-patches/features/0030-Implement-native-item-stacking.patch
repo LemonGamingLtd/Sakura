@@ -5,7 +5,7 @@ Subject: [PATCH] Implement native item stacking
 
 
 diff --git a/net/minecraft/world/entity/item/ItemEntity.java b/net/minecraft/world/entity/item/ItemEntity.java
-index db37b0329f334c981554fd37a5b06fa8640ca3a6..e65d065562d693e9df72977c2bf837f0732847af 100644
+index cfda5b0fec85835f99b7361b5d46f0a9994407ef..9ea0ed845c872a006a15f67ff52bd6beff8bdc66 100644
 --- a/net/minecraft/world/entity/item/ItemEntity.java
 +++ b/net/minecraft/world/entity/item/ItemEntity.java
 @@ -253,7 +253,7 @@ public class ItemEntity extends Entity implements TraceableEntity {
@@ -83,7 +83,7 @@ index db37b0329f334c981554fd37a5b06fa8640ca3a6..e65d065562d693e9df72977c2bf837f0
      @Override
      public boolean fireImmune() {
 diff --git a/net/minecraft/world/level/block/entity/HopperBlockEntity.java b/net/minecraft/world/level/block/entity/HopperBlockEntity.java
-index 70470c86cc840b3314679b5a489b5124db404d96..957aa83e44d4f0c008d259abc8fd471e1c905b21 100644
+index df345d4634fb4a9b282f837222f019980ff687e6..840e6e9a35813395118a2273005c545b90ddebbe 100644
 --- a/net/minecraft/world/level/block/entity/HopperBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/HopperBlockEntity.java
 @@ -682,9 +682,10 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen

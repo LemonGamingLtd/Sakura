@@ -1,6 +1,6 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Nahuel Dolores <contact@nahu.me>
-Date: Mon, 11 May 2026 16:32:37 +0200
+Date: Mon, 29 Jun 2026 15:23:49 +0200
 Subject: [PATCH] Allow disabled tripwire redstone emissions
 
 
@@ -45,15 +45,15 @@ index 83823edc4a943e006e3237ecb9198a571a681873..70a92f0c9e0ca757ef0143c657f4f854
          }
  
 diff --git a/net/minecraft/world/level/block/TripWireHookBlock.java b/net/minecraft/world/level/block/TripWireHookBlock.java
-index 31f8b7225ae5804ed66e7b17862ee56ac6ae5237..9ab4a2a570e3ac398843bfc384bddaa91a913bd9 100644
+index ad7a8c082c20b1ad30c520a94e9f902986ed6030..605f182129ac16b208961b131b57969b3823bf46 100644
 --- a/net/minecraft/world/level/block/TripWireHookBlock.java
 +++ b/net/minecraft/world/level/block/TripWireHookBlock.java
 @@ -201,7 +201,7 @@ public class TripWireHookBlock extends Block {
                      BlockState wireData = wireStates[i];
                      if (wireData != null) {
-                         BlockState testPosState = level.getBlockState(testPosx);
+                         BlockState testPosState = level.getBlockState(testPos);
 -                        if (testPosState.is(Blocks.TRIPWIRE) || testPosState.is(Blocks.TRIPWIRE_HOOK)) {
-+                        if (/*testPosState.is(Blocks.TRIPWIRE) ||*/ testPosState.is(Blocks.TRIPWIRE_HOOK)) { // Citrus
-                             if (!io.papermc.paper.configuration.GlobalConfiguration.get().blockUpdates.disableTripwireUpdates || !testPosState.is(Blocks.TRIPWIRE)) level.setBlock(testPosx, wireData.trySetValue(ATTACHED, attached), Block.UPDATE_ALL); // Paper - prevent tripwire from updating
++                        if (/* testPosState.is(Blocks.TRIPWIRE) ||*/ testPosState.is(Blocks.TRIPWIRE_HOOK)) { // Citrus
+                             if (!io.papermc.paper.configuration.GlobalConfiguration.get().blockUpdates.disableTripwireUpdates || !testPosState.is(Blocks.TRIPWIRE)) level.setBlock(testPos, wireData.trySetValue(ATTACHED, attached), Block.UPDATE_ALL); // Paper - prevent tripwire from updating
                          }
                      }

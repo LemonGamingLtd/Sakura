@@ -1,29 +1,29 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Nahuel Dolores <contact@nahu.me>
-Date: Mon, 11 May 2026 16:29:15 +0200
+Date: Mon, 29 Jun 2026 15:20:54 +0200
 Subject: [PATCH] Allow unsigned chat messages
 
 
 diff --git a/net/minecraft/network/chat/SignedMessageChain.java b/net/minecraft/network/chat/SignedMessageChain.java
-index 99a8a8b5cb65bd94d9496ddb6ff11b8a67f3a870..e57187e048dc6503414cac95cd6bd6df7bdae127 100644
+index 9395c6a58ba37fb00c492065b8045f54de0a2246..bdbc15d949ae764f99e79530eec07d0e14118e6f 100644
 --- a/net/minecraft/network/chat/SignedMessageChain.java
 +++ b/net/minecraft/network/chat/SignedMessageChain.java
-@@ -56,8 +56,11 @@ public class SignedMessageChain {
-                         SignedMessageChain.this.lastTimeStamp = body.timeStamp();
-                         PlayerChatMessage unpacked = new PlayerChatMessage(link, signature, body, null, FilterMask.PASS_THROUGH);
-                         if (!unpacked.verify(signatureValidator)) {
--                            this.setChainBroken();
--                            throw new SignedMessageChain.DecodeException(SignedMessageChain.DecodeException.INVALID_SIGNATURE);
-+                            // Citrus start - Allow unsigned chat messages
-+                            //this.setChainBroken();
-+                            //throw new SignedMessageChain.DecodeException(SignedMessageChain.DecodeException.INVALID_SIGNATURE);
-+                            return unpacked;
-+                            // Citrus end - Allow unsigned chat messages
-                         } else {
-                             if (unpacked.hasExpiredServer(Instant.now())) {
-                                 SignedMessageChain.LOGGER.warn("Received expired chat: '{}'. Is the client/server system time unsynchronized?", body.content());
+@@ -57,8 +57,11 @@ public class SignedMessageChain {
+                 SignedMessageChain.this.lastTimeStamp = body.timeStamp();
+                 PlayerChatMessage unpacked = new PlayerChatMessage(link, signature, body, null, FilterMask.PASS_THROUGH);
+                 if (!unpacked.verify(signatureValidator)) {
+-                    this.setChainBroken();
+-                    throw new SignedMessageChain.DecodeException(SignedMessageChain.DecodeException.INVALID_SIGNATURE);
++                    // Citrus start - Allow unsigned chat messages
++                    //this.setChainBroken();
++                    //throw new SignedMessageChain.DecodeException(SignedMessageChain.DecodeException.INVALID_SIGNATURE);
++                    return unpacked;
++                    // Citrus start - Allow unsigned chat messages
+                 }
+ 
+                 if (unpacked.hasExpiredServer(Instant.now())) {
 diff --git a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-index f816ceb53ab72c22cabe782f3f20af43733090e1..c4a9e9f1aa18a16b6dd3b1f1635f4a3b21f6f67f 100644
+index 61b08dcaca579763d947d289438041554acc5f1e..692624d2c24369a88fab98fb1a34bcd058515359 100644
 --- a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 @@ -300,11 +300,22 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
@@ -51,10 +51,10 @@ index f816ceb53ab72c22cabe782f3f20af43733090e1..c4a9e9f1aa18a16b6dd3b1f1635f4a3b
          if (packet == null) {
              return;
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 1b2a079ffc7c0c9290b471768dfccf61e5ba996b..2730db6b2788b970283addc4053ef34d9953355e 100644
+index e954bc9d6cd08029c73dfb42804de9570253d8c2..082d431352e71ea3830766d784163127d9fdf2c8 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -2803,9 +2803,11 @@ public class ServerGamePacketListenerImpl
+@@ -2805,9 +2805,11 @@ public class ServerGamePacketListenerImpl
                  trackedCount = this.lastSeenMessages.trackedMessagesCount();
              }
  
@@ -70,15 +70,15 @@ index 1b2a079ffc7c0c9290b471768dfccf61e5ba996b..2730db6b2788b970283addc4053ef34d
          }
          // Paper end - Ensure that client receives chat packets in the same order that we add into the message signature cache
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
-index 82748af2479b0f8f15e39d1ad1ccd2a0e583bcdd..c89edf35d59e4bd423165745a2126a2fa6557866 100644
+index 5bea5dcdaf8ee0a38cd8587a55845e940d8f4cac..4b5bce6f99f5d1ebaccb10498048cda7da97924e 100644
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
-@@ -1158,7 +1158,7 @@ public abstract class PlayerList {
+@@ -1155,7 +1155,7 @@ public abstract class PlayerList {
      }
  
      public boolean verifyChatTrusted(final PlayerChatMessage message) {
 -        return message.hasSignature() && !message.hasExpiredServer(Instant.now());
-+        return true; // Citrus - Allow unsigned chat messages
++        return true; // message.hasSignature() && !message.hasExpiredServer(Instant.now()); // Citrus - Allow unsigned chat messages
      }
  
      // CraftBukkit start
