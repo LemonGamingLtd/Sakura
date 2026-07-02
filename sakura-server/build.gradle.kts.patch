@@ -48,15 +48,36 @@
  configurations.named(log4jPlugins.compileClasspathConfigurationName) {
      extendsFrom(configurations.compileClasspath.get())
  }
-@@ -109,7 +_,7 @@
+@@ -109,7 +_,20 @@
  }
  
++repositories {
++    maven("https://repo.lemongaming.ltd/repository/maven-snapshots/") {
++        credentials {
++            username = providers.gradleProperty("lgNexusUser").get()
++            password = providers.gradleProperty("lgNexusPass").get()
++        }
++    }
++    maven("https://repo.lucko.me/")
++}
++
  dependencies {
 -    implementation(project(":paper-api"))
 +    implementation(project(":$serverBrand-api"))
      implementation("ca.spottedleaf:concurrentutil:0.0.10")
      implementation("org.jline:jline-terminal-ffm:3.27.1") // use ffm on java 22+
      implementation("org.jline:jline-terminal-jni:3.27.1") // fall back to jni on java 21
+@@ -189,8 +_,8 @@
+     testImplementation("org.junit-pioneer:junit-pioneer:2.3.0") // CartesianTest
+ 
+     // Spark
+-    implementation("me.lucko:spark-api:0.1-20240720.200737-2")
+-    implementation("me.lucko:spark-paper:1.10.152")
++    implementation("ltd.lemongaming.spark:spark-api:1.10.1-SNAPSHOT")
++    implementation("ltd.lemongaming.spark:spark-paper:1.10.1-SNAPSHOT")
+ }
+ 
+ tasks.jar {
 @@ -178,7 +_,7 @@
              "Specification-Version" to project.version,
              "Specification-Vendor" to "Paper Team",
