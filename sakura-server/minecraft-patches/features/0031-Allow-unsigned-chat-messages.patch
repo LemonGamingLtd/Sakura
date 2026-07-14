@@ -23,7 +23,7 @@ index 9395c6a58ba37fb00c492065b8045f54de0a2246..bdbc15d949ae764f99e79530eec07d0e
  
                  if (unpacked.hasExpiredServer(Instant.now())) {
 diff --git a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-index 61b08dcaca579763d947d289438041554acc5f1e..692624d2c24369a88fab98fb1a34bcd058515359 100644
+index 9ce2d5bcc40dfeee2f9a6912c551b11bc7ada14c..117269a9a00ffe8fb9316519949aaed6309ff129 100644
 --- a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 @@ -300,11 +300,22 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
@@ -51,10 +51,10 @@ index 61b08dcaca579763d947d289438041554acc5f1e..692624d2c24369a88fab98fb1a34bcd0
          if (packet == null) {
              return;
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index e954bc9d6cd08029c73dfb42804de9570253d8c2..082d431352e71ea3830766d784163127d9fdf2c8 100644
+index d383e809a7544a5afca87a6b7f0f2c5e91f7dd4d..5267242b46c4e1afeda877fe5a7a3319790bf7c2 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -2805,9 +2805,11 @@ public class ServerGamePacketListenerImpl
+@@ -2791,9 +2791,11 @@ public class ServerGamePacketListenerImpl
                  trackedCount = this.lastSeenMessages.trackedMessagesCount();
              }
  
@@ -70,10 +70,10 @@ index e954bc9d6cd08029c73dfb42804de9570253d8c2..082d431352e71ea3830766d784163127
          }
          // Paper end - Ensure that client receives chat packets in the same order that we add into the message signature cache
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
-index 5bea5dcdaf8ee0a38cd8587a55845e940d8f4cac..4b5bce6f99f5d1ebaccb10498048cda7da97924e 100644
+index baec5d072b8f2d9379dba850b04e881e5267ca6b..53f1e8bfc436c4278cf955968e5bdd9feee98514 100644
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
-@@ -1155,7 +1155,7 @@ public abstract class PlayerList {
+@@ -1158,7 +1158,7 @@ public abstract class PlayerList {
      }
  
      public boolean verifyChatTrusted(final PlayerChatMessage message) {

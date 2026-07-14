@@ -5,7 +5,7 @@ Subject: [PATCH] Allow disabled tripwire redstone emissions
 
 
 diff --git a/net/minecraft/world/level/block/TripWireBlock.java b/net/minecraft/world/level/block/TripWireBlock.java
-index 83823edc4a943e006e3237ecb9198a571a681873..70a92f0c9e0ca757ef0143c657f4f85407f2d317 100644
+index 49510dc0ef82621953be8e485708872bd8b2b88b..d97b958859d47d3a531356e3d4c6f9e5a8337977 100644
 --- a/net/minecraft/world/level/block/TripWireBlock.java
 +++ b/net/minecraft/world/level/block/TripWireBlock.java
 @@ -127,7 +127,7 @@ public class TripWireBlock extends Block {
@@ -25,7 +25,7 @@ index 83823edc4a943e006e3237ecb9198a571a681873..70a92f0c9e0ca757ef0143c657f4f854
 +        // if (io.papermc.paper.configuration.GlobalConfiguration.get().blockUpdates.disableTripwireUpdates) return; // Paper - prevent tripwires from detecting collision // Citrus
          if (!new io.papermc.paper.event.entity.EntityInsideBlockEvent(entity.getBukkitEntity(), org.bukkit.craftbukkit.block.CraftBlock.at(level, pos)).callEvent()) { return; } // Paper - Add EntityInsideBlockEvent
          if (!level.isClientSide()) {
-             if (!state.getValue(POWERED)) {
+             if (!state.getValue(POWERED) && !level.getBlockTicks().hasScheduledTick(pos, this)) {
 @@ -171,7 +171,7 @@ public class TripWireBlock extends Block {
  
      @Override
@@ -45,7 +45,7 @@ index 83823edc4a943e006e3237ecb9198a571a681873..70a92f0c9e0ca757ef0143c657f4f854
          }
  
 diff --git a/net/minecraft/world/level/block/TripWireHookBlock.java b/net/minecraft/world/level/block/TripWireHookBlock.java
-index ad7a8c082c20b1ad30c520a94e9f902986ed6030..605f182129ac16b208961b131b57969b3823bf46 100644
+index 9d08ce61f964bb3115c708091549a233dabcf0e3..07a9a95a08c72e55f42f16b7905fe28af27aea4f 100644
 --- a/net/minecraft/world/level/block/TripWireHookBlock.java
 +++ b/net/minecraft/world/level/block/TripWireHookBlock.java
 @@ -201,7 +201,7 @@ public class TripWireHookBlock extends Block {

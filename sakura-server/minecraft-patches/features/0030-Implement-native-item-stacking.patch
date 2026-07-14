@@ -5,10 +5,10 @@ Subject: [PATCH] Implement native item stacking
 
 
 diff --git a/net/minecraft/world/entity/item/ItemEntity.java b/net/minecraft/world/entity/item/ItemEntity.java
-index cfda5b0fec85835f99b7361b5d46f0a9994407ef..9ea0ed845c872a006a15f67ff52bd6beff8bdc66 100644
+index ccc3cbd577565f485670068a16c6d5515d2c4b67..78476afa90a661eb0e4d162aa3c69505853af3bc 100644
 --- a/net/minecraft/world/entity/item/ItemEntity.java
 +++ b/net/minecraft/world/entity/item/ItemEntity.java
-@@ -253,7 +253,7 @@ public class ItemEntity extends Entity implements TraceableEntity {
+@@ -255,7 +255,7 @@ public class ItemEntity extends Entity implements TraceableEntity {
  
      private void mergeWithNeighbours() {
          if (this.isMergable()) {
@@ -17,7 +17,7 @@ index cfda5b0fec85835f99b7361b5d46f0a9994407ef..9ea0ed845c872a006a15f67ff52bd6be
              for (ItemEntity entity : this.level()
                  .getEntitiesOfClass(ItemEntity.class, this.getBoundingBox().inflate(radius, this.level().paperConfig().entities.behavior.onlyMergeItemsHorizontally ? 0 : radius - 0.5D, radius), other -> other != this && other.isMergable())) { // Spigot // Paper - configuration to only merge items horizontally
                  if (entity.isMergable()) {
-@@ -276,7 +276,7 @@ public class ItemEntity extends Entity implements TraceableEntity {
+@@ -278,7 +278,7 @@ public class ItemEntity extends Entity implements TraceableEntity {
  
      private boolean isMergable() {
          ItemStack item = this.getItem();
@@ -26,7 +26,7 @@ index cfda5b0fec85835f99b7361b5d46f0a9994407ef..9ea0ed845c872a006a15f67ff52bd6be
      }
  
      private void tryToMerge(final ItemEntity other) {
-@@ -292,19 +292,19 @@ public class ItemEntity extends Entity implements TraceableEntity {
+@@ -294,19 +294,19 @@ public class ItemEntity extends Entity implements TraceableEntity {
      }
  
      public static boolean areMergable(final ItemStack thisItemStack, final ItemStack otherItemStack) {
@@ -49,7 +49,7 @@ index cfda5b0fec85835f99b7361b5d46f0a9994407ef..9ea0ed845c872a006a15f67ff52bd6be
          toItem.setItem(newToStack);
      }
  
-@@ -316,11 +316,31 @@ public class ItemEntity extends Entity implements TraceableEntity {
+@@ -318,11 +318,31 @@ public class ItemEntity extends Entity implements TraceableEntity {
          // CraftBukkit end
          merge(toItem, toStack, fromStack);
          toItem.pickupDelay = Math.max(toItem.pickupDelay, fromItem.pickupDelay);
@@ -83,7 +83,7 @@ index cfda5b0fec85835f99b7361b5d46f0a9994407ef..9ea0ed845c872a006a15f67ff52bd6be
      @Override
      public boolean fireImmune() {
 diff --git a/net/minecraft/world/level/block/entity/HopperBlockEntity.java b/net/minecraft/world/level/block/entity/HopperBlockEntity.java
-index df345d4634fb4a9b282f837222f019980ff687e6..840e6e9a35813395118a2273005c545b90ddebbe 100644
+index 620196fbf068961eb6aef145c96c8a55c18c63ef..c33569e5864874792f1174a5bf7148de80def239 100644
 --- a/net/minecraft/world/level/block/entity/HopperBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/HopperBlockEntity.java
 @@ -682,9 +682,10 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
