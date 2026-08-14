@@ -1332,10 +1332,10 @@ index 162d7890f204315b0476467e757de5c9dd84aeca..d718bfb1714cb3a5554cecc4dc1ae0cf
                  PrimedTnt tnt = new PrimedTnt(level, event.getVelocity().getX(), event.getVelocity().getY(), event.getVelocity().getZ(), null); // CraftBukkit
                  level.addFreshEntity(tnt);
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 7e562db55edb18f1158998c759514983412fbe34..af3bad53d37574be54744e496ad888fdf65fd719 100644
+index 30043137f7a58d6c6efb2eeb6b085979d2bd8ddf..6785456c57505825c1a4073dd629ecc9d2580364 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -559,6 +559,17 @@ public abstract class Entity
+@@ -560,6 +560,17 @@ public abstract class Entity
          return this.deltaMovement;
      }
      // Sakura end - optimise cannon entities
@@ -1353,7 +1353,7 @@ index 7e562db55edb18f1158998c759514983412fbe34..af3bad53d37574be54744e496ad888fd
  
      public Entity(final EntityType<?> type, final Level level) {
          this.type = type;
-@@ -1111,7 +1122,7 @@ public abstract class Entity
+@@ -1112,7 +1123,7 @@ public abstract class Entity
      }
  
      protected void checkSupportingBlock(final boolean onGround, final @Nullable Vec3 movement) {
@@ -1362,7 +1362,7 @@ index 7e562db55edb18f1158998c759514983412fbe34..af3bad53d37574be54744e496ad888fd
              AABB boundingBox = this.getBoundingBox();
              AABB testArea = new AABB(boundingBox.minX, boundingBox.minY - 1.0E-6, boundingBox.minZ, boundingBox.maxX, boundingBox.minY, boundingBox.maxZ);
              Optional<BlockPos> supportingBlock = this.level.findSupportingBlock(this, testArea);
-@@ -1165,7 +1176,10 @@ public abstract class Entity
+@@ -1166,7 +1177,10 @@ public abstract class Entity
              this.verticalCollisionBelow = false;
              this.minorHorizontalCollision = false;
          } else {
@@ -1374,7 +1374,7 @@ index 7e562db55edb18f1158998c759514983412fbe34..af3bad53d37574be54744e496ad888fd
                  delta = this.limitPistonMovement(delta);
                  // Paper start - EAR 2
                  this.activatedTick = Math.max(this.activatedTick, net.minecraft.server.MinecraftServer.currentTick + 20);
-@@ -1179,7 +1193,7 @@ public abstract class Entity
+@@ -1180,7 +1194,7 @@ public abstract class Entity
              ProfilerFiller profiler = Profiler.get();
              profiler.push("move");
              if (this.stuckSpeedMultiplier.lengthSqr() > 1.0E-7) {
@@ -1383,7 +1383,7 @@ index 7e562db55edb18f1158998c759514983412fbe34..af3bad53d37574be54744e496ad888fd
                      delta = delta.multiply(this.stuckSpeedMultiplier);
                  }
  
-@@ -1197,10 +1211,22 @@ public abstract class Entity
+@@ -1198,10 +1212,22 @@ public abstract class Entity
              delta = this.maybeBackOffFromEdge(delta, moverType);
              Vec3 movement = this.collide(delta);
              double movementLength = movement.lengthSqr();
@@ -1410,7 +1410,7 @@ index 7e562db55edb18f1158998c759514983412fbe34..af3bad53d37574be54744e496ad888fd
                      BlockHitResult hitResult = this.level()
                          .clip(new ClipContext(this.position(), checkTo, ClipContext.Block.FALLDAMAGE_RESETTING, ClipContext.Fluid.WATER, this));
                      if (hitResult.getType() != HitResult.Type.MISS) {
-@@ -1209,9 +1235,15 @@ public abstract class Entity
+@@ -1210,9 +1236,15 @@ public abstract class Entity
                  }
  
                  Vec3 pos = this.position();
@@ -1429,7 +1429,7 @@ index 7e562db55edb18f1158998c759514983412fbe34..af3bad53d37574be54744e496ad888fd
              }
  
              profiler.pop();
-@@ -1241,9 +1273,17 @@ public abstract class Entity
+@@ -1242,9 +1274,17 @@ public abstract class Entity
              if (this.isRemoved()) {
                  profiler.pop();
              } else {
@@ -1449,7 +1449,7 @@ index 7e562db55edb18f1158998c759514983412fbe34..af3bad53d37574be54744e496ad888fd
                  // CraftBukkit start
                  if (this.horizontalCollision && this.getBukkitEntity() instanceof org.bukkit.entity.Vehicle) {
                      org.bukkit.entity.Vehicle vehicle = (org.bukkit.entity.Vehicle) this.getBukkitEntity();
-@@ -1396,7 +1436,7 @@ public abstract class Entity
+@@ -1397,7 +1437,7 @@ public abstract class Entity
          this.finalMovementsThisTick.clear();
          this.finalMovementsThisTick.addAll(this.movementThisTick);
          this.movementThisTick.clear();
@@ -1458,7 +1458,7 @@ index 7e562db55edb18f1158998c759514983412fbe34..af3bad53d37574be54744e496ad888fd
              this.finalMovementsThisTick.add(new Entity.Movement(this.oldPosition(), this.position()));
          } else if (this.finalMovementsThisTick.getLast().to.distanceToSqr(this.position()) > 9.9999994E-11F) {
              this.finalMovementsThisTick.add(new Entity.Movement(this.finalMovementsThisTick.getLast().to, this.position()));
-@@ -1678,7 +1718,7 @@ public abstract class Entity
+@@ -1679,7 +1719,7 @@ public abstract class Entity
          double y = movement.y;
          double z = movement.z;
  
@@ -1467,7 +1467,7 @@ index 7e562db55edb18f1158998c759514983412fbe34..af3bad53d37574be54744e496ad888fd
          if (y != 0.0) {
              y = this.scanY(currentBox, y, collisionsVoxel, collisionsBB);
              if (y != 0.0) {
-@@ -1807,7 +1847,7 @@ public abstract class Entity
+@@ -1808,7 +1848,7 @@ public abstract class Entity
              ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.COLLISION_FLAG_CHECK_BORDER, null
          );
          potentialCollisionsBB.addAll(entityAABBs);
@@ -1476,7 +1476,7 @@ index 7e562db55edb18f1158998c759514983412fbe34..af3bad53d37574be54744e496ad888fd
  
          final boolean collidedX = collided.x != movement.x;
          final boolean collidedY = collided.y != movement.y;
-@@ -1955,25 +1995,37 @@ public abstract class Entity
+@@ -1956,25 +1996,37 @@ public abstract class Entity
      private void checkInsideBlocks(final List<Entity.Movement> movements, final InsideBlockEffectApplier.StepBasedCollector effectCollector) {
          if (this.isAffectedByBlocks()) {
              LongSet visitedBlocks = this.visitedBlocks;
@@ -1519,7 +1519,7 @@ index 7e562db55edb18f1158998c759514983412fbe34..af3bad53d37574be54744e496ad888fd
                      this.checkInsideBlocks(movement.to(), movement.to(), effectCollector, visitedBlocks, 1);
                  }
              }
-@@ -1989,8 +2041,20 @@ public abstract class Entity
+@@ -1990,8 +2042,20 @@ public abstract class Entity
          final LongSet visitedBlocks,
          final int maxMovementIterations
      ) {
@@ -1542,7 +1542,7 @@ index 7e562db55edb18f1158998c759514983412fbe34..af3bad53d37574be54744e496ad888fd
          boolean debugEntityBlockIntersections = this.level instanceof ServerLevel serverLevel
              && serverLevel.getServer().debugSubscribers().hasAnySubscriberFor(DebugSubscriptions.ENTITY_BLOCK_INTERSECTIONS);
          AtomicInteger iterations = new AtomicInteger();
-@@ -1998,6 +2062,7 @@ public abstract class Entity
+@@ -1999,6 +2063,7 @@ public abstract class Entity
              from,
              to,
              deflatedBoundingBoxAtTarget,
@@ -1550,7 +1550,7 @@ index 7e562db55edb18f1158998c759514983412fbe34..af3bad53d37574be54744e496ad888fd
              (blockIntersection, iteration) -> {
                  if (!this.isAlive()) {
                      return false;
-@@ -2020,7 +2085,7 @@ public abstract class Entity
+@@ -2021,7 +2086,7 @@ public abstract class Entity
                      boolean insideBlock = intersectShape == Shapes.block()
                          || this.collidedWithShapeMovingFrom(from, to, intersectShape.move(new Vec3(blockIntersection)).toAabbs());
                      boolean insideFluid = this.collidedWithFluid(state.getFluidState(), blockIntersection, from, to);
@@ -1858,7 +1858,7 @@ index 2a4c928281c7e455d6f210aeb599881855d328f8..3e52336853f1948cddb64e19b04746c4
                  return false;
              }
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index 74e87b4ad2cfa473af7c641bea371eaa6710bc96..3e1e09503023c0dff064b4bcca51688741a06b35 100644
+index 266023ae0fa1437a7ee1fe2e2d19196ed40d93ac..68233cbf5f120e17fd0349cb796e8614de1c5a34 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
 @@ -847,6 +847,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl

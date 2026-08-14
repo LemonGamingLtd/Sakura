@@ -5,7 +5,7 @@ Subject: [PATCH] Configurable left shooting and adjusting limits
 
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 193b3554e6ec5371ca8396c2abb80412dbe48013..980091e75371812894d458a172301b88554ecb06 100644
+index 032696e8f0d6500fd446eb15ff84b3340e814d18..78e55afd8fd232914e651179998f2b443dafc9f1 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -182,6 +182,47 @@ public abstract class Entity
@@ -56,7 +56,7 @@ index 193b3554e6ec5371ca8396c2abb80412dbe48013..980091e75371812894d458a172301b88
  
      // Paper start - Share random for entities to make them more random
      public static RandomSource SHARED_RANDOM = new RandomRandomSource();
-@@ -1761,6 +1802,7 @@ public abstract class Entity
+@@ -1762,6 +1803,7 @@ public abstract class Entity
          }
  
          if (xSmaller && z != 0.0) {
@@ -64,7 +64,7 @@ index 193b3554e6ec5371ca8396c2abb80412dbe48013..980091e75371812894d458a172301b88
              z = this.scanZ(currentBox, z, collisionsVoxel, collisionsBB);
              if (z != 0.0) {
                  currentBox = ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.offsetZ(currentBox, z);
-@@ -1768,6 +1810,11 @@ public abstract class Entity
+@@ -1769,6 +1811,11 @@ public abstract class Entity
          }
  
          if (x != 0.0) {

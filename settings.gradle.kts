@@ -12,4 +12,4 @@ plugins {
 
 rootProject.name = "sakura"
 
-include("sakura-api", "sakura-server")
+include("sakura-api", "sakura-server", "sakura-checkstyle")

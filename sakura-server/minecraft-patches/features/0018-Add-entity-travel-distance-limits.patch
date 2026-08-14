@@ -5,7 +5,7 @@ Subject: [PATCH] Add entity travel distance limits
 
 
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index cd5fa9f0ef914d42a2987bdbcde89dd0d24ab390..f1c3e29116e45c7578f2e20a797de19496eabd18 100644
+index 455eee0e18c2e28f995359a06bc7d8d595d8c8e0..aaf81a8eed91c8667b6ff671f36d48737284f239 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -1413,6 +1413,11 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
@@ -21,7 +21,7 @@ index cd5fa9f0ef914d42a2987bdbcde89dd0d24ab390..f1c3e29116e45c7578f2e20a797de194
  
          for (Entity passenger : entity.getPassengers()) {
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index a8f62a76fccb09f895b6d8c9689698f46eb9b681..193b3554e6ec5371ca8396c2abb80412dbe48013 100644
+index febce8dd1c9b3eb9dfae730cafee97feff5d00b5..032696e8f0d6500fd446eb15ff84b3340e814d18 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -170,6 +170,18 @@ public abstract class Entity
@@ -43,7 +43,7 @@ index a8f62a76fccb09f895b6d8c9689698f46eb9b681..193b3554e6ec5371ca8396c2abb80412
  
      // Paper start - Share random for entities to make them more random
      public static RandomSource SHARED_RANDOM = new RandomRandomSource();
-@@ -621,6 +633,7 @@ public abstract class Entity
+@@ -622,6 +634,7 @@ public abstract class Entity
          this.setPos(0.0, 0.0, 0.0);
          this.eyeHeight = this.dimensions.eyeHeight();
          this.despawnTime = level == null || type == EntityTypes.PLAYER ? -1 : level.paperConfig().entities.spawning.despawnTime.getOrDefault(type, io.papermc.paper.configuration.type.number.IntOr.Disabled.DISABLED).or(-1); // Paper - entity despawn time limit
