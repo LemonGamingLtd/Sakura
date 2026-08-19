@@ -1,0 +1,11 @@
+--- a/net/minecraft/core/component/DataComponents.java
++++ b/net/minecraft/core/component/DataComponents.java
+@@ -108,7 +_,7 @@
+     static final EncoderCache ENCODER_CACHE = new EncoderCache(512);
+     public static final DataComponentType<CustomData> CUSTOM_DATA = register("custom_data", b -> b.persistent(CustomData.CODEC));
+     public static final DataComponentType<Integer> MAX_STACK_SIZE = register(
+-        "max_stack_size", b -> b.persistent(ExtraCodecs.intRange(1, 99)).networkSynchronized(ByteBufCodecs.VAR_INT)
++        "max_stack_size", b -> b.persistent(ExtraCodecs.intRange(1, 1024)).networkSynchronized(ByteBufCodecs.VAR_INT) // Citrus - Bump max range for encoding
+     );
+     public static final DataComponentType<Integer> MAX_DAMAGE = register(
+         "max_damage", b -> b.persistent(ExtraCodecs.POSITIVE_INT).networkSynchronized(ByteBufCodecs.VAR_INT)

@@ -1,5 +1,14 @@
 --- a/net/minecraft/world/item/ItemStack.java
 +++ b/net/minecraft/world/item/ItemStack.java
+@@ -112,7 +_,7 @@
+         subCodec -> RecordCodecBuilder.mapCodec(
+             i -> i.group(
+                     Item.CODEC_WITH_BOUND_COMPONENTS.fieldOf("id").forGetter(ItemStack::typeHolder),
+-                    ExtraCodecs.optionalAlwaysPresentFieldOf(ExtraCodecs.intRange(1, 99), "count", 1).forGetter(ItemStack::getCount),
++                    ExtraCodecs.optionalAlwaysPresentFieldOf(ExtraCodecs.intRange(1, 1024), "count", 1).forGetter(ItemStack::getCount), // Citrus - Bump max range for encoding
+                     DataComponentPatch.CODEC.optionalFieldOf("components", DataComponentPatch.EMPTY).forGetter(s -> s.components.asPatch())
+                 )
+                 .apply(i, ItemStack::new)
 @@ -250,6 +_,22 @@
          return !this.isEmpty() && this.components.hasNonDefault(type);
      }
