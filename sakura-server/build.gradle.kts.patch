@@ -48,7 +48,8 @@
  configurations.named(log4jPlugins.compileClasspathConfigurationName) {
      extendsFrom(configurations.compileClasspath.get())
  }
-@@ -109,7 +_,20 @@
+@@ -108,8 +_,18 @@
+     }
  }
  
 +repositories {
@@ -67,12 +68,12 @@
      implementation("ca.spottedleaf:leafpile:1.0.0")
      implementation("org.jline:jline-terminal-ffm:3.27.1") // use ffm on java 22+
      implementation("org.jline:jline-terminal-jni:3.27.1") // fall back to jni on java 21
-@@ -189,8 +_,8 @@
+@@ -155,8 +_,8 @@
      testImplementation("org.junit-pioneer:junit-pioneer:2.3.0") // CartesianTest
  
      // Spark
 -    implementation("me.lucko:spark-api:0.1-20240720.200737-2")
--    implementation("me.lucko:spark-paper:1.10.152")
+-    implementation("me.lucko:spark-paper:1.10.172")
 +    implementation("ltd.lemongaming.spark:spark-api:1.10.1-SNAPSHOT")
 +    implementation("ltd.lemongaming.spark:spark-paper:1.10.1-SNAPSHOT")
  }
