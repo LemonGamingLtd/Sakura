@@ -747,10 +747,10 @@ index 0000000000000000000000000000000000000000..a5fa2dd230319dca30ba0e23b725d8ec
 +    }
 +}
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index a4ca3935ed28007115ffdff2baf13b11c0501dc4..b6d31d44dc2c2d95c9e24e39a00f9ce088e85685 100644
+index e3af9663b747e3c623e3a4512a8f65e4e383ba6a..7f9eca187034b95155d1229ba1175836b19a7509 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
-@@ -1855,6 +1855,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1854,6 +1854,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              profiler.pop();
              profiler.pop();
              level.explosionDensityCache.clear(); // Paper - Optimize explosions
@@ -759,7 +759,7 @@ index a4ca3935ed28007115ffdff2baf13b11c0501dc4..b6d31d44dc2c2d95c9e24e39a00f9ce0
          this.isIteratingOverLevels = false; // Paper - Throw exception on world create while being ticked
  
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index ab6586872265a16d8c55351e98db2a939a726833..ee85586c824e37083699c740785c16dfcba966c9 100644
+index e1ce7d68f1985f06dd1af90d02ade908dedfee2b..e37841f02d68e7ce70e329df214f7b8f2f1c2e1d 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -742,6 +742,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
@@ -1048,7 +1048,7 @@ index 7f383fa36658d5b6027d8a048001c1095ace458b..284c07aa87833e11155bad78f9bfa0f0
  
      public void limitSize(final int maxStackSize) {
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index db1b24bb1e79419edbd4ccf6033a311a28f2709f..c01a425d517f994d503a36e532c38ddb10a965a0 100644
+index a527277c5eeec828dd8d9bc50cfdad5a2e1afbc9..6a7dad0b57bbe5662005e3d540e7e94b5c40da79 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
 @@ -835,6 +835,15 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
@@ -1067,7 +1067,7 @@ index db1b24bb1e79419edbd4ccf6033a311a28f2709f..c01a425d517f994d503a36e532c38ddb
  
      protected Level(
          final WritableLevelData levelData,
-@@ -1092,6 +1101,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+@@ -1093,6 +1102,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
              return false;
          }
  

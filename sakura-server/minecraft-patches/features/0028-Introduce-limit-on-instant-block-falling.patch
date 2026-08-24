@@ -16,25 +16,25 @@ index fe1294fa83e1a3c42cbbd762d531b18b2a8cfe89..92b01f8941aec04a3c2cef369d7e6c1e
      }
  }
 diff --git a/net/minecraft/world/entity/item/FallingBlockEntity.java b/net/minecraft/world/entity/item/FallingBlockEntity.java
-index e86a30a196589d2d696d8374fb8b2021d0e647c7..c264cd3da0a9537acb4ab6e08cb2222091eee709 100644
+index c1672408340fa8c01226af22ae11de8bf0f0d826..8704cfdc7408d0166803a91b18a539a16398e25a 100644
 --- a/net/minecraft/world/entity/item/FallingBlockEntity.java
 +++ b/net/minecraft/world/entity/item/FallingBlockEntity.java
-@@ -213,6 +213,13 @@ public class FallingBlockEntity extends Entity implements me.samsuik.sakura.enti
+@@ -235,6 +235,13 @@ public class FallingBlockEntity extends Entity implements me.samsuik.sakura.enti
              state.hasProperty(BlockStateProperties.WATERLOGGED) ? state.setValue(BlockStateProperties.WATERLOGGED, false) : state
          );
          if (!org.bukkit.craftbukkit.event.CraftEventFactory.callEntityChangeBlockEvent(entity, pos, state.getFluidState().createLegacyBlock())) return entity; // CraftBukkit
 +
 +        // Sakura start - limit instant block falling
-+        final int instantBlockFallLimit = level.sakuraConfig().cannons.restrictions.instantBlockFallLimit.or(-1);
-+        if (instantBlockFallLimit > 1 && level.fallingBlockColumnLimits.count(pos) >= instantBlockFallLimit && level instanceof ServerLevel serverLevel) {
++        final int instantBlockFallingLimit = level.sakuraConfig().cannons.restrictions.instantBlockFallingLimit.or(-1);
++        if (instantBlockFallingLimit > 1 && level.fallingBlockColumnLimits.count(pos) >= instantBlockFallingLimit && level instanceof ServerLevel serverLevel) {
 +            serverLevel.getBlockTicks().clearArea(new net.minecraft.world.level.levelgen.structure.BoundingBox(pos.above()));
 +        }
 +        // Sakura end - limit instant block falling
          // Sakura start - configure server mechanics
-         if (entity.mechanicsTarget().atLeast(me.samsuik.sakura.mechanics.MechanicVersion.v1_18_2)) {
+         if (entity.mechanicsTarget.atLeast(me.samsuik.sakura.mechanics.MechanicVersion.v1_18_2)) {
              level.setBlock(pos, state.getFluidState().createLegacyBlock(), Block.UPDATE_ALL);
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index 6b9ee397aca75957a4bc253a2c171b4893f84729..b5d890339e086f94886f035416315d3b1de93699 100644
+index 56c65f424b314a0a62593d3a14b18551c5991bb0..919fbe437885e88dea4eae5ed4ca22f6042d09f9 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
 @@ -855,6 +855,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl

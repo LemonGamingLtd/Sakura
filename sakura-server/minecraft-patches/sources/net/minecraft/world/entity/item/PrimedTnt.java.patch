@@ -1,6 +1,31 @@
 --- a/net/minecraft/world/entity/item/PrimedTnt.java
 +++ b/net/minecraft/world/entity/item/PrimedTnt.java
-@@ -67,6 +_,7 @@
+@@ -64,9 +_,32 @@
+     public float explosionPower = 4.0F;
+     public boolean isIncendiary = false; // CraftBukkit
+ 
++    // Sakura start - configure cannon mechanics
++    public int heightLimit;
++
++    @Override
++    public final void sakura$addedToWorld() {
++        final me.samsuik.sakura.configuration.local.CachedLocalConfiguration config = this.level().localConfig().at(this.blockPosition());
++        switch (config.tntSpread) {
++            case NONE -> this.setDeltaMovement(0.0, 0.0, 0.0);
++            case Y -> this.setDeltaMovement(this.getDeltaMovement().multiply(0.0, 1.0, 0.0));
++        }
++
++        if (this.pushedByFluid) { // default
++            this.pushedByFluid = config.tntFlowsInWater;
++        }
++
++        this.heightLimit = config.heightLimit;
++        if (this.heightLimit == Integer.MIN_VALUE) {
++            this.heightLimit = this.level().paperConfig().fixes.tntEntityHeightNerf.or(Integer.MIN_VALUE);
++        }
++    }
++    // Sakura end - configure cannon mechanics
++
      public PrimedTnt(final EntityType<? extends PrimedTnt> type, final Level level) {
          super(type, level);
          this.blocksBuilding = true;
@@ -8,20 +33,7 @@
      }
  
      public PrimedTnt(final Level level, final double x, final double y, final double z, final @Nullable LivingEntity owner) {
-@@ -79,6 +_,12 @@
-         this.yo = y;
-         this.zo = z;
-         this.owner = EntityReference.of(owner);
-+        // Sakura start - configure cannon mechanics
-+        switch (level.sakuraConfig().cannons.mechanics.tntSpread) {
-+            case NONE -> this.setDeltaMovement(0.0, 0.0, 0.0);
-+            case Y -> this.setDeltaMovement(this.getDeltaMovement().multiply(0.0, 1.0, 0.0));
-+        }
-+        // Sakura end - configure cannon mechanics
-     }
- 
-     @Override
-@@ -104,7 +_,7 @@
+@@ -104,13 +_,13 @@
  
      @Override
      public void tick() {
@@ -30,6 +42,13 @@
          this.handlePortal();
          this.applyGravity();
          this.move(MoverType.SELF, this.getDeltaMovement());
+         this.applyEffectsFromBlocks();
+         // Paper start - Configurable TNT height nerf
+-        if (this.level().paperConfig().fixes.tntEntityHeightNerf.test(v -> this.getY() > v)) {
++        if (this.heightLimit != Integer.MIN_VALUE && this.getY() > this.heightLimit) { // Sakura - configure cannon mechanics
+             this.discard(EntityRemoveEvent.Cause.OUT_OF_WORLD);
+             return;
+         }
 @@ -136,8 +_,16 @@
                  this.level().addParticle(ParticleTypes.SMOKE, this.getX(), this.getY() + 0.5, this.getZ(), 0.0, 0.0, 0.0);
              }
@@ -48,12 +67,3 @@
              this.hurtMarked = true;
              this.needsSync = true;
          }
-@@ -241,7 +_,7 @@
-     // Paper start - Option to prevent TNT from moving in water
-     @Override
-     public boolean isPushedByFluid() {
--        return !this.level().paperConfig().fixes.preventTntFromMovingInWater && super.isPushedByFluid();
-+        return !this.level().paperConfig().fixes.preventTntFromMovingInWater && this.level().sakuraConfig().cannons.mechanics.tntFlowsInWater  && super.isPushedByFluid(); // Sakura - configure cannon mechanics
-     }
-     // Paper end - Option to prevent TNT from moving in water
- }

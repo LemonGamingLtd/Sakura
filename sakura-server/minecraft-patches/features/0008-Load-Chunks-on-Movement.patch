@@ -62,10 +62,10 @@ index fed2a68bf1a9e9a169c0235e129346b9b624170b..b4361dd056b9b8cc94d39e681206081b
      private static TicketType register(final String name, final long timeout, final @TicketType.Flags int flags) {
          return Registry.register(BuiltInRegistries.TICKET_TYPE, name, new TicketType(timeout, flags));
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index be68c37c006e87cc1f1976c8a6124eebb03e3b59..4ff0336386ff42663963c53d3e8c7d060180b852 100644
+index a9e24f2472709382e55790a8cb787a4f42901695..1b2bc561b8f1a4a419a6fa2809d2f1da3335c4be 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -570,6 +570,19 @@ public abstract class Entity
+@@ -568,6 +568,19 @@ public abstract class Entity
          return this.mechanicsTarget;
      }
      // Sakura end - configure server mechanics
@@ -85,7 +85,7 @@ index be68c37c006e87cc1f1976c8a6124eebb03e3b59..4ff0336386ff42663963c53d3e8c7d06
  
      public Entity(final EntityType<?> type, final Level level) {
          this.type = type;
-@@ -1760,7 +1773,7 @@ public abstract class Entity
+@@ -1758,7 +1771,7 @@ public abstract class Entity
              collisionBox,
              collisionsVoxel,
              collisionsBB,
@@ -94,7 +94,7 @@ index be68c37c006e87cc1f1976c8a6124eebb03e3b59..4ff0336386ff42663963c53d3e8c7d06
              null
          );
  
-@@ -1844,7 +1857,7 @@ public abstract class Entity
+@@ -1842,7 +1855,7 @@ public abstract class Entity
  
          ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.getCollisionsForBlocksOrWorldBorder(
              this.level, (Entity)(Object)this, initialCollisionBox, potentialCollisionsVoxel, potentialCollisionsBB,
@@ -103,7 +103,7 @@ index be68c37c006e87cc1f1976c8a6124eebb03e3b59..4ff0336386ff42663963c53d3e8c7d06
          );
          potentialCollisionsBB.addAll(entityAABBs);
          final Vec3 collided = ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.performCollisions(movement, currentBox, potentialCollisionsVoxel, potentialCollisionsBB, this.mechanicsTarget); // Sakura - configure server mechanics
-@@ -5473,13 +5486,14 @@ public abstract class Entity
+@@ -5477,13 +5490,14 @@ public abstract class Entity
      @Override
      public boolean shouldBeSaved() {
          return (this.removalReason == null || this.removalReason.shouldSave())
@@ -120,22 +120,22 @@ index be68c37c006e87cc1f1976c8a6124eebb03e3b59..4ff0336386ff42663963c53d3e8c7d06
  
      public boolean mayInteract(final ServerLevel level, final BlockPos pos) {
 diff --git a/net/minecraft/world/entity/item/FallingBlockEntity.java b/net/minecraft/world/entity/item/FallingBlockEntity.java
-index 44e83e252d3755976ed9ccd2d9b83ba3de19175b..5aae285787a775445cc67021c3c0dc86cddc29df 100644
+index 52743ffcf99d0f94c600593dbde60d5d2b465451..913fd9bfdc73fee0980602c3982aba8adea026ee 100644
 --- a/net/minecraft/world/entity/item/FallingBlockEntity.java
 +++ b/net/minecraft/world/entity/item/FallingBlockEntity.java
-@@ -182,6 +182,7 @@ public class FallingBlockEntity extends Entity implements me.samsuik.sakura.enti
-         this.updateMechanicsTarget();
-         this.eyeHeight = this.mechanicsTarget().isLegacy() ? 0.49f : this.eyeHeight;
-         // Sakura end - configure server mechanics
+@@ -204,6 +204,7 @@ public class FallingBlockEntity extends Entity implements me.samsuik.sakura.enti
+         this.dropItem = level.sakuraConfig().cannons.sand.dropItems; // Sakura - configure falling blocks dropping items
+         this.cannonEntity = true; // Sakura - add cannon entity field
+         this.sakuraEntityController = level.sakuraEntityManager.createController(this); // Sakura - optimise cannon entities
 +        this.loadChunks = level.sakuraConfig().cannons.loadChunks; // Sakura - load chunks on movement
      }
  
      public FallingBlockEntity(final Level level, final double x, final double y, final double z, final BlockState blockState) {
 diff --git a/net/minecraft/world/entity/item/PrimedTnt.java b/net/minecraft/world/entity/item/PrimedTnt.java
-index 7de5664c528f4efc48d6e5197da0449a0b50b95f..2a128fa78eaf17ec027854608736588333e82f45 100644
+index 67b62583f16c3fb6b40ac1d7f17d857fb6ddd19a..2fb054c206beee6a4d46a7c0059b81882e0805d2 100644
 --- a/net/minecraft/world/entity/item/PrimedTnt.java
 +++ b/net/minecraft/world/entity/item/PrimedTnt.java
-@@ -131,6 +131,7 @@ public class PrimedTnt extends Entity implements TraceableEntity, me.samsuik.sak
+@@ -162,6 +162,7 @@ public class PrimedTnt extends Entity implements TraceableEntity, me.samsuik.sak
          this.blocksBuilding = true;
          this.cannonEntity = true; // Sakura - add cannon entity field
          this.sakuraEntityController = level.sakuraEntityManager.createController(this); // Sakura - optimise cannon entities

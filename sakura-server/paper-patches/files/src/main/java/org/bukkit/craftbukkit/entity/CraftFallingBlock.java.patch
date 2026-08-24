@@ -4,7 +4,7 @@
          super(server, entity);
      }
  
-+    // Sakura start - falling block height parity api
++    // Sakura start - height parity api
 +    @Override
 +    public final void setHeightParity(final boolean heightParity) {
 +        this.getHandle().heightParity = heightParity;
@@ -14,7 +14,7 @@
 +    public final boolean getHeightParity() {
 +        return this.getHandle().heightParity;
 +    }
-+    // Sakura end - falling block height parity api
++    // Sakura end - height parity api
 +
      @Override
      public FallingBlockEntity getHandle() {

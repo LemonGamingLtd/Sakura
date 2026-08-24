@@ -9,6 +9,7 @@ import io.papermc.paper.configuration.type.number.DoubleOr;
 import io.papermc.paper.configuration.type.number.IntOr;
 import it.unimi.dsi.fastutil.objects.Reference2ObjectOpenHashMap;
 import me.samsuik.sakura.SakuraFeatureHooks;
+import me.samsuik.sakura.entity.TntSpread;
 import me.samsuik.sakura.entity.merge.MergeLevel;
 import me.samsuik.sakura.explosion.durable.DurableMaterial;
 import me.samsuik.sakura.mechanics.MinecraftMechanicsTarget;
@@ -31,7 +32,7 @@ import java.util.Set;
 
 @SuppressWarnings({"FieldCanBeLocal", "FieldMayBeFinal", "NotNullFieldNotInitialized", "InnerClassMayBeStatic", "RedundantSuppression"})
 public final class WorldConfiguration extends ConfigurationPart {
-    static final int CURRENT_VERSION = 12;
+    static final int CURRENT_VERSION = 13;
 
     private transient final Identifier worldIdentifier;
     WorldConfiguration(final Identifier worldIdentifier) {
@@ -50,10 +51,7 @@ public final class WorldConfiguration extends ConfigurationPart {
         public MergeLevel mergeLevel = MergeLevel.LENIENT;
         public boolean tntAndSandAffectedByBubbleColumns = true;
 
-        @NestedSetting({"treat-collidable-blocks-as-full", "while-moving"})
-        public boolean treatAllBlocksAsFullWhenMoving = false;
-        @NestedSetting({"treat-collidable-blocks-as-full", "moving-faster-than"})
-        public double treatAllBlocksAsFullWhenMovingFasterThan = 64.0;
+        public boolean collideWithNonFullBlocks = false;
         public boolean loadChunks = false;
 
         public Restrictions restrictions = new Restrictions();
@@ -63,12 +61,12 @@ public final class WorldConfiguration extends ConfigurationPart {
             @Comment("The maximum amount of blocks that a cannon can adjust")
             public IntOr.Disabled maxAdjustDistance = IntOr.Disabled.DISABLED;
             @Comment("The maximum amount of falling blocks that can fall instantly")
-            public IntOr.Disabled instantBlockFallLimit = IntOr.Disabled.DISABLED;
+            public IntOr.Disabled instantBlockFallingLimit = IntOr.Disabled.DISABLED;
         }
 
         public Tnt tnt = new Tnt();
         public final class Tnt extends ConfigurationPart {
-            public boolean forcePositionUpdates;
+            public boolean forcePositionUpdates = false;
         }
 
         public Sand sand = new Sand();
@@ -76,11 +74,11 @@ public final class WorldConfiguration extends ConfigurationPart {
             public boolean despawnInsideMovingPistons = true;
             public boolean concreteSolidifyInWater = true;
 
-            @NestedSetting({"prevent-stacking", "against-border"})
-            public boolean preventAgainstBorder = false;
-            @NestedSetting({"prevent-stacking", "world-height"})
-            public boolean preventAtWorldHeight = false;
+            public boolean canStackAgainstBorder = true;
+            public boolean canStackAtWorldHeight = true;
             public boolean dropItems = true;
+
+            public boolean replaceBlocksWithoutCollision = false;
         }
 
         public Explosion explosion = new Explosion();
@@ -123,11 +121,12 @@ public final class WorldConfiguration extends ConfigurationPart {
 
         public Mechanics mechanics = new Mechanics();
         public final class Mechanics extends ConfigurationPart {
-            public TNTSpread tntSpread = TNTSpread.ALL;
+            public TntSpread tntSpread = TntSpread.ALL;
             public boolean tntFlowsInWater = true;
-            public boolean fallingBlockParity = false;
+            public boolean heightParity = false;
+            public boolean floatingPointFix = false;
+            public IntOr.Disabled heightLimit = IntOr.Disabled.DISABLED;
             public MinecraftMechanicsTarget mechanicsTarget = MinecraftMechanicsTarget.latest();
-            public boolean fallingBlockFloatingPointFix = false;
 
             @Comment(
                 "Replaces the optimize-explosions option in the paper config." +
@@ -138,10 +137,6 @@ public final class WorldConfiguration extends ConfigurationPart {
             public boolean useBrokenPaperExplosionBehaviour(final Level level) {
                 return level.paperConfig().environment.optimizeExplosions && this.mechanicsTarget.isLegacy()
                     || this.brokenPaperExplosionBehaviour;
-            }
-
-            public enum TNTSpread {
-                ALL, Y, NONE;
             }
         }
     }
@@ -234,12 +229,13 @@ public final class WorldConfiguration extends ConfigurationPart {
         public boolean posesShrinkCollisionBox = true;
         public boolean fishingHooksPullEntities = true;
         public boolean preventPlacingSpawnEggsInsideBlocks = false;
+
+        @Comment("Collide with cobwebs when there's a full block on top")
         public boolean collideWithCobwebs = false;
     }
 
     public Entity entity;
     public final class Entity extends ConfigurationPart {
-        @Comment("Only modify if you know what you're doing")
         public boolean disableMobAi = false;
         public boolean waterSensitivity = true;
         public boolean instantDeathAnimation = false;
@@ -252,13 +248,13 @@ public final class WorldConfiguration extends ConfigurationPart {
             public BlastResistant blastResistant = new BlastResistant();
             public final class BlastResistant extends ConfigurationPart {
                 public Set<Item> items = Set.of();
-                public boolean whitelistOverBlacklist = true;
+                public boolean whitelist = false;
             }
 
             public ExplosionItemDrops explosionItemDrops = new ExplosionItemDrops();
             public final class ExplosionItemDrops extends ConfigurationPart {
                 public Set<Item> items = Set.of();
-                public boolean whitelistOverBlacklist = false;
+                public boolean whitelist = false;
             }
         }
 

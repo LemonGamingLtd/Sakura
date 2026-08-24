@@ -5,10 +5,10 @@ Subject: [PATCH] Optimise cannon entity movement
 
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index fb95057be780a24e7eae784fbd5e675f3830cd2d..7e562db55edb18f1158998c759514983412fbe34 100644
+index 26835155be02d276c582ca46ea72fbadb6c69e6b..c5a58a1c0b5d239797c2dd1198360dd2d172fc94 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -1630,6 +1630,149 @@ public abstract class Entity
+@@ -1632,6 +1632,149 @@ public abstract class Entity
          return colliders.isEmpty() ? maxDistance : -Shapes.collide(Direction.Axis.Y, aabb, colliders, -maxDistance);
      }
  
@@ -159,10 +159,10 @@ index fb95057be780a24e7eae784fbd5e675f3830cd2d..7e562db55edb18f1158998c759514983
          // Paper start - optimise collisions
          final boolean xZero = movement.x == 0.0;
 diff --git a/net/minecraft/world/entity/item/FallingBlockEntity.java b/net/minecraft/world/entity/item/FallingBlockEntity.java
-index a6d9e875afae199a96a548a43d8a544526d0a27a..c3ab6a065906cb1561bd4c804dfad4f5a765354a 100644
+index 085e25ae5dcacdde7540cda53e0d50a246749d8e..e21126fd7e44520fd6ba200d0b1c634ae7ba1e32 100644
 --- a/net/minecraft/world/entity/item/FallingBlockEntity.java
 +++ b/net/minecraft/world/entity/item/FallingBlockEntity.java
-@@ -153,6 +153,12 @@ public class FallingBlockEntity extends Entity implements me.samsuik.sakura.enti
+@@ -174,6 +174,12 @@ public class FallingBlockEntity extends Entity implements me.samsuik.sakura.enti
          return this.sakuraEntityController.getLinks().getHead().entity.getDeltaMovement();
      }
      // Sakura end - optimise cannon entities
@@ -176,10 +176,10 @@ index a6d9e875afae199a96a548a43d8a544526d0a27a..c3ab6a065906cb1561bd4c804dfad4f5
      public FallingBlockEntity(final EntityType<? extends FallingBlockEntity> type, final Level level) {
          super(type, level);
 diff --git a/net/minecraft/world/entity/item/PrimedTnt.java b/net/minecraft/world/entity/item/PrimedTnt.java
-index ae3cb9d612b3a21d3275c6be990931f09094d58f..780eacbc11499b9e706e724c347ceeb65f407dfc 100644
+index 7d43e403622bfaac967e8bdde7ecebd402d0106c..692233673ec59fec1fdf0b3a7f8ec1b5779fa1af 100644
 --- a/net/minecraft/world/entity/item/PrimedTnt.java
 +++ b/net/minecraft/world/entity/item/PrimedTnt.java
-@@ -101,6 +101,12 @@ public class PrimedTnt extends Entity implements TraceableEntity, me.samsuik.sak
+@@ -122,6 +122,12 @@ public class PrimedTnt extends Entity implements TraceableEntity, me.samsuik.sak
          return this.sakuraEntityController.getLinks().getHead().entity.getDeltaMovement();
      }
      // Sakura end - optimise cannon entities
