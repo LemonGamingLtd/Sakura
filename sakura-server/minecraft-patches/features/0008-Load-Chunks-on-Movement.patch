@@ -62,10 +62,10 @@ index fed2a68bf1a9e9a169c0235e129346b9b624170b..b4361dd056b9b8cc94d39e681206081b
      private static TicketType register(final String name, final long timeout, final @TicketType.Flags int flags) {
          return Registry.register(BuiltInRegistries.TICKET_TYPE, name, new TicketType(timeout, flags));
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 21fc1acb0513f1857adec961d8b6176509d3be64..c1f7ceac22988f70af444b35ade6da5a335ec264 100644
+index be68c37c006e87cc1f1976c8a6124eebb03e3b59..4ff0336386ff42663963c53d3e8c7d060180b852 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -571,6 +571,19 @@ public abstract class Entity
+@@ -570,6 +570,19 @@ public abstract class Entity
          return this.mechanicsTarget;
      }
      // Sakura end - configure server mechanics
@@ -85,7 +85,7 @@ index 21fc1acb0513f1857adec961d8b6176509d3be64..c1f7ceac22988f70af444b35ade6da5a
  
      public Entity(final EntityType<?> type, final Level level) {
          this.type = type;
-@@ -1761,7 +1774,7 @@ public abstract class Entity
+@@ -1760,7 +1773,7 @@ public abstract class Entity
              collisionBox,
              collisionsVoxel,
              collisionsBB,
@@ -94,7 +94,7 @@ index 21fc1acb0513f1857adec961d8b6176509d3be64..c1f7ceac22988f70af444b35ade6da5a
              null
          );
  
-@@ -1845,7 +1858,7 @@ public abstract class Entity
+@@ -1844,7 +1857,7 @@ public abstract class Entity
  
          ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.getCollisionsForBlocksOrWorldBorder(
              this.level, (Entity)(Object)this, initialCollisionBox, potentialCollisionsVoxel, potentialCollisionsBB,
@@ -103,7 +103,7 @@ index 21fc1acb0513f1857adec961d8b6176509d3be64..c1f7ceac22988f70af444b35ade6da5a
          );
          potentialCollisionsBB.addAll(entityAABBs);
          final Vec3 collided = ca.spottedleaf.moonrise.patches.collisions.CollisionUtil.performCollisions(movement, currentBox, potentialCollisionsVoxel, potentialCollisionsBB, this.mechanicsTarget); // Sakura - configure server mechanics
-@@ -5480,13 +5493,14 @@ public abstract class Entity
+@@ -5473,13 +5486,14 @@ public abstract class Entity
      @Override
      public boolean shouldBeSaved() {
          return (this.removalReason == null || this.removalReason.shouldSave())

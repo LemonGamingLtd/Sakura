@@ -5,10 +5,10 @@ Subject: [PATCH] Optimise cannon entity movement
 
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index ff502c910e4afbcb12f3989354cf3d13bd786901..30043137f7a58d6c6efb2eeb6b085979d2bd8ddf 100644
+index fb95057be780a24e7eae784fbd5e675f3830cd2d..7e562db55edb18f1158998c759514983412fbe34 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -1631,6 +1631,149 @@ public abstract class Entity
+@@ -1630,6 +1630,149 @@ public abstract class Entity
          return colliders.isEmpty() ? maxDistance : -Shapes.collide(Direction.Axis.Y, aabb, colliders, -maxDistance);
      }
  

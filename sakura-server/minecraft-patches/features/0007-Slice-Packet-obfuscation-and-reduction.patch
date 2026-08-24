@@ -158,10 +158,10 @@ index 60af82925d2f7e605bf7340cf01f1a5668f4d725..8597280fbc49c7d74bec872a62355dbf
  
          if (this.entity instanceof LivingEntity livingEntity) {
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 6785456c57505825c1a4073dd629ecc9d2580364..21fc1acb0513f1857adec961d8b6176509d3be64 100644
+index af3bad53d37574be54744e496ad888fdf65fd719..d49a10c803c7a28be4b5bc8f9d13a068c5a12e80 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -4019,7 +4019,7 @@ public abstract class Entity
+@@ -4017,7 +4017,7 @@ public abstract class Entity
              }
              return;
          }
@@ -201,7 +201,7 @@ index f9e602bede7e3cbb96e6a245ec7df55839390a9a..7de5664c528f4efc48d6e5197da0449a
  
      public int getFuse() {
 diff --git a/net/minecraft/world/entity/player/Player.java b/net/minecraft/world/entity/player/Player.java
-index 9cd2631cd2c8c539c9be44fd5bbcd0d8c5b7be00..5ef7f78d2186c1768ac8540e03d4be02bfc385c5 100644
+index b2953cd294364127a81fb3f12c13eced8fc64c49..7835ed5b20772e02a8e8647626d288b0a233f518 100644
 --- a/net/minecraft/world/entity/player/Player.java
 +++ b/net/minecraft/world/entity/player/Player.java
 @@ -573,7 +573,7 @@ public abstract class Player extends Avatar implements ContainerUser {

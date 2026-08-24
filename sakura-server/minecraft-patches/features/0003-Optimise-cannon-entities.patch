@@ -5,7 +5,7 @@ Subject: [PATCH] Optimise cannon entities
 
 
 diff --git a/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java b/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java
-index 5b7ed8e5067683143c99473a126e17baa531903c..82b30996d6568ee8d8b3e58c5cebd00c34dff459 100644
+index 8d9ce3d301d5f7e4106587ae00adb8dd5b8b6f88..8e5d6cc4cf66be6e5dcf87b0736555221166a277 100644
 --- a/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java
 +++ b/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java
 @@ -66,6 +66,18 @@ public final class ChunkEntitySlices {
@@ -785,7 +785,7 @@ index 0000000000000000000000000000000000000000..86c24fd87be41aaa9c3073997ba8e3bc
 +    }
 +}
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index f8b0a94032c51b15826cf1801f67b8c4c7086535..20a5fc881bccd59c8cd426296e59899cd43d2285 100644
+index e1dba14a6c07db928ebdfe9c2f4b726f92a81565..4b2389e85b9d3c129a00cafa80910e1fd06b4aa3 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -1402,10 +1402,17 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
@@ -819,10 +819,10 @@ index f8b0a94032c51b15826cf1801f67b8c4c7086535..20a5fc881bccd59c8cd426296e59899c
          // CraftBukkit start
          if (explosion.wasCanceled) {
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index c6d367e815149cb9e017f4fbe93fe30460230f81..ff502c910e4afbcb12f3989354cf3d13bd786901 100644
+index 57eefeb78c500d6f306aa066e55ef5306511d2e7..7e3afb31103d3d83e7f50a7e79b8ee3fad8af8a2 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -551,6 +551,15 @@ public abstract class Entity
+@@ -550,6 +550,15 @@ public abstract class Entity
      // Paper end - optimise entity tracker
      public boolean pushedByFluid = true; // Sakura - entity pushed by fluid api
      public boolean cannonEntity = false; // Sakura - add cannon entity field
@@ -838,7 +838,7 @@ index c6d367e815149cb9e017f4fbe93fe30460230f81..ff502c910e4afbcb12f3989354cf3d13
  
      public Entity(final EntityType<?> type, final Level level) {
          this.type = type;
-@@ -5215,6 +5224,12 @@ public abstract class Entity
+@@ -5212,6 +5221,12 @@ public abstract class Entity
              this.stopRiding();
          }
  
@@ -993,7 +993,7 @@ index 04f8b7435b1d316d19d5a70aa9fafab9515c67a3..ae3cb9d612b3a21d3275c6be990931f0
  
      public PrimedTnt(final Level level, final double x, final double y, final double z, final @Nullable LivingEntity owner) {
 diff --git a/net/minecraft/world/entity/monster/cubemob/SulfurCube.java b/net/minecraft/world/entity/monster/cubemob/SulfurCube.java
-index b770ec7e8a2168d5a9b161c8ef83ec262ea93409..5c901a0477f60eb7177e0cbcc1799e537b9799c1 100644
+index 5df19b714151b2e9b0d842c8b5d63939f87dd715..c250ddb59d722172c8cbf3025e7a632afc4f4862 100644
 --- a/net/minecraft/world/entity/monster/cubemob/SulfurCube.java
 +++ b/net/minecraft/world/entity/monster/cubemob/SulfurCube.java
 @@ -77,7 +77,7 @@ import net.minecraft.world.phys.Vec2;
@@ -1075,7 +1075,7 @@ index b770ec7e8a2168d5a9b161c8ef83ec262ea93409..5c901a0477f60eb7177e0cbcc1799e53
                  if (archetype.buoyant()) {
                      this.floatsInLiquids = true;
                  }
-@@ -898,6 +948,7 @@ public class SulfurCube extends AbstractCubeMob implements Bucketable, Shearable
+@@ -884,6 +934,7 @@ public class SulfurCube extends AbstractCubeMob implements Bucketable, Shearable
      @Override
      public void knockback(final double power, double xd, double zd, final DamageSource source, final float damage, final boolean comesFromEffect, @Nullable Entity attacker, io.papermc.paper.event.entity.EntityKnockbackEvent.Cause eventCause) { // Paper - knockback events
          if (source.getEntity() != null && this.hasBodyItem()) {

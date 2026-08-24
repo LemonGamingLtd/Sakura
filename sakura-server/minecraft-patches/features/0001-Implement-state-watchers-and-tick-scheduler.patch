@@ -747,10 +747,10 @@ index 0000000000000000000000000000000000000000..a5fa2dd230319dca30ba0e23b725d8ec
 +    }
 +}
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index e3af9663b747e3c623e3a4512a8f65e4e383ba6a..7f9eca187034b95155d1229ba1175836b19a7509 100644
+index a4ca3935ed28007115ffdff2baf13b11c0501dc4..b6d31d44dc2c2d95c9e24e39a00f9ce088e85685 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
-@@ -1854,6 +1854,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1855,6 +1855,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              profiler.pop();
              profiler.pop();
              level.explosionDensityCache.clear(); // Paper - Optimize explosions
@@ -759,7 +759,7 @@ index e3af9663b747e3c623e3a4512a8f65e4e383ba6a..7f9eca187034b95155d1229ba1175836
          this.isIteratingOverLevels = false; // Paper - Throw exception on world create while being ticked
  
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 1bdedab58b9b563236c6b6dce7d39c6509268c29..a9212312fcf6462436ed300a8a4e6e4a7d7a0b70 100644
+index ab6586872265a16d8c55351e98db2a939a726833..ee85586c824e37083699c740785c16dfcba966c9 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -742,6 +742,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
