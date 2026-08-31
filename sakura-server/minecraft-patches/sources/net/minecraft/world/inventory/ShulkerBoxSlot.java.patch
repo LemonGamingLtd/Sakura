@@ -1,0 +1,10 @@
+--- a/net/minecraft/world/inventory/ShulkerBoxSlot.java
++++ b/net/minecraft/world/inventory/ShulkerBoxSlot.java
+@@ -10,6 +_,6 @@
+ 
+     @Override
+     public boolean mayPlace(final ItemStack itemStack) {
+-        return itemStack.getItem().canFitInsideContainerItems();
++        return !(itemStack.getItem() instanceof net.minecraft.world.item.BlockItem blockItem) || !(blockItem.getBlock() instanceof net.minecraft.world.level.block.ShulkerBoxBlock); // itemStack.getItem().canFitInsideContainerItems(); // Citrus
+     }
+ }
