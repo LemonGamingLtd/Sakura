@@ -70,10 +70,10 @@ index 92e9c44c611b45dddddfc6f0a751c14c849e7591..712f73796468f9c248d79f0681331411
          }
          // Paper end - Ensure that client receives chat packets in the same order that we add into the message signature cache
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
-index baec5d072b8f2d9379dba850b04e881e5267ca6b..53f1e8bfc436c4278cf955968e5bdd9feee98514 100644
+index 79d33646da088d02c54bbf2824deced107c1ce5f..306d0d839921488f3891e63b2721d2866bce95b4 100644
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
-@@ -1158,7 +1158,7 @@ public abstract class PlayerList {
+@@ -1161,7 +1161,7 @@ public abstract class PlayerList {
      }
  
      public boolean verifyChatTrusted(final PlayerChatMessage message) {

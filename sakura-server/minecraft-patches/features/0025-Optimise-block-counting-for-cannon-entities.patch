@@ -5,7 +5,7 @@ Subject: [PATCH] Optimise block counting for cannon entities
 
 
 diff --git a/ca/spottedleaf/moonrise/patches/collisions/CollisionUtil.java b/ca/spottedleaf/moonrise/patches/collisions/CollisionUtil.java
-index 2a7f0605cd954e42e070534dd83466abbc910696..105f7279000b250eaae71f1b39bb2d8ba1b0fe2a 100644
+index d33abce3ac6ecbc462064d1dfec2d8aaffcee4a4..e327bb18e52d2ad72397361307002cd050f7bf8b 100644
 --- a/ca/spottedleaf/moonrise/patches/collisions/CollisionUtil.java
 +++ b/ca/spottedleaf/moonrise/patches/collisions/CollisionUtil.java
 @@ -1941,6 +1941,7 @@ public final class CollisionUtil {
@@ -42,7 +42,7 @@ index 2a7f0605cd954e42e070534dd83466abbc910696..105f7279000b250eaae71f1b39bb2d8b
                      for (int currY = minYIterate; currY <= maxYIterate; ++currY) {
                          final int blockY = currY | (currChunkY << 4);
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index 0ac72e26ca48b648a981f2d2628813ec6dda409d..6b9ee397aca75957a4bc253a2c171b4893f84729 100644
+index 501185a5363d6e2c4dfbe4a34fd0783d63b59a36..d7a9d649b031c1052538b4c5c8e101bb301d745d 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
 @@ -627,6 +627,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl

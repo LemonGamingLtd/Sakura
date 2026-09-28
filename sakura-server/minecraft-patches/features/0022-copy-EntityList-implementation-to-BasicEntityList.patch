@@ -5,7 +5,7 @@ Subject: [PATCH] copy EntityList implementation to BasicEntityList
 
 
 diff --git a/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java b/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java
-index 5db28a841fc00366cb3934945b665325a8ead896..10fe562b1d87dc476a39578a8bb0472d1c04884b 100644
+index 04b286074e10b1f6e2d2773d881bc18be4d67572..d985b092569da011b85e6b643e87cd25f9443e00 100644
 --- a/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java
 +++ b/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java
 @@ -431,6 +431,13 @@ public final class ChunkEntitySlices {

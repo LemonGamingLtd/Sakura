@@ -5,7 +5,7 @@ Subject: [PATCH] Allow disabled tripwire redstone emissions
 
 
 diff --git a/net/minecraft/world/level/block/TripWireBlock.java b/net/minecraft/world/level/block/TripWireBlock.java
-index 49510dc0ef82621953be8e485708872bd8b2b88b..d97b958859d47d3a531356e3d4c6f9e5a8337977 100644
+index 68327b9afdaac7bbc262f4883159172ccc1f8fa1..bcb6c079debce9e4f109981707e6dfcb19f1c949 100644
 --- a/net/minecraft/world/level/block/TripWireBlock.java
 +++ b/net/minecraft/world/level/block/TripWireBlock.java
 @@ -127,7 +127,7 @@ public class TripWireBlock extends Block {
