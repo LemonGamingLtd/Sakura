@@ -42,7 +42,7 @@ index d33abce3ac6ecbc462064d1dfec2d8aaffcee4a4..e327bb18e52d2ad72397361307002cd0
                      for (int currY = minYIterate; currY <= maxYIterate; ++currY) {
                          final int blockY = currY | (currChunkY << 4);
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index 501185a5363d6e2c4dfbe4a34fd0783d63b59a36..d7a9d649b031c1052538b4c5c8e101bb301d745d 100644
+index d4f681f70dcf1c5ba1c14d008a59730e136dec31..56c65f424b314a0a62593d3a14b18551c5991bb0 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
 @@ -627,6 +627,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl

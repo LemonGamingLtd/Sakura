@@ -83,10 +83,10 @@ index 3e157b0b397cf57eb1c936a12491916db554094a..5d7cf21f8c694bb33c26915e522b8285
      @Override
      public boolean fireImmune() {
 diff --git a/net/minecraft/world/level/block/entity/HopperBlockEntity.java b/net/minecraft/world/level/block/entity/HopperBlockEntity.java
-index fef616d7b92454a721f7a14941b62a8963080cc5..7f2f06c1b216e59df96ed3d53aefd19bd5176ec4 100644
+index 301f03ade9891ec253275dc91e85f4152b33123d..76e746aed1f55d34e1d69beebabef7620ace11f2 100644
 --- a/net/minecraft/world/level/block/entity/HopperBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/HopperBlockEntity.java
-@@ -580,9 +580,10 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -685,9 +685,10 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
              if (current.isEmpty()) {
                  // Spigot start - SPIGOT-6693, SimpleContainer#setItem
                  ItemStack leftover = ItemStack.EMPTY; // Paper - Make hoppers respect inventory max stack size
@@ -99,7 +99,7 @@ index fef616d7b92454a721f7a14941b62a8963080cc5..7f2f06c1b216e59df96ed3d53aefd19b
                  }
                  // Spigot end
                  ignoreBlockEntityUpdates = true; // Paper - Perf: Optimize Hoppers
-@@ -591,7 +592,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -696,7 +697,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
                  itemStack = leftover; // Paper - Make hoppers respect inventory max stack size
                  success = true;
              } else if (canMergeItems(current, itemStack)) {
