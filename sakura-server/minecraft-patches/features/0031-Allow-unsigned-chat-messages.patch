@@ -23,7 +23,7 @@ index 9395c6a58ba37fb00c492065b8045f54de0a2246..bdbc15d949ae764f99e79530eec07d0e
  
                  if (unpacked.hasExpiredServer(Instant.now())) {
 diff --git a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
-index 9ce2d5bcc40dfeee2f9a6912c551b11bc7ada14c..117269a9a00ffe8fb9316519949aaed6309ff129 100644
+index 9ce2d5bcc40dfeee2f9a6912c551b11bc7ada14c..6005c4dcd8f4ebe3cbff78359d2c2de8056b6325 100644
 --- a/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerCommonPacketListenerImpl.java
 @@ -300,11 +300,22 @@ public abstract class ServerCommonPacketListenerImpl implements ServerCommonPack
@@ -34,7 +34,7 @@ index 9ce2d5bcc40dfeee2f9a6912c551b11bc7ada14c..117269a9a00ffe8fb9316519949aaed6
 +    // Citrus start - Allow unsigned chat messages
 +    public void send(Packet<?> packet) {
 +        if (packet instanceof net.minecraft.network.protocol.game.ClientboundPlayerChatPacket chat) {
-+            packet = new net.minecraft.network.protocol.game.ClientboundSystemChatPacket(chat.chatType().decorate(chat.unsignedContent() != null ? chat.unsignedContent() : Component.literal(chat.body().content())), false);
++            packet = new net.minecraft.network.protocol.game.ClientboundSystemChatPacket(chat.chatType().decorate(chat.unsignedContent().orElse(Component.literal(chat.body().content()))), false);
 +        }
 +    // Citrus end - Allow unsigned chat messages
          this.send(packet, null);
