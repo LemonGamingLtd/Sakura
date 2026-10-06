@@ -1,14 +1,14 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Nahuel Dolores <contact@nahu.me>
-Date: Mon, 29 Jun 2026 15:23:49 +0200
+Date: Tue, 6 Oct 2026 11:12:42 +0200
 Subject: [PATCH] Allow disabled tripwire redstone emissions
 
 
 diff --git a/net/minecraft/world/level/block/TripWireBlock.java b/net/minecraft/world/level/block/TripWireBlock.java
-index 68327b9afdaac7bbc262f4883159172ccc1f8fa1..bcb6c079debce9e4f109981707e6dfcb19f1c949 100644
+index 51c5b039e5c4da0273077fe405ab1c3c377ceb23..f41538d622afe4a033b6b53cfa43ad3117a9860f 100644
 --- a/net/minecraft/world/level/block/TripWireBlock.java
 +++ b/net/minecraft/world/level/block/TripWireBlock.java
-@@ -127,7 +127,7 @@ public class TripWireBlock extends Block {
+@@ -116,7 +116,7 @@ public class TripWireBlock extends Block {
      }
  
      private void updateSource(final Level level, final BlockPos pos, final BlockState state) {
@@ -17,7 +17,7 @@ index 68327b9afdaac7bbc262f4883159172ccc1f8fa1..bcb6c079debce9e4f109981707e6dfcb
          for (Direction direction : new Direction[]{Direction.SOUTH, Direction.WEST}) {
              for (int i = 1; i < 42; i++) {
                  BlockPos testPos = pos.relative(direction, i);
-@@ -160,7 +160,7 @@ public class TripWireBlock extends Block {
+@@ -149,7 +149,7 @@ public class TripWireBlock extends Block {
          final InsideBlockEffectApplier effectApplier,
          final boolean isPrecise
      ) {
@@ -26,7 +26,7 @@ index 68327b9afdaac7bbc262f4883159172ccc1f8fa1..bcb6c079debce9e4f109981707e6dfcb
          if (!new io.papermc.paper.event.entity.EntityInsideBlockEvent(entity.getBukkitEntity(), org.bukkit.craftbukkit.block.CraftBlock.at(level, pos)).callEvent()) { return; } // Paper - Add EntityInsideBlockEvent
          if (!level.isClientSide()) {
              if (!state.getValue(POWERED) && !level.getBlockTicks().hasScheduledTick(pos, this)) {
-@@ -171,7 +171,7 @@ public class TripWireBlock extends Block {
+@@ -160,7 +160,7 @@ public class TripWireBlock extends Block {
  
      @Override
      protected void tick(final BlockState state, final ServerLevel level, final BlockPos pos, final RandomSource random) {
@@ -35,25 +35,25 @@ index 68327b9afdaac7bbc262f4883159172ccc1f8fa1..bcb6c079debce9e4f109981707e6dfcb
          if (level.getBlockState(pos).getValue(POWERED)) {
              this.checkPressed(level, pos);
          }
-@@ -231,7 +231,7 @@ public class TripWireBlock extends Block {
+@@ -220,7 +220,7 @@ public class TripWireBlock extends Block {
  
          if (shouldBePressed != wasPressed) {
              state = state.setValue(POWERED, shouldBePressed);
--            level.setBlock(pos, state, Block.UPDATE_ALL);
-+            // level.setBlock(pos, state, Block.UPDATE_ALL); // Citrus
+-            level.setBlockAndUpdate(pos, state);
++            // level.setBlockAndUpdate(pos, state); // Citrus
              this.updateSource(level, pos, state);
          }
  
 diff --git a/net/minecraft/world/level/block/TripWireHookBlock.java b/net/minecraft/world/level/block/TripWireHookBlock.java
-index 9d08ce61f964bb3115c708091549a233dabcf0e3..07a9a95a08c72e55f42f16b7905fe28af27aea4f 100644
+index b9090b80f9489431b11da29acf1f499e94c022ea..0caec53311f59a109477bf917c1eda2fa6bc0054 100644
 --- a/net/minecraft/world/level/block/TripWireHookBlock.java
 +++ b/net/minecraft/world/level/block/TripWireHookBlock.java
-@@ -201,7 +201,7 @@ public class TripWireHookBlock extends Block {
+@@ -194,7 +194,7 @@ public class TripWireHookBlock extends Block {
                      BlockState wireData = wireStates[i];
                      if (wireData != null) {
                          BlockState testPosState = level.getBlockState(testPos);
 -                        if (testPosState.is(Blocks.TRIPWIRE) || testPosState.is(Blocks.TRIPWIRE_HOOK)) {
 +                        if (/* testPosState.is(Blocks.TRIPWIRE) ||*/ testPosState.is(Blocks.TRIPWIRE_HOOK)) { // Citrus
-                             if (!io.papermc.paper.configuration.GlobalConfiguration.get().blockUpdates.disableTripwireUpdates || !testPosState.is(Blocks.TRIPWIRE)) level.setBlock(testPos, wireData.trySetValue(ATTACHED, attached), Block.UPDATE_ALL); // Paper - prevent tripwire from updating
+                             if (!io.papermc.paper.configuration.GlobalConfiguration.get().blockUpdates.disableTripwireUpdates || !testPosState.is(Blocks.TRIPWIRE)) level.setBlockAndUpdate(testPos, wireData.trySetValue(ATTACHED, attached)); // Paper - prevent tripwire from updating
                          }
                      }

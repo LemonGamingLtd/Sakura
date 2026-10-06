@@ -1,6 +1,6 @@
 --- a/net/minecraft/core/component/DataComponents.java
 +++ b/net/minecraft/core/component/DataComponents.java
-@@ -108,7 +_,7 @@
+@@ -115,7 +_,7 @@
      static final EncoderCache ENCODER_CACHE = new EncoderCache(512);
      public static final DataComponentType<CustomData> CUSTOM_DATA = register("custom_data", b -> b.persistent(CustomData.CODEC));
      public static final DataComponentType<Integer> MAX_STACK_SIZE = register(
