@@ -5,7 +5,7 @@ Subject: [PATCH] Implement native item stacking
 
 
 diff --git a/net/minecraft/world/entity/item/ItemEntity.java b/net/minecraft/world/entity/item/ItemEntity.java
-index b08902e5a4850842c90a7a36e8f5fe000553bcbb..3f1a02a44b2200ec1c9e2cfc3ba92cdc74f2d086 100644
+index 23fc6cc98c9c59965b12bc457f5389399f7bcb7d..895043de7f0b3b5c7f15efe9e83750d536bce04f 100644
 --- a/net/minecraft/world/entity/item/ItemEntity.java
 +++ b/net/minecraft/world/entity/item/ItemEntity.java
 @@ -248,7 +248,7 @@ public class ItemEntity extends Entity implements TraceableEntity {
@@ -83,10 +83,10 @@ index b08902e5a4850842c90a7a36e8f5fe000553bcbb..3f1a02a44b2200ec1c9e2cfc3ba92cdc
      @Override
      public boolean fireImmune() {
 diff --git a/net/minecraft/world/level/block/entity/HopperBlockEntity.java b/net/minecraft/world/level/block/entity/HopperBlockEntity.java
-index 4225127de705f9e5db0385b622a4192337420576..ce5c5995ca22686e70ca5e533abdd72724904ccd 100644
+index 17f0eabfedf3853b0660266fb6ff84646c11a8a3..66163b7decc7f8f617404e01c0a33ed78ab5cc8d 100644
 --- a/net/minecraft/world/level/block/entity/HopperBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/HopperBlockEntity.java
-@@ -685,9 +685,10 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -690,9 +690,10 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
              if (current.isEmpty()) {
                  // Spigot start - SPIGOT-6693, SimpleContainer#setItem
                  ItemStack leftover = ItemStack.EMPTY; // Paper - Make hoppers respect inventory max stack size
@@ -99,7 +99,7 @@ index 4225127de705f9e5db0385b622a4192337420576..ce5c5995ca22686e70ca5e533abdd727
                  }
                  // Spigot end
                  ignoreBlockEntityUpdates = true; // Paper - Perf: Optimize Hoppers
-@@ -696,7 +697,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -701,7 +702,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
                  itemStack = leftover; // Paper - Make hoppers respect inventory max stack size
                  success = true;
              } else if (canMergeItems(current, itemStack)) {

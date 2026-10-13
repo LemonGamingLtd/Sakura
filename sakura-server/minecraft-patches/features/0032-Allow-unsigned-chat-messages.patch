@@ -51,7 +51,7 @@ index 9ce2d5bcc40dfeee2f9a6912c551b11bc7ada14c..6005c4dcd8f4ebe3cbff78359d2c2de8
          if (packet == null) {
              return;
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index a8757d87892b5138f4ff13dba401be7b3fcdf2b7..076de584db351007a6b3a3cb10f6e7fa4d4f2069 100644
+index ee8cb2c089c13ab2d135525b618df089152a9594..431c0c1cdcf0607b60003b353e6588c2d4231d87 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -2850,9 +2850,11 @@ public class ServerGamePacketListenerImpl
@@ -70,10 +70,10 @@ index a8757d87892b5138f4ff13dba401be7b3fcdf2b7..076de584db351007a6b3a3cb10f6e7fa
          }
          // Paper end - Ensure that client receives chat packets in the same order that we add into the message signature cache
 diff --git a/net/minecraft/server/players/PlayerList.java b/net/minecraft/server/players/PlayerList.java
-index a7f589970a04e520eb5cbe6dfeb333bc9cd479a8..8016e965b451823f0293d23b92aa3c03a88792f9 100644
+index 62f57eb254321902692550d0a86c24292ef9e87d..dc4daf7ec38938942ee0e5f44ed7996d52186bb2 100644
 --- a/net/minecraft/server/players/PlayerList.java
 +++ b/net/minecraft/server/players/PlayerList.java
-@@ -1161,7 +1161,7 @@ public abstract class PlayerList {
+@@ -1162,7 +1162,7 @@ public abstract class PlayerList {
      }
  
      public boolean verifyChatTrusted(final PlayerChatMessage message) {
