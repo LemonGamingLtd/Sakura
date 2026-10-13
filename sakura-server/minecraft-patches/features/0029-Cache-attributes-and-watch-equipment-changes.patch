@@ -5,7 +5,7 @@ Subject: [PATCH] Cache attributes and watch equipment changes
 
 
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index 1d48bd6ff386a627abeb3f55c64912f5649b7f06..e1a7261d60956cf54550183e82be32199a34edbe 100644
+index 87a3fb3457294d72855f726c8593a53f22efa2f8..30806f5902dcc17ae58512ca819fb00db4d13fd4 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
 @@ -365,6 +365,13 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
@@ -47,7 +47,7 @@ index 1d48bd6ff386a627abeb3f55c64912f5649b7f06..e1a7261d60956cf54550183e82be3219
 @@ -3154,7 +3167,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
  
      @Override
-     protected double getDefaultGravity() {
+     public double getDefaultGravity() {
 -        return this.getAttributeValue(Attributes.GRAVITY);
 +        return this.gravityWatcher.getValue(); // Sakura - cache attribute and equipment changes
      }
@@ -89,7 +89,7 @@ index 1d48bd6ff386a627abeb3f55c64912f5649b7f06..e1a7261d60956cf54550183e82be3219
          Vec3 movement = this.getDeltaMovement();
          double dx = movement.x;
          double dy = movement.y;
-@@ -5080,7 +5102,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
+@@ -5084,7 +5106,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
  
      @Override
      public boolean isTransmittingWaypoint() {
