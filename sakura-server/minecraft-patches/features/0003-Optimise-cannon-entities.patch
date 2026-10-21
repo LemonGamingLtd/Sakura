@@ -734,10 +734,10 @@ index c3060d4602a062b4d1713bfb9def2686c4b7a4c7..72c00ba66881539cfec183deec9f37bf
  }
 diff --git a/me/samsuik/sakura/utils/SimpleHashTable.java b/me/samsuik/sakura/utils/SimpleHashTable.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..86c24fd87be41aaa9c3073997ba8e3bcf06e94fe
+index 0000000000000000000000000000000000000000..350c9910db7c6232ec74d28a66cf364ec46f061f
 --- /dev/null
 +++ b/me/samsuik/sakura/utils/SimpleHashTable.java
-@@ -0,0 +1,46 @@
+@@ -0,0 +1,47 @@
 +package me.samsuik.sakura.utils;
 +
 +import it.unimi.dsi.fastutil.HashCommon;
@@ -746,6 +746,7 @@ index 0000000000000000000000000000000000000000..86c24fd87be41aaa9c3073997ba8e3bc
 +
 +import java.util.Arrays;
 +
++@SuppressWarnings("unchecked")
 +@NullMarked
 +public final class SimpleHashTable<K, V> {
 +    private final @Nullable V[] table;
@@ -785,7 +786,7 @@ index 0000000000000000000000000000000000000000..86c24fd87be41aaa9c3073997ba8e3bc
 +    }
 +}
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 6bea327386ee3fea6788365edc62e5634bc826dd..7669a4d5b88049874157774735ec537888db0438 100644
+index 92e77c536ef1922b62705fdc010dd9334646db78..2872b214cb458446b344a40a040af7089bb5b497 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -1408,10 +1408,17 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
@@ -819,7 +820,7 @@ index 6bea327386ee3fea6788365edc62e5634bc826dd..7669a4d5b88049874157774735ec5378
          // CraftBukkit start
          if (explosion.wasCanceled) {
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 026733e5a152e019708391bfca24c425e91f5546..b9489565c3c26e2034b0788a9f5dbf6e754f5254 100644
+index 7eb88d8b68efe25e99d22db5b8e8c6eec9d1ab4d..aeb0a7d922f89132407f91348e8198f10223cf2f 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -557,6 +557,15 @@ public abstract class Entity
@@ -838,7 +839,7 @@ index 026733e5a152e019708391bfca24c425e91f5546..b9489565c3c26e2034b0788a9f5dbf6e
  
      public Entity(final EntityType<?> type, final Level level) {
          this.type = type;
-@@ -5362,6 +5371,12 @@ public abstract class Entity
+@@ -5358,6 +5367,12 @@ public abstract class Entity
              this.stopRiding();
          }
  
@@ -1176,7 +1177,7 @@ index ce87c750d10cd173e95d8fbec71dfcd62c17a17c..8c3c4532e16d697b692d5e44a17bda1f
          super(type, level);
      }
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index 9692b57cc3693d25a2386cfe36bc98fa05a0f83d..3bf66b6ba172a9bf559e3e305cebfe1d984e881b 100644
+index cbd79d454536bb5a9e4c98ba086d70856e40ca8b..379c7e31173f16a7ef5b12a6060187cd4d97d51b 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
 @@ -843,6 +843,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
