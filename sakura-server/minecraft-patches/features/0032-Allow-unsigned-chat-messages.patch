@@ -51,10 +51,10 @@ index 9ce2d5bcc40dfeee2f9a6912c551b11bc7ada14c..6005c4dcd8f4ebe3cbff78359d2c2de8
          if (packet == null) {
              return;
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index ee8cb2c089c13ab2d135525b618df089152a9594..431c0c1cdcf0607b60003b353e6588c2d4231d87 100644
+index 6aac0749e87a07f8be457943277303851c21b512..e58c07adca44dc2e4dc9310ebf4eec5995d663fe 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -2850,9 +2850,11 @@ public class ServerGamePacketListenerImpl
+@@ -2851,9 +2851,11 @@ public class ServerGamePacketListenerImpl
                  trackedCount = this.lastSeenMessages.trackedMessagesCount();
              }
  
