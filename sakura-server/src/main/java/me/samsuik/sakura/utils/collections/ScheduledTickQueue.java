@@ -99,7 +99,10 @@ public final class ScheduledTickQueue<T extends ScheduledTick<?>> extends Abstra
         }
     }
 
-    private void removeAt(final int index) {
+    /**
+     * @return true if the elements after the index were shifted back by one
+     */
+    private boolean removeAt(final int index) {
         final @Nullable T[] elements = this.elements;
         final int mask = this.elements.length - 1;
         final int tail = this.tail;
@@ -108,23 +111,28 @@ public final class ScheduledTickQueue<T extends ScheduledTick<?>> extends Abstra
         this.elements[index] = null;
         this.size--;
 
-        if (tail < head) {
+        // a full queue has head == tail and must be treated as wrapped
+        if (tail <= head) {
             if (index >= head) {
                 System.arraycopy(elements, head, elements, head + 1, index - head);
                 elements[head] = null;
                 this.head = (head + 1) & mask;
-            } else if (index < tail) {
-                System.arraycopy(elements, index + 1, elements, index, tail - index - 1);
-                this.tail = (tail - 1) & mask;
-                elements[this.tail] = null;
-            }
-        } else {
-            if (index == head) {
-                this.head = (head + 1) & mask;
+                return false;
             } else {
                 System.arraycopy(elements, index + 1, elements, index, tail - index - 1);
                 this.tail = (tail - 1) & mask;
                 elements[this.tail] = null;
+                return true;
+            }
+        } else {
+            if (index == head) {
+                this.head = (head + 1) & mask;
+                return false;
+            } else {
+                System.arraycopy(elements, index + 1, elements, index, tail - index - 1);
+                this.tail = (tail - 1) & mask;
+                elements[this.tail] = null;
+                return true;
             }
         }
     }
@@ -160,9 +168,11 @@ public final class ScheduledTickQueue<T extends ScheduledTick<?>> extends Abstra
         @Override
         public void remove() {
             if (this.lastRet == -1) throw new IllegalStateException();
-            ScheduledTickQueue.this.removeAt(this.lastRet);
+            if (ScheduledTickQueue.this.removeAt(this.lastRet)) {
+                this.cursor = (this.cursor - 1) & ScheduledTickQueue.this.mask;
+            }
 
-            this.cursor = (this.cursor - 1) & ScheduledTickQueue.this.mask;
+            this.count--;
             this.lastRet = -1;
         }
     }
