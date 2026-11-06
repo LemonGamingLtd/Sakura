@@ -1,0 +1,242 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: g0dzcsgo <xdfelgen@gmail.com>
+Date: Sat, 31 Oct 2026 10:03:03 +0100
+Subject: [PATCH] Custom block engine
+
+
+diff --git a/net/minecraft/core/particles/BlockParticleOption.java b/net/minecraft/core/particles/BlockParticleOption.java
+index ba47cd02f74ced7f1b8b331344a9bfdc00c17787..ff7632220344a5c7a5dbe9d290c7759e1a8d2b28 100644
+--- a/net/minecraft/core/particles/BlockParticleOption.java
++++ b/net/minecraft/core/particles/BlockParticleOption.java
+@@ -21,7 +21,7 @@ public class BlockParticleOption implements ParticleOptions {
+     }
+ 
+     public static StreamCodec<? super RegistryFriendlyByteBuf, BlockParticleOption> streamCodec(final ParticleType<BlockParticleOption> type) {
+-        return ByteBufCodecs.idMapper(Block.BLOCK_STATE_REGISTRY).map(state -> new BlockParticleOption(type, state), o -> o.state);
++        return ltd.lemongaming.citrus.block.ClientBlockStates.STREAM_CODEC.map(state -> new BlockParticleOption(type, state), o -> o.state); // Citrus - custom blocks
+     }
+ 
+     public BlockParticleOption(final ParticleType<BlockParticleOption> type, final BlockState state) {
+diff --git a/net/minecraft/nbt/NbtUtils.java b/net/minecraft/nbt/NbtUtils.java
+index 61394351fa87314507a040f3db3f3d504245c3d9..ef2b200c01fa4fd64973ec51a8a5f7b8071c37a1 100644
+--- a/net/minecraft/nbt/NbtUtils.java
++++ b/net/minecraft/nbt/NbtUtils.java
+@@ -124,6 +124,14 @@ public final class NbtUtils {
+     public static BlockState readBlockState(final HolderGetter<Block> blocks, final CompoundTag tag) {
+         Optional<? extends Holder<Block>> blockHolder = tag.read("id", BLOCK_NAME_CODEC).flatMap(blocks::get);
+         if (blockHolder.isEmpty()) {
++            // Citrus start - custom blocks
++            final Block fallback = tag.read("id", BLOCK_NAME_CODEC)
++                .map(key -> ltd.lemongaming.citrus.block.CustomBlockPersistence.fallbackFor(key.identifier()))
++                .orElse(null);
++            if (fallback != null) {
++                return fallback.defaultBlockState();
++            }
++            // Citrus end - custom blocks
+             return Blocks.AIR.defaultBlockState();
+         }
+ 
+diff --git a/net/minecraft/network/codec/ByteBufCodecs.java b/net/minecraft/network/codec/ByteBufCodecs.java
+index 07d06eaea3ab06b021f292800e6e18dbe07e99d4..937d5ac2526f30aabcba2335e11f1f1460b1dff4 100644
+--- a/net/minecraft/network/codec/ByteBufCodecs.java
++++ b/net/minecraft/network/codec/ByteBufCodecs.java
+@@ -755,6 +755,7 @@ public interface ByteBufCodecs {
+     private static <T, R> StreamCodec<RegistryFriendlyByteBuf, R> registry(
+         final ResourceKey<? extends Registry<T>> registryKey, final Function<Registry<T>, IdMap<R>> mapExtractor
+     ) {
++        final boolean blockRegistry = registryKey.equals(net.minecraft.core.registries.Registries.BLOCK); // Citrus - custom blocks
+         return new StreamCodec<RegistryFriendlyByteBuf, R>() {
+             private IdMap<R> getRegistryOrThrow(final RegistryFriendlyByteBuf input) {
+                 return mapExtractor.apply(input.registryAccess().lookupOrThrow(registryKey));
+@@ -767,7 +768,8 @@ public interface ByteBufCodecs {
+             }
+ 
+             @Override
+-            public void encode(final RegistryFriendlyByteBuf output, final R value) {
++            public void encode(final RegistryFriendlyByteBuf output, R value) { // Citrus - custom blocks
++                if (blockRegistry) value = ltd.lemongaming.citrus.block.ClientBlockStates.registryValue(value); // Citrus - custom blocks
+                 int id = this.getRegistryOrThrow(output).getIdOrThrow(value);
+                 VarInt.write(output, id);
+             }
+diff --git a/net/minecraft/network/protocol/game/ClientboundAddTransientBlockPacket.java b/net/minecraft/network/protocol/game/ClientboundAddTransientBlockPacket.java
+index 626e5da796b0629137b9296b2efd4a89f2983b22..bcc8bc125d70c9210cc918f96db65e76af17f92a 100644
+--- a/net/minecraft/network/protocol/game/ClientboundAddTransientBlockPacket.java
++++ b/net/minecraft/network/protocol/game/ClientboundAddTransientBlockPacket.java
+@@ -28,7 +28,7 @@ public class ClientboundAddTransientBlockPacket implements Packet<ClientGamePack
+ 
+     private void write(final RegistryFriendlyByteBuf output) {
+         output.writeBlockPos(this.pos);
+-        ByteBufCodecs.idMapper(Block.BLOCK_STATE_REGISTRY).encode(output, this.blockState);
++        ltd.lemongaming.citrus.block.ClientBlockStates.STREAM_CODEC.encode(output, this.blockState); // Citrus - custom blocks
+     }
+ 
+     @Override
+diff --git a/net/minecraft/network/protocol/game/ClientboundBlockUpdatePacket.java b/net/minecraft/network/protocol/game/ClientboundBlockUpdatePacket.java
+index 838b1e38ae2d84576014a00ac293867f75b943e3..46f3d390d35894cf322d62e053fb1068ca81f3d7 100644
+--- a/net/minecraft/network/protocol/game/ClientboundBlockUpdatePacket.java
++++ b/net/minecraft/network/protocol/game/ClientboundBlockUpdatePacket.java
+@@ -14,7 +14,7 @@ public class ClientboundBlockUpdatePacket implements Packet<ClientGamePacketList
+     public static final StreamCodec<RegistryFriendlyByteBuf, ClientboundBlockUpdatePacket> STREAM_CODEC = StreamCodec.composite(
+         BlockPos.STREAM_CODEC,
+         ClientboundBlockUpdatePacket::getPos,
+-        ByteBufCodecs.idMapper(Block.BLOCK_STATE_REGISTRY),
++        ltd.lemongaming.citrus.block.ClientBlockStates.STREAM_CODEC, // Citrus - custom blocks
+         ClientboundBlockUpdatePacket::getBlockState,
+         ClientboundBlockUpdatePacket::new
+     );
+diff --git a/net/minecraft/network/protocol/game/ClientboundLevelEventPacket.java b/net/minecraft/network/protocol/game/ClientboundLevelEventPacket.java
+index aa38ac809eaf68c911fb1d7f37b89b5cc53b3fb0..f905f633fc0e3a763e96bef6e6a1b9faacad83c8 100644
+--- a/net/minecraft/network/protocol/game/ClientboundLevelEventPacket.java
++++ b/net/minecraft/network/protocol/game/ClientboundLevelEventPacket.java
+@@ -33,7 +33,7 @@ public class ClientboundLevelEventPacket implements Packet<ClientGamePacketListe
+     private void write(final FriendlyByteBuf output) {
+         output.writeInt(this.type);
+         output.writeBlockPos(this.pos);
+-        output.writeInt(this.data);
++        output.writeInt(ltd.lemongaming.citrus.block.ClientBlockStates.levelEventData(this.type, this.data)); // Citrus - custom blocks
+         output.writeBoolean(this.globalEvent);
+     }
+ 
+diff --git a/net/minecraft/network/protocol/game/ClientboundSectionBlocksUpdatePacket.java b/net/minecraft/network/protocol/game/ClientboundSectionBlocksUpdatePacket.java
+index a66d8fe21b7c162340ea2f6ac0b02de6093ad3b8..dfb471167c57bbbea6b8d2011a291cbfee5fb7ae 100644
+--- a/net/minecraft/network/protocol/game/ClientboundSectionBlocksUpdatePacket.java
++++ b/net/minecraft/network/protocol/game/ClientboundSectionBlocksUpdatePacket.java
+@@ -68,7 +68,7 @@ public class ClientboundSectionBlocksUpdatePacket implements Packet<ClientGamePa
+         output.writeVarInt(this.positions.length);
+ 
+         for (int i = 0; i < this.positions.length; i++) {
+-            output.writeVarLong((long)Block.getId(this.states[i]) << 12 | this.positions[i]);
++            output.writeVarLong((long)ltd.lemongaming.citrus.block.ClientBlockStates.clientId(this.states[i]) << 12 | this.positions[i]); // Citrus - custom blocks
+         }
+     }
+ 
+diff --git a/net/minecraft/network/syncher/EntityDataSerializers.java b/net/minecraft/network/syncher/EntityDataSerializers.java
+index 9b5e87602c80e300353f7fa18ca0de524db4b4b2..453c99948150585cc4ab6406b6a8c24aa516d359 100644
+--- a/net/minecraft/network/syncher/EntityDataSerializers.java
++++ b/net/minecraft/network/syncher/EntityDataSerializers.java
+@@ -88,12 +88,12 @@ public class EntityDataSerializers {
+             return value.copy();
+         }
+     };
+-    public static final EntityDataSerializer<BlockState> BLOCK_STATE = EntityDataSerializer.forValueType(ByteBufCodecs.idMapper(Block.BLOCK_STATE_REGISTRY));
++    public static final EntityDataSerializer<BlockState> BLOCK_STATE = EntityDataSerializer.forValueType(ltd.lemongaming.citrus.block.ClientBlockStates.STREAM_CODEC); // Citrus - custom blocks
+     private static final StreamCodec<ByteBuf, Optional<BlockState>> OPTIONAL_BLOCK_STATE_CODEC = new StreamCodec<ByteBuf, Optional<BlockState>>() {
+         @Override
+         public void encode(final ByteBuf output, final Optional<BlockState> value) {
+             if (value.isPresent()) {
+-                VarInt.write(output, Block.getId(value.get()));
++                VarInt.write(output, ltd.lemongaming.citrus.block.ClientBlockStates.clientId(value.get())); // Citrus - custom blocks
+             } else {
+                 VarInt.write(output, 0);
+             }
+diff --git a/net/minecraft/server/Bootstrap.java b/net/minecraft/server/Bootstrap.java
+index 8485cd64cc47e7d8b5499b90ec6bf4dd13791d22..34a6fe5a8c064b0f388a5ff9a425595190402bef 100644
+--- a/net/minecraft/server/Bootstrap.java
++++ b/net/minecraft/server/Bootstrap.java
+@@ -44,6 +44,7 @@ public class Bootstrap {
+         if (!isBootstrapped) {
+             isBootstrapped = true;
+             Instant start = Instant.now();
++            ltd.lemongaming.citrus.block.CitrusCustomBlocks.install(); // Citrus - custom blocks
+             io.papermc.paper.plugin.entrypoint.LaunchEntryPointHandler.enterBootstrappers(); // Paper - Entrypoint for bootstrapping
+             if (BuiltInRegistries.REGISTRY.keySet().isEmpty()) {
+                 throw new IllegalStateException("Unable to load registries");
+@@ -58,6 +59,7 @@ public class Bootstrap {
+             DispenseItemBehavior.bootStrap();
+             CauldronInteractions.bootStrap();
+             BuiltInRegistries.bootStrap(io.papermc.paper.world.worldgen.OptionallyFlatBedrockCondition::bootstrap); // Paper - Flat bedrock generator settings
++            ltd.lemongaming.citrus.block.CitrusCustomBlocks.bake(); // Citrus - custom blocks
+             CreativeModeTabs.validate();
+             LootContextParamSets.validate();
+             wrapStreams();
+diff --git a/net/minecraft/tags/TagNetworkSerialization.java b/net/minecraft/tags/TagNetworkSerialization.java
+index 2ddd71cce36c3b4ce80dde2b19177896f3d93f91..5409cb0f9be741975bbbd84109fb1d7e4f4ac6c2 100644
+--- a/net/minecraft/tags/TagNetworkSerialization.java
++++ b/net/minecraft/tags/TagNetworkSerialization.java
+@@ -38,6 +38,7 @@ public class TagNetworkSerialization {
+                 if (holder.kind() != Holder.Kind.REFERENCE) {
+                     throw new IllegalStateException("Can't serialize unregistered value " + holder);
+                 }
++                if (holder.value() instanceof ltd.lemongaming.citrus.block.CitrusCustomBlock) continue; // Citrus - custom blocks
+ 
+                 ids.add(registry.getId(holder.value()));
+             }
+diff --git a/net/minecraft/world/entity/item/FallingBlockEntity.java b/net/minecraft/world/entity/item/FallingBlockEntity.java
+index 1d2a4d9fa9293ceda3f720e9e46a5f6b21027ff9..841a7f12fc880be8ff3fabc69ba43369a18eeedf 100644
+--- a/net/minecraft/world/entity/item/FallingBlockEntity.java
++++ b/net/minecraft/world/entity/item/FallingBlockEntity.java
+@@ -551,7 +551,7 @@ public class FallingBlockEntity extends Entity implements me.samsuik.sakura.enti
+ 
+     @Override
+     public Packet<ClientGamePacketListener> getAddEntityPacket(final ServerEntity serverEntity) {
+-        return new ClientboundAddEntityPacket(this, serverEntity, Block.getId(this.getBlockState()));
++        return new ClientboundAddEntityPacket(this, serverEntity, ltd.lemongaming.citrus.block.ClientBlockStates.clientId(this.getBlockState())); // Citrus - custom blocks
+     }
+ 
+     @Override
+diff --git a/net/minecraft/world/level/block/Blocks.java b/net/minecraft/world/level/block/Blocks.java
+index 71ff3e831bbe4c49e946664c7ca22634a4e9fecc..69702ab8499443679c6ea4400ec7f5bfc78a906f 100644
+--- a/net/minecraft/world/level/block/Blocks.java
++++ b/net/minecraft/world/level/block/Blocks.java
+@@ -5936,6 +5936,7 @@ public class Blocks {
+     }
+ 
+     static {
++        ltd.lemongaming.citrus.block.CitrusCustomBlocks.registerBlocks(); // Citrus - custom blocks
+         SolidDebugger.runAndDump(() -> {
+             // Paper start - Perf: Optimize block state cache initialization
+             // initCache of the first state of every block runs directly (to make sure Blocks is always called here) before the rest are put off-thread
+diff --git a/net/minecraft/world/level/block/state/BlockState.java b/net/minecraft/world/level/block/state/BlockState.java
+index 921081dc4f8374bd6eb3a1e6d29fa50f6c420efd..24964dd60a8e8990ce8ae16f641ec7b68e1ddfc6 100644
+--- a/net/minecraft/world/level/block/state/BlockState.java
++++ b/net/minecraft/world/level/block/state/BlockState.java
+@@ -7,9 +7,9 @@ import net.minecraft.world.level.block.Block;
+ import net.minecraft.world.level.block.state.properties.Property;
+ 
+ public class BlockState extends BlockBehaviour.BlockStateBase {
+-    public static final Codec<BlockState> FULL_CODEC = codec(BuiltInRegistries.BLOCK.byNameCodec(), Block::defaultBlockState, Block::getStateDefinition)
++    public static final Codec<BlockState> FULL_CODEC = codec(ltd.lemongaming.citrus.block.CustomBlockPersistence.BLOCK_CODEC, Block::defaultBlockState, Block::getStateDefinition) // Citrus - custom blocks
+         .stable();
+-    private static final Codec<Either<Block, BlockState>> CONSTANT_OR_DISPATCH_CODEC = Codec.either(BuiltInRegistries.BLOCK.byNameCodec(), FULL_CODEC);
++    private static final Codec<Either<Block, BlockState>> CONSTANT_OR_DISPATCH_CODEC = Codec.either(ltd.lemongaming.citrus.block.CustomBlockPersistence.BLOCK_CODEC, FULL_CODEC); // Citrus - custom blocks
+     public static final Codec<BlockState> CODEC = CONSTANT_OR_DISPATCH_CODEC.xmap(
+         either -> either.map(Block::defaultBlockState, f -> (BlockState)f),
+         state -> state == state.getBlock().defaultBlockState() ? Either.left(state.getBlock()) : Either.right(state)
+diff --git a/net/minecraft/world/level/chunk/PalettedContainer.java b/net/minecraft/world/level/chunk/PalettedContainer.java
+index d564338ddc3dc13f0d11a18e26ea36e1f9343745..75792ed7f56bdbb92707305f289d9882d84e643e 100644
+--- a/net/minecraft/world/level/chunk/PalettedContainer.java
++++ b/net/minecraft/world/level/chunk/PalettedContainer.java
+@@ -518,11 +518,31 @@ public class PalettedContainer<T> implements PaletteResize<T>, PalettedContainer
+             }
+         }
+ 
+-        public int getSerializedSize(final IdMap<T> globalMap) {
++        public int getSerializedSize(IdMap<T> globalMap) { // Citrus - custom blocks
++            // Citrus start - custom blocks
++            if (ltd.lemongaming.citrus.block.ClientBlockStates.remapsGlobalPalette(globalMap, this.palette)) {
++                return 1 + ltd.lemongaming.citrus.block.ClientBlockStates.globalStorageBytes(this.storage.getSize());
++            }
++            globalMap = ltd.lemongaming.citrus.block.ClientBlockStates.forClient(globalMap);
++            // Citrus end - custom blocks
+             return 1 + this.palette.getSerializedSize(globalMap) + this.storage.getRaw().length * 8;
+         }
+ 
+-        public void write(final FriendlyByteBuf buffer, final IdMap<T> globalMap, final io.papermc.paper.antixray.@Nullable ChunkPacketInfo<T> chunkPacketInfo, final int chunkSectionIndex) { // Paper - Anti-Xray - Add chunk packet info
++        public void write(final FriendlyByteBuf buffer, IdMap<T> globalMap, final io.papermc.paper.antixray.@Nullable ChunkPacketInfo<T> chunkPacketInfo, final int chunkSectionIndex) { // Paper - Anti-Xray - Add chunk packet info // Citrus - custom blocks
++            // Citrus start - custom blocks
++            if (ltd.lemongaming.citrus.block.ClientBlockStates.remapsGlobalPalette(globalMap, this.palette)) {
++                final int bits = ltd.lemongaming.citrus.block.ClientBlockStates.globalPaletteBits();
++                buffer.writeByte(bits);
++                if (chunkPacketInfo != null) {
++                    chunkPacketInfo.setBits(chunkSectionIndex, bits);
++                    chunkPacketInfo.setPalette(chunkSectionIndex, this.palette);
++                    chunkPacketInfo.setIndex(chunkSectionIndex, buffer.writerIndex());
++                }
++                buffer.writeFixedSizeLongArray(ltd.lemongaming.citrus.block.ClientBlockStates.remapGlobalStorage(this.storage));
++                return;
++            }
++            globalMap = ltd.lemongaming.citrus.block.ClientBlockStates.forClient(globalMap);
++            // Citrus end - custom blocks
+             buffer.writeByte(this.storage.getBits());
+             this.palette.write(buffer, globalMap);
+             // Paper start - Anti-Xray - Add chunk packet info

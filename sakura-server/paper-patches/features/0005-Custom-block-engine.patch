@@ -1,0 +1,23 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: g0dzcsgo <xdfelgen@gmail.com>
+Date: Sat, 31 Oct 2026 10:03:03 +0100
+Subject: [PATCH] Custom block engine
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java b/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java
+index 2c6137746c3bb545967c73de9311eb7d9cb80d10..51e100bf1517f19fd3917b1ef81a6e4276295853 100644
+--- a/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java
++++ b/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java
+@@ -139,6 +139,12 @@ public final class CraftMagicNumbers implements UnsafeValues {
+ 
+     static {
+         for (Block block : BuiltInRegistries.BLOCK) {
++            // Citrus start - custom blocks
++            if (block instanceof ltd.lemongaming.citrus.block.CitrusCustomBlock customBlock) {
++                BLOCK_MATERIAL.put(block, customBlock.fallbackMaterial());
++                continue;
++            }
++            // Citrus end - custom blocks
+             BLOCK_MATERIAL.put(block, Material.getMaterial(BuiltInRegistries.BLOCK.getKey(block).getPath().toUpperCase(Locale.ROOT)));
+         }
+ 

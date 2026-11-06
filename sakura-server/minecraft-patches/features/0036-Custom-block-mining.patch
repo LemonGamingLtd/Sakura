@@ -1,0 +1,38 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: g0dzcsgo <xdfelgen@gmail.com>
+Date: Sat, 31 Oct 2026 11:23:06 +0100
+Subject: [PATCH] Custom block mining
+
+
+diff --git a/net/minecraft/server/level/ServerPlayerGameMode.java b/net/minecraft/server/level/ServerPlayerGameMode.java
+index 81487e9840845de76f58e83cc57b173b5945bab4..e0bd537d99264aa886d50e099bc7ae9c4a682002 100644
+--- a/net/minecraft/server/level/ServerPlayerGameMode.java
++++ b/net/minecraft/server/level/ServerPlayerGameMode.java
+@@ -54,9 +54,11 @@ public class ServerPlayerGameMode {
+     private int lastSentState = -1;
+     public boolean captureSentBlockEntities = false; // Paper - Send block entities after destroy prediction
+     public boolean capturedBlockEntity = false; // Paper - Send block entities after destroy prediction
++    public final ltd.lemongaming.citrus.block.CustomBlockMining customBlockMining; // Citrus - custom block mining
+ 
+     public ServerPlayerGameMode(final ServerPlayer player) {
+         this.player = player;
++        this.customBlockMining = new ltd.lemongaming.citrus.block.CustomBlockMining(player); // Citrus - custom block mining
+         this.level = player.level();
+         this.gameTicks = (int) this.level.getLagCompensationTick(); // Paper - lag compensate eating; start in the same clock as tick()
+     }
+@@ -134,6 +136,7 @@ public class ServerPlayerGameMode {
+     public void tick() {
+         // this.gameTicks = net.minecraft.server.MinecraftServer.currentTick; // CraftBukkit
+         this.gameTicks = (int) this.level.getLagCompensationTick(); // Paper - lag compensate eating
++        this.customBlockMining.tick(this.isDestroyingBlock ? this.destroyPos : null); // Citrus - custom block mining
+         if (this.hasDelayedDestroy) {
+             BlockState blockState = this.level.getBlockStateIfLoaded(this.delayedDestroyPos); // Paper - Don't allow digging into unloaded chunks
+             if (blockState == null || blockState.isAir()) { // Paper - Don't allow digging into unloaded chunks
+@@ -204,6 +207,7 @@ public class ServerPlayerGameMode {
+             this.debugLogging(pos, false, sequence, "too high");
+         } else {
+             if (action == ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK) {
++                this.customBlockMining.update(pos); // Citrus - custom block mining
+                 if (this.level.getServer().isUnderSpawnProtection(this.level, pos, this.player)) {
+                     this.player.sendSpawnProtectionMessage(pos);
+                     this.debugLogging(pos, false, sequence, "spawn protection");
