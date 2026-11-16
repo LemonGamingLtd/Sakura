@@ -1088,10 +1088,10 @@ index 0000000000000000000000000000000000000000..ca9cdb3fe90f1f9224b5ff6afccb8194
 +    }
 +}
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index d495d6bcdc7cd0df328826e9a0abe7c5502ec039..2ea432190d0086ce45bd9446c96d796924020d74 100644
+index 86e9ddf5732567252d74bb838da9d1617c55c291..74b8a9cad6d3f801c08dbbdcf834b305c5d02d16 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -2024,7 +2024,18 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+@@ -2025,7 +2025,18 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
              case STANDARD -> Explosion.BlockInteraction.DESTROY; // CraftBukkit - handle custom explosion type
          };
          Vec3 center = new Vec3(x, y, z);
@@ -1111,7 +1111,7 @@ index d495d6bcdc7cd0df328826e9a0abe7c5502ec039..2ea432190d0086ce45bd9446c96d7969
          if (configurator != null) configurator.accept(explosion); // Paper - Allow explosions to damage source
          // Sakura start - optimise cannon entities
          if (source != null) {
-@@ -2037,6 +2048,36 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+@@ -2038,6 +2049,36 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
              return explosion;
          }
          // CraftBukkit end
@@ -1148,7 +1148,7 @@ index d495d6bcdc7cd0df328826e9a0abe7c5502ec039..2ea432190d0086ce45bd9446c96d7969
          ParticleOptions explosionParticle = explosion.isSmall() ? smallExplosionParticles : largeExplosionParticles;
  
          for (ServerPlayer player : this.players) {
-@@ -2069,7 +2110,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+@@ -2070,7 +2111,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
              }
          }
  
@@ -1216,7 +1216,7 @@ index 8c3c4532e16d697b692d5e44a17bda1f3a376dc2..fa62294a416a95456fa6fbf6071996c6
          org.bukkit.event.entity.ExplosionPrimeEvent event = org.bukkit.craftbukkit.event.CraftEventFactory.callExplosionPrimeEvent(this, RADIUS, false);
          if (event.isCancelled()) {
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index 379c7e31173f16a7ef5b12a6060187cd4d97d51b..3bf4b6513f0f33aa8195407616463d99064d67d6 100644
+index 707ad6a1fad31024684a71a86931a974438334c3..ed6e45aa33c0efbdae72410c8ced0bc56e57604b 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
 @@ -844,6 +844,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl

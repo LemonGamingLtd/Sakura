@@ -47,10 +47,10 @@ index a4212e9b0df55580b60666bc306d812d6f9531ba..81587d65631ac627f84cdab8e0b24435
                  }
              });
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
-index 429922f5cf8badc77d1075fe493174f6c6e99f40..1fca97b8c54d73070b7770616e272c4bcd586b9f 100644
+index 9f5a2e78410344900e5aa2e3cc74df426bfe17b2..69e49ede79bd7d9f4bd5fbbe63f026be935260a8 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftEntity.java
-@@ -201,7 +201,7 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
+@@ -203,7 +203,7 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
  
      @Override
      public Location getLocation() {
@@ -59,7 +59,7 @@ index 429922f5cf8badc77d1075fe493174f6c6e99f40..1fca97b8c54d73070b7770616e272c4b
      }
  
      @Override
-@@ -220,7 +220,7 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
+@@ -222,7 +222,7 @@ public abstract class CraftEntity implements org.bukkit.entity.Entity {
  
      @Override
      public Vector getVelocity() {

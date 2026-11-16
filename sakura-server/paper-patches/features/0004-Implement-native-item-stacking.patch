@@ -5,10 +5,10 @@ Subject: [PATCH] Implement native item stacking
 
 
 diff --git a/src/main/java/io/papermc/paper/configuration/GlobalConfiguration.java b/src/main/java/io/papermc/paper/configuration/GlobalConfiguration.java
-index 0b35a293f3436bcf8a39c4f07a88340cd9d33bcb..5f42ba7fc8d7077f8c5cd77b5e642e6a2d9bf643 100644
+index 014f8488af19ba4c95365d6867784e76406c9165..dcd92dbea80a2f8af12e60a5a95158329889faf6 100644
 --- a/src/main/java/io/papermc/paper/configuration/GlobalConfiguration.java
 +++ b/src/main/java/io/papermc/paper/configuration/GlobalConfiguration.java
-@@ -392,4 +392,15 @@ public class GlobalConfiguration extends ConfigurationPart {
+@@ -395,4 +395,15 @@ public class GlobalConfiguration extends ConfigurationPart {
      public class UpdateChecker extends ConfigurationPart {
          public boolean enabled = true;
      }

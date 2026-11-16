@@ -790,10 +790,10 @@ index 0000000000000000000000000000000000000000..350c9910db7c6232ec74d28a66cf364e
 +    }
 +}
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 92e77c536ef1922b62705fdc010dd9334646db78..d495d6bcdc7cd0df328826e9a0abe7c5502ec039 100644
+index e179750d82b87ba0457286bca41a9fad79259afb..86e9ddf5732567252d74bb838da9d1617c55c291 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -1408,10 +1408,17 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+@@ -1409,10 +1409,17 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
          profiler.incrementCounter("tickNonPassenger");
          entity.commonTick();
          final boolean isActive = io.papermc.paper.entity.activation.ActivationRange.checkIfActive(entity); // Paper - EAR 2
@@ -815,7 +815,7 @@ index 92e77c536ef1922b62705fdc010dd9334646db78..d495d6bcdc7cd0df328826e9a0abe7c5
          profiler.pop();
  
          for (Entity passenger : entity.getPassengers()) {
-@@ -2019,6 +2026,11 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+@@ -2020,6 +2027,11 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
          Vec3 center = new Vec3(x, y, z);
          ServerExplosion explosion = new ServerExplosion(this, source, damageSource, damageCalculator, center, r, fire, blockInteraction);
          if (configurator != null) configurator.accept(explosion); // Paper - Allow explosions to damage source
@@ -828,7 +828,7 @@ index 92e77c536ef1922b62705fdc010dd9334646db78..d495d6bcdc7cd0df328826e9a0abe7c5
          // CraftBukkit start
          if (explosion.wasCanceled) {
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 805ce3796a87d8385ba33afca1171a540c481ad4..815725c0099e30b42f8cfb9c9064b988e2fa2eda 100644
+index d3fdd5ee44536bc5366d3f2a407c437c19062b49..98b0713de8641c6826556d8f8e4cc73b5ca5110e 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -557,6 +557,26 @@ public abstract class Entity
@@ -1105,7 +1105,7 @@ index ce87c750d10cd173e95d8fbec71dfcd62c17a17c..8c3c4532e16d697b692d5e44a17bda1f
          super(type, level);
      }
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index cbd79d454536bb5a9e4c98ba086d70856e40ca8b..379c7e31173f16a7ef5b12a6060187cd4d97d51b 100644
+index 663252e05d2316130b1a8dd7fbfb6a73a1f67a7e..707ad6a1fad31024684a71a86931a974438334c3 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
 @@ -843,6 +843,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl

@@ -5,7 +5,7 @@ Subject: [PATCH] Cache attributes and watch equipment changes
 
 
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index 87a3fb3457294d72855f726c8593a53f22efa2f8..30806f5902dcc17ae58512ca819fb00db4d13fd4 100644
+index 5560ecd08634eabbe65b81e9649776e32bb0ca6e..85cb0c06ad14d2d933c2aa0c46037a7172355cef 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
 @@ -365,6 +365,13 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
@@ -44,7 +44,7 @@ index 87a3fb3457294d72855f726c8593a53f22efa2f8..30806f5902dcc17ae58512ca819fb00d
      }
  
      private static float computeModifiedFriction(final float friction, final float modifier) {
-@@ -3154,7 +3167,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
+@@ -3165,7 +3178,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
  
      @Override
      public double getDefaultGravity() {
@@ -53,7 +53,7 @@ index 87a3fb3457294d72855f726c8593a53f22efa2f8..30806f5902dcc17ae58512ca819fb00d
      }
  
      @Override
-@@ -3253,7 +3266,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
+@@ -3264,7 +3277,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
      protected void travelInWater(final Vec3 input, final double baseGravity, final boolean isFalling, final double oldY) {
          float slowDown = this.isSprinting() ? 0.9F : this.getWaterSlowDown();
          float speed = 0.02F;
@@ -62,7 +62,7 @@ index 87a3fb3457294d72855f726c8593a53f22efa2f8..30806f5902dcc17ae58512ca819fb00d
          if (!this.onGround()) {
              waterWalker *= 0.5F;
          }
-@@ -3536,7 +3549,12 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
+@@ -3547,7 +3560,12 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
                  }
              }
  
@@ -76,7 +76,7 @@ index 87a3fb3457294d72855f726c8593a53f22efa2f8..30806f5902dcc17ae58512ca819fb00d
              if (this.tickCount % 20 == 0) {
                  this.getCombatTracker().recheckStatus();
              }
-@@ -3814,7 +3832,11 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
+@@ -3825,7 +3843,11 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
              this.lerpHeadSteps--;
          }
  
@@ -89,7 +89,7 @@ index 87a3fb3457294d72855f726c8593a53f22efa2f8..30806f5902dcc17ae58512ca819fb00d
          Vec3 movement = this.getDeltaMovement();
          double dx = movement.x;
          double dy = movement.y;
-@@ -5084,7 +5106,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
+@@ -5095,7 +5117,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
  
      @Override
      public boolean isTransmittingWaypoint() {

@@ -533,10 +533,10 @@ index f3f391ccf9c02aa8122abc80de68317ea87db35d..f16166dd781f70d159a3120017f1ae03
                  if (visibleToPlayer && !player.getBukkitEntity().canSee(this.entity.getBukkitEntity())) { // Paper - only consider hits
                      visibleToPlayer = false;
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index f39a2b99d6a2a02982a3079c2bb81fbd04b4ae1d..92e77c536ef1922b62705fdc010dd9334646db78 100644
+index f44230b9ad2a6f21271e04aee754ce903900a77e..e179750d82b87ba0457286bca41a9fad79259afb 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -2030,6 +2030,24 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+@@ -2031,6 +2031,24 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
          for (ServerPlayer player : this.players) {
              if (player.distanceToSqr(center) < 4096.0) {
                  Optional<Vec3> playerKnockback = Optional.ofNullable(explosion.getHitPlayers().get(player));
@@ -596,7 +596,7 @@ index 5dbb2849f32ac3418f8fdf76c04022d7e9dc165b..9ce2d5bcc40dfeee2f9a6912c551b11b
          if (packet.isTerminal()) {
              this.close();
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index 7860357d8e64b72778190cd95402bfdc2f63d214..cbd79d454536bb5a9e4c98ba086d70856e40ca8b 100644
+index 74f4ee2c6b1e0220f51ec36ec85a23130961d32e..663252e05d2316130b1a8dd7fbfb6a73a1f67a7e 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
 @@ -842,6 +842,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl

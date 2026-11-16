@@ -5,10 +5,10 @@ Subject: [PATCH] Add entity travel distance limits
 
 
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 2ea432190d0086ce45bd9446c96d796924020d74..5cdab1e9d8904e93ddd3bac0ff803d51aedb414b 100644
+index 74b8a9cad6d3f801c08dbbdcf834b305c5d02d16..860c601e1fa12d9164709476a6815f9ae9c084be 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
-@@ -1419,6 +1419,11 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
+@@ -1420,6 +1420,11 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
              } else {entity.inactiveTick();} // Paper - EAR 2
          }
          // Sakura end - optimise cannon entities
@@ -21,7 +21,7 @@ index 2ea432190d0086ce45bd9446c96d796924020d74..5cdab1e9d8904e93ddd3bac0ff803d51
  
          for (Entity passenger : entity.getPassengers()) {
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index af50dc32ae9b38921caddd9be2f8d6a63d31a61a..6d583847f3823468be98793a9afb6fe2961aa37d 100644
+index d67916b230c88e597d79b9fb5f3b8c3d8459635b..1b0af2336a07437c667d0ad8aea8b1b44efe895d 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -172,6 +172,18 @@ public abstract class Entity

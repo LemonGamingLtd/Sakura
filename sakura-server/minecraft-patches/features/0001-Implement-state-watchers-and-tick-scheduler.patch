@@ -765,7 +765,7 @@ index 0000000000000000000000000000000000000000..fc3bbf153907fbc0b6b5eb8f43f79a9e
 +    }
 +}
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index 054384aa4e48fc36146ff467aafb3df073aae8ae..5a49157b6fee38c7baf8b1d0a728d3bafc3ee6b0 100644
+index 761412d19d90be9a3a607a6bf01bcf9e707b68df..7951671a48d3b5f8216c15dc06380bcbf975e3fa 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
 @@ -1838,6 +1838,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -777,7 +777,7 @@ index 054384aa4e48fc36146ff467aafb3df073aae8ae..5a49157b6fee38c7baf8b1d0a728d3ba
          this.isIteratingOverLevels = false; // Paper - Throw exception on world create while being ticked
  
 diff --git a/net/minecraft/server/level/ServerLevel.java b/net/minecraft/server/level/ServerLevel.java
-index 2f4e4f41ec0efbc4a15ceb72281c494a78029a60..f39a2b99d6a2a02982a3079c2bb81fbd04b4ae1d 100644
+index 19ae0bb39f875ba3d63ba65612e0ee1b2592ffeb..f44230b9ad2a6f21271e04aee754ce903900a77e 100644
 --- a/net/minecraft/server/level/ServerLevel.java
 +++ b/net/minecraft/server/level/ServerLevel.java
 @@ -744,6 +744,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ServerEntityGet
@@ -994,7 +994,7 @@ index e59787c1698e96df98ef4cf98d62b4a67c4e95dc..62ad0d316404fd80808a6cdcbf7413ed
      }
  
 diff --git a/net/minecraft/world/item/ItemStack.java b/net/minecraft/world/item/ItemStack.java
-index 6f72fc090d0475cb2ae334e5b70612a79a0ecb5b..a7c7fb2d9d10301a257851600ab664245c5ac572 100644
+index 20269209e594824796c678f274b75c170430a13b..c563d9fa53cc7decff2f7dc569d73f04b73af32e 100644
 --- a/net/minecraft/world/item/ItemStack.java
 +++ b/net/minecraft/world/item/ItemStack.java
 @@ -100,7 +100,7 @@ import org.apache.commons.lang3.mutable.MutableBoolean;
@@ -1026,7 +1026,7 @@ index 6f72fc090d0475cb2ae334e5b70612a79a0ecb5b..a7c7fb2d9d10301a257851600ab66424
  
      public ItemStack(final ItemLike item, final int count) {
          this(item.asItem().builtInRegistryHolder(), count);
-@@ -982,11 +995,16 @@ public final class ItemStack implements DataComponentHolder, ItemInstance {
+@@ -983,11 +996,16 @@ public final class ItemStack implements DataComponentHolder, ItemInstance {
      // CraftBukkit start
      public void restorePatch(DataComponentPatch datacomponentpatch) {
          this.components.restorePatch(datacomponentpatch);
@@ -1044,7 +1044,7 @@ index 6f72fc090d0475cb2ae334e5b70612a79a0ecb5b..a7c7fb2d9d10301a257851600ab66424
      }
  
      public <T> @Nullable T set(final TypedDataComponent<T> value) {
-@@ -1007,7 +1025,11 @@ public final class ItemStack implements DataComponentHolder, ItemInstance {
+@@ -1008,7 +1026,11 @@ public final class ItemStack implements DataComponentHolder, ItemInstance {
      }
  
      public <T> @Nullable T remove(final DataComponentType<? extends T> type) {
@@ -1057,7 +1057,7 @@ index 6f72fc090d0475cb2ae334e5b70612a79a0ecb5b..a7c7fb2d9d10301a257851600ab66424
      }
  
      public void applyComponentsAndValidate(final DataComponentPatch patch) {
-@@ -1320,6 +1342,7 @@ public final class ItemStack implements DataComponentHolder, ItemInstance {
+@@ -1321,6 +1343,7 @@ public final class ItemStack implements DataComponentHolder, ItemInstance {
  
      public void setCount(final int count) {
          this.count = count;
@@ -1066,7 +1066,7 @@ index 6f72fc090d0475cb2ae334e5b70612a79a0ecb5b..a7c7fb2d9d10301a257851600ab66424
  
      public void limitSize(final int maxStackSize) {
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index 4af13f6d69c68bbe31399fafb3b7067d7998935d..7860357d8e64b72778190cd95402bfdc2f63d214 100644
+index a45a951339f41ad9f043c4bc25f0b4493509b1ad..74f4ee2c6b1e0220f51ec36ec85a23130961d32e 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
 @@ -833,6 +833,15 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl

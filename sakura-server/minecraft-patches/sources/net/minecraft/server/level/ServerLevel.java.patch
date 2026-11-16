@@ -9,7 +9,7 @@
          this.weatherData = savedDataStorage.computeIfAbsent(WeatherData.TYPE);
          this.weatherData.setLevel(this);
          this.typeKey = typeKey;
-@@ -2975,6 +_,7 @@
+@@ -2976,6 +_,7 @@
  
      public boolean canSpreadFireAround(final BlockPos pos) {
          int spreadRadius = this.getGameRules().get(GameRules.FIRE_SPREAD_RADIUS_AROUND_PLAYER);
@@ -17,7 +17,7 @@
          return spreadRadius == -1 || this.chunkSource.chunkMap.anyPlayerCloseEnoughTo(pos, spreadRadius);
      }
  
-@@ -3154,6 +_,7 @@
+@@ -3155,6 +_,7 @@
                  entity.originWorld = ServerLevel.this.getWorld().getUID();
              }
              // Paper end - Entity origin API
